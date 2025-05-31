@@ -5,8 +5,10 @@ on:
 
 jobs:
   rollback:
-    uses: DecentAppsNet/rollback@v1
-    with:
-      app-name: ${{ vars.APP_NAME }}
-    secrets:
-      api-key: ${{ secrets.DECENT_API_KEY }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Roll back production to previous version
+        uses: DecentAppsNet/rollback@v1
+        with:
+          app-name: ${{ vars.APP_NAME }}
+          api-key: ${{ secrets.DECENT_API_KEY }}
