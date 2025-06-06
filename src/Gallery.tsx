@@ -1,4 +1,5 @@
-import DecentBar, { Link } from './components/decentBar/DecentBar';
+import DecentBar from './components/decentBar/DecentBar';
+import Link from './components/decentBar/types/Link';
 import { getBaseUrl } from './components/decentBar/decentBarUtil';
 import style from './Gallery.module.css'
 

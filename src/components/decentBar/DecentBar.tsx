@@ -4,6 +4,7 @@ import styles from './DecentBar.module.css';
 import ContentButton from '@/components/contentButton/ContentButton';
 import { getBaseUrl, isServingFromEnabledDomain } from './decentBarUtil';
 import DecentBarCssOverrides from './types/DecentBarCssOverrides';
+import Link from './types/Link';
 
 // Default domains where the decent bar is rendered. Can be overridden in props.
 const DEFAULT_ENABLED_DOMAINS = ['decentapps.net', '127.0.0.1', 'localhost'];
