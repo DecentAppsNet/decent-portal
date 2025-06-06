@@ -44,6 +44,7 @@ Example:
 * homeUrl (optional) - Where the user will navigate when they click on the home link. By default, this will be the base URL of wherever the web app is served, e.g., an app served from "https://decentapps.net/bleetbox" will have a default home URL of "https://decentapps.net".
 * links (optional) - An array of links, each of type `Link`, which is `{description:string, url:string}`. Description is what displays on the button. We recommend always including a "Support" link.
 * onClickLink (optional) - The callback function you can optionally implement to customize behavior of clicking links. See "Implementing onClickLink()" section below.
+* classNameOverrides (optional) - CSS overrides for any of the elements rendered by the bar. See "Overriding CSS" section below.
 
 ### Implementing onClickLink()
 
@@ -81,6 +82,14 @@ function HomeScreen() {
 When implementing your own `onClickLink()` handler, you should handle any links that need to do something besides the default behavior, and then let the rest be handled with a call to `defaultOnClickLink()`. In this way, you'll have consistent behavior with other apps on the Decent Portal. For example, there is logic in `defaultOnClickLink()` to navigate to a new tab for stay in same tab based on if the link is matching the current domain.
 
 Whatever you do with your links and navigation, always be clear about sending the user away from the Decent Portal. Using the "Links" area of the DecentBar and opening the cross-domain link in a new tab (handled by `defaultOnClickLink()` automatically) should suffice for this.
+
+### Overriding CSS
+
+The `classNameOverrides` property will let you specify a CSS class that will be applied in addition to the default CSS class. You can do things like adjust font sizes, margins, padding, and colors.
+
+For hosting on Decent Portal, we want the DecentBar to look consistent across different apps, but a few tweaks to make the bar fit in with your app better are fine. Don't obstruct or obscure the navigational functionality.
+
+An example of how to override the CSS can be found [here](https://github.com/DecentAppsNet/decent-portal/blob/main/src/Gallery.tsx).
 
 ### DecentBar Behavior on Other Hosts
 

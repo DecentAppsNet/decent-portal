@@ -86,6 +86,22 @@ function testOverrideHomeUrl() {
   </>;
 }
 
+function testOverrideCss() {
+  return <>
+  <h3>Test: Override CSS</h3>
+    <DecentBar
+      appName="My App"
+      classNameOverrides={{
+        container: style.customContainer,
+        appFacet: style.customAppFacet,
+        appName: style.customAppName,
+        contributorFacet: style.customContributorFacet,
+        favIcon: style.customFavIcon,
+      }}
+    />
+  </>;
+}
+
 function Gallery() {
   return (
     <div className={style.container}>
@@ -101,6 +117,7 @@ function Gallery() {
       { testContributors() }
       { testNoRenderOnDisabledDomain() }
       { testOverrideHomeUrl() }
+      { testOverrideCss() }
     </div>
   );
 }

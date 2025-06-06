@@ -3,14 +3,10 @@ import { useEffect, useState } from 'react';
 import styles from './DecentBar.module.css';
 import ContentButton from '@/components/contentButton/ContentButton';
 import { getBaseUrl, isServingFromEnabledDomain } from './decentBarUtil';
+import DecentBarCssOverrides from './types/DecentBarCssOverrides';
 
 // Default domains where the decent bar is rendered. Can be overridden in props.
 const DEFAULT_ENABLED_DOMAINS = ['decentapps.net', '127.0.0.1', 'localhost'];
-
-export type Link = {
-  description:string,
-  url:string
-}
 
 type Props = {
   appName:string,
@@ -18,7 +14,8 @@ type Props = {
   contributorText?:string,
   enabledDomains?:string[],
   homeUrl?:string,
-  onClickLink?:(link:Link) => void
+  onClickLink?:(link:Link) => void,
+  classNameOverrides?:DecentBarCssOverrides
 }
 
 export function defaultOnClickLink(link:Link) {
@@ -46,7 +43,15 @@ function _appLinksContent(links:Link[], onClickLink:Function) {
   return <>Links:<br />{linkButtons}</>;
 }
 
-function DecentBar({ appName, appLinks, contributorText, onClickLink = defaultOnClickLink, enabledDomains = DEFAULT_ENABLED_DOMAINS, homeUrl = getBaseUrl() }: Props) {
+function DecentBar({ 
+    appName, 
+    appLinks, 
+    contributorText, 
+    onClickLink = defaultOnClickLink, 
+    enabledDomains = DEFAULT_ENABLED_DOMAINS, 
+    homeUrl = getBaseUrl(),
+    classNameOverrides = {} 
+  }: Props) {
   const [favIconUrl, setFavIconUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -63,21 +68,30 @@ function DecentBar({ appName, appLinks, contributorText, onClickLink = defaultOn
 
   const appLinksContent = _appLinksContent(appLinks || [], onClickLink);
 
+  const containerClassName = `${styles.container} ${classNameOverrides?.container ?? ''}`;
+  const decentFacetClassName = `${styles.decentFacet} ${classNameOverrides?.decentFacet ?? ''}`;
+  const favIconClassName = `${styles.favIcon} ${classNameOverrides?.favIcon ?? ''}`;
+  const appFacetClassName = `${styles.appFacet} ${classNameOverrides?.appFacet ?? ''}`;
+  const appNameClassName = `${styles.appName} ${classNameOverrides?.appName ?? ''}`;
+  const appButtonAreaClassName = `${styles.appButtonArea} ${classNameOverrides?.appButtonArea ?? ''}`;
+  const appFacetSeparatorClassName = `${styles.appFacetSeparator} ${classNameOverrides?.appFacetSeparator ?? ''}`;
+  const contributorFacetClassName = `${styles.contributorFacet} ${classNameOverrides?.contributorFacet ?? ''}`;
+
   return (
-    <div className={styles.container}>
-      <div className={styles.decentFacet}>
+    <div className={ containerClassName }>
+      <div className={ decentFacetClassName }>
         <a href={homeUrl}>
-          <img src={favIconUrl} className={styles.favIcon} draggable="false"/>
+          <img src={favIconUrl} className={ favIconClassName } draggable="false"/>
         </a>  
       </div>
-      <div className={styles.appFacet}>
-        <div className={styles.appName}>{appName}</div>
-        <div className={styles.appButtonArea}>
+      <div className={ appFacetClassName }>
+        <div className={ appNameClassName }>{appName}</div>
+        <div className={ appButtonAreaClassName }>
           {appLinksContent}
         </div>
       </div>
-      <div className={styles.appFacetSeparator} />
-      <div className={styles.contributorFacet}>
+      <div className={ appFacetSeparatorClassName }/>
+      <div className={ contributorFacetClassName }>
         {contributorText}
       </div>
     </div>

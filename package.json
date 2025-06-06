@@ -7,7 +7,7 @@
   "private": false,
   "license": "MIT",
   "author": "Erik Hermansen",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "type": "module",
   "scripts": {
     "dev": "vite",
