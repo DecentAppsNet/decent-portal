@@ -1,4 +1,5 @@
-import DecentBar, { Link } from './components/decentBar/DecentBar';
+import DecentBar from './components/decentBar/DecentBar';
+import Link from './components/decentBar/types/Link';
 import { getBaseUrl } from './components/decentBar/decentBarUtil';
 import style from './Gallery.module.css'
 
@@ -86,6 +87,22 @@ function testOverrideHomeUrl() {
   </>;
 }
 
+function testOverrideCss() {
+  return <>
+  <h3>Test: Override CSS</h3>
+    <DecentBar
+      appName="My App"
+      classNameOverrides={{
+        container: style.customContainer,
+        appFacet: style.customAppFacet,
+        appName: style.customAppName,
+        contributorFacet: style.customContributorFacet,
+        favIcon: style.customFavIcon,
+      }}
+    />
+  </>;
+}
+
 function Gallery() {
   return (
     <div className={style.container}>
@@ -101,6 +118,7 @@ function Gallery() {
       { testContributors() }
       { testNoRenderOnDisabledDomain() }
       { testOverrideHomeUrl() }
+      { testOverrideCss() }
     </div>
   );
 }

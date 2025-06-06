@@ -1,3 +1,23 @@
 .container {
  padding: 1rem;   
 }
+
+.customContainer {
+  height: 3vh;
+}
+
+.customAppFacet {
+  background: linear-gradient(white, #222222);
+}
+
+.customContributorFacet {
+  background: linear-gradient(#aaaaaa, #222222);
+}
+
+.customAppName {
+  font-size: 2vh;
+}
+
+.customFavIcon {
+  height: 2vh;
+}
