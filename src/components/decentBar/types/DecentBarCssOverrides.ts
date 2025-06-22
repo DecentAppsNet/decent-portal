@@ -8,6 +8,7 @@ type DecentBarCssOverrides = {
   appFacetSeparator?: string;
   contributorFacet?: string;
   favIcon?: string;
+  settingsIcon?: string;
 };
 
 export default DecentBarCssOverrides;

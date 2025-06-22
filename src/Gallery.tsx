@@ -98,6 +98,7 @@ function testOverrideCss() {
         appName: style.customAppName,
         contributorFacet: style.customContributorFacet,
         favIcon: style.customFavIcon,
+        settingsIcon: style.customSettingsIcon,
       }}
     />
   </>;

@@ -1,10 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import styles from './DecentBar.module.css';
 import ContentButton from '@/components/contentButton/ContentButton';
 import { getBaseUrl, isServingFromEnabledDomain } from './decentBarUtil';
 import DecentBarCssOverrides from './types/DecentBarCssOverrides';
 import Link from './types/Link';
+import SettingsIcon from './icons/cog.svg';
+import SettingsDialog from '../settingsDialog/SettingsDialog';
+import SettingCategory from '@/settings/types/SettingCategory';
+import { LoadAppSettingsCallback, SaveAppSettingsCallback, ValidateSettingCallback } from '../settingsDialog/types/AppSettingsCallbacks';
 
 // Default domains where the decent bar is rendered. Can be overridden in props.
 const DEFAULT_ENABLED_DOMAINS = ['decentapps.net', '127.0.0.1', 'localhost'];
@@ -16,7 +20,11 @@ type Props = {
   enabledDomains?:string[],
   homeUrl?:string,
   onClickLink?:(link:Link) => void,
-  classNameOverrides?:DecentBarCssOverrides
+  classNameOverrides?:DecentBarCssOverrides,
+  defaultAppSettings?:SettingCategory,
+  onLoadAppSettings?:LoadAppSettingsCallback,
+  onSaveAppSettings?:SaveAppSettingsCallback,
+  onValidateSetting?:ValidateSettingCallback
 }
 
 export function defaultOnClickLink(link:Link) {
@@ -44,6 +52,14 @@ function _appLinksContent(links:Link[], onClickLink:Function) {
   return <>Links:<br />{linkButtons}</>;
 }
 
+function _createDefaultAppSettings(appName:string):SettingCategory {
+  return {
+    name: 'This App',
+    description: `There are no settings for ${appName}. But this is where you’d find them if they existed!`,
+    settings: []
+  }
+}
+
 function DecentBar({ 
     appName, 
     appLinks, 
@@ -51,9 +67,15 @@ function DecentBar({
     onClickLink = defaultOnClickLink, 
     enabledDomains = DEFAULT_ENABLED_DOMAINS, 
     homeUrl = getBaseUrl(),
-    classNameOverrides = {} 
+    classNameOverrides = {},
+    defaultAppSettings,
+    onLoadAppSettings,
+    onSaveAppSettings,
+    onValidateSetting
   }: Props) {
+  const initialAppSettings = useRef<SettingCategory>(defaultAppSettings || _createDefaultAppSettings(appName));
   const [favIconUrl, setFavIconUrl] = useState<string | null>(null);
+  const [modalDialogName, setModalDialogName] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isServingFromEnabledDomain(enabledDomains)) {
@@ -77,25 +99,37 @@ function DecentBar({
   const appButtonAreaClassName = `${styles.appButtonArea} ${classNameOverrides?.appButtonArea ?? ''}`;
   const appFacetSeparatorClassName = `${styles.appFacetSeparator} ${classNameOverrides?.appFacetSeparator ?? ''}`;
   const contributorFacetClassName = `${styles.contributorFacet} ${classNameOverrides?.contributorFacet ?? ''}`;
+  const settingsIconClassName = `${styles.settingsIcon} ${classNameOverrides?.settingsIcon ?? ''}`;
 
   return (
-    <div className={ containerClassName }>
-      <div className={ decentFacetClassName }>
-        <a href={homeUrl}>
-          <img src={favIconUrl} className={ favIconClassName } draggable="false"/>
-        </a>  
-      </div>
-      <div className={ appFacetClassName }>
-        <div className={ appNameClassName }>{appName}</div>
-        <div className={ appButtonAreaClassName }>
-          {appLinksContent}
+    <>
+      <div className={ containerClassName }>
+        <div className={ decentFacetClassName }>
+          <a href={homeUrl}>
+            <img src={favIconUrl} className={ favIconClassName } draggable="false"/>
+          </a>  
+        </div>
+        <div className={ appFacetClassName }>
+          <div className={ appNameClassName }>{appName}</div>
+          <div className={ appButtonAreaClassName }>
+            {appLinksContent}
+          </div>
+        </div>
+        <div className={ appFacetSeparatorClassName }/>
+        <div className={ contributorFacetClassName }>
+          {contributorText}
+          <img src={SettingsIcon} className={settingsIconClassName} alt="Device Settings" onClick={() => setModalDialogName(SettingsDialog.name)}/>
         </div>
       </div>
-      <div className={ appFacetSeparatorClassName }/>
-      <div className={ contributorFacetClassName }>
-        {contributorText}
-      </div>
-    </div>
+      <SettingsDialog 
+        isOpen={modalDialogName === SettingsDialog.name} 
+        defaultAppSettings={initialAppSettings.current} 
+        onClose={() => setModalDialogName(null)} 
+        onLoadAppSettings={onLoadAppSettings}
+        onSaveAppSettings={onSaveAppSettings}
+        onValidateSetting={onValidateSetting}
+      />
+    </>
   )
 }
 
