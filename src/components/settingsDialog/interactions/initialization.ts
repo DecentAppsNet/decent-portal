@@ -31,6 +31,22 @@ function _mergeAppCategory(defaultAppCategory:SettingCategory, loadedAppSettings
   return defaultAppCategory;
 }
 
+function _fakeLlmCategory():SettingCategory {
+  return {
+    name: "LLM",
+    description: "Settings for the LLM (Large Language Model) integration.",
+    settings: []
+  }
+}
+
+function _fakeLoggingCategory():SettingCategory {
+  return {
+    name: "Logging",
+    description: "Settings for logging.",
+    settings: []
+  }
+}
+
 export async function init(defaultAppCategory:SettingCategory, onLoadAppSettings?:LoadAppSettingsCallback):Promise<SettingCategory[]> {
   const loadedAppSettings = await getCategorySettings(_getAppCategoryName());
   const mergedAppCategory = _mergeAppCategory(defaultAppCategory, loadedAppSettings);
@@ -39,5 +55,5 @@ export async function init(defaultAppCategory:SettingCategory, onLoadAppSettings
     if (updatedAppSettings) mergedAppCategory.settings = updatedAppSettings;
   }
 
-  return [mergedAppCategory];
+  return [mergedAppCategory, _fakeLlmCategory(), _fakeLoggingCategory()];
 }

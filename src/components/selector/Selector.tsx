@@ -5,12 +5,13 @@ interface IProps {
   label?:string,
   selectedOptionNo:number,
   optionNames:string[],
+  displayAsTabs?:boolean,
   onChange?:(optionNo:number) => void,
   onClick?:(optionNo:number) => void
 }
 
 function Selector(props:IProps) {
-  const { disabled, label, optionNames, onClick, onChange, selectedOptionNo } = props;
+  const { disabled, label, optionNames, onClick, onChange, selectedOptionNo, displayAsTabs } = props;
 
   function _onOptionClick(optionNo:number) {
     if (disabled) return;
@@ -29,8 +30,13 @@ function Selector(props:IProps) {
     const textClass = disabled
       ? styles.selectorButtonTextDisabled
       : selected ? styles.selectorButtonTextSelected : styles.selectorButtonText;
-    if (optionNo === 0) buttonClass = `${buttonClass} ${styles.firstSelectorButton}`;
-    if (optionNo === optionNames.length-1) buttonClass = `${buttonClass} ${styles.lastSelectorButton}`;
+
+    if (displayAsTabs) {
+      buttonClass = `${buttonClass} ${styles.tabButton}`;
+    } else {
+      if (optionNo === 0) buttonClass = `${buttonClass} ${styles.firstSelectorButton}`;
+      if (optionNo === optionNames.length-1) buttonClass = `${buttonClass} ${styles.lastSelectorButton}`;
+    }
     return (
       <button key={optionName} className={buttonClass} onClick={() => _onOptionClick(optionNo)} >
     <span className={textClass}>{optionName}</span>

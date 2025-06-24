@@ -2,7 +2,7 @@ import SettingBase from "./SettingBase"
 import SettingType from "./SettingType"
 
 type NumericRangeSetting = SettingBase & {
-  type:SettingType.NUMERIC_RANGE,
+  type:SettingType.NUMERIC,
   value:number,
   min:number,
   max:number,

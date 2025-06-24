@@ -2,6 +2,12 @@ import DecentBar from './components/decentBar/DecentBar';
 import Link from './components/decentBar/types/Link';
 import { getBaseUrl } from './components/decentBar/decentBarUtil';
 import style from './Gallery.module.css'
+import SettingType from './settings/types/SettingType';
+import TextSetting from './settings/types/TextSetting';
+import BooleanToggleSetting from './settings/types/BooleanToggleSetting';
+import SettingCategory from './settings/types/SettingCategory';
+import NumericSetting from './settings/types/NumericSetting';
+import Heading from './settings/types/Heading';
 
 function testMinimal() {
   return <>
@@ -104,6 +110,56 @@ function testOverrideCss() {
   </>;
 }
 
+function testAppSettings() {
+  const textSetting:TextSetting = {
+    id: 'app-text-setting',
+    type: SettingType.TEXT,
+    label: 'App Text Setting',
+    value: 'Default Text',
+    placeholder: 'This is a text setting for the app.',
+  }
+  const booleanToggleSetting:BooleanToggleSetting = {
+    id: 'app-boolean-toggle-setting',
+    type: SettingType.BOOLEAN_TOGGLE,
+    label: 'App Boolean Toggle Setting',
+    value: true,
+    trueLabel: 'Enabled',
+    falseLabel: 'Disabled'
+  }
+  const numericSetting:NumericSetting = {
+    id: 'app-numeric-setting',
+    type: SettingType.NUMERIC,
+    label: 'App Numeric Setting',
+    value: 52,
+    min: 0,
+    max: 100
+  }
+  const heading:Heading = {
+    id: 'app-heading',
+    type: SettingType.HEADING,
+    label: 'Special Settings',
+    buttons: [
+      { label: 'Button 1', value: 'button1' },
+      { label: 'Button 2', value: 'button2' }
+    ],
+    onButtonClick: (value) => {
+      window.alert(`Button clicked: ${value}`);
+    }
+  }
+  const defaultAppSettings:SettingCategory = {
+    name: 'This App',
+    description: `These are some great settings. You're going to love them.`,
+    settings: [textSetting,booleanToggleSetting,heading,numericSetting]
+  };
+  return <>
+    <h3>Test: Settings Dialog</h3>
+    <DecentBar
+      appName="My App"
+      defaultAppSettings={defaultAppSettings}
+    />
+  </>;
+}
+
 function Gallery() {
   return (
     <div className={style.container}>
@@ -120,6 +176,7 @@ function Gallery() {
       { testNoRenderOnDisabledDomain() }
       { testOverrideHomeUrl() }
       { testOverrideCss() }
+      { testAppSettings() }
     </div>
   );
 }

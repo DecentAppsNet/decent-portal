@@ -1,7 +1,7 @@
 enum SettingType {
   TEXT,
   BOOLEAN_TOGGLE,
-  NUMERIC_RANGE,
+  NUMERIC,
   BUTTON_BAR,
   HEADING
 }

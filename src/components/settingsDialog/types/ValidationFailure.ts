@@ -6,7 +6,7 @@ export const LAST_VALID_VALUE = 'LAST_VALID_VALUE';
 
 type ValidationFailure = {
   failReason: string;
-  nextValue?: string; // Undefined - don't change the invalid value. LAST_VALID_VALUE - revert to the last valid value.
+  nextValue?: any; // Undefined - allow the invalid value. LAST_VALID_VALUE - revert to the last valid value.
 }
 
 export default ValidationFailure;

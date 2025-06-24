@@ -8,7 +8,7 @@ type Props = {
 
 function SettingsCategorySelector({ categoryNames, selectedCategoryNo, onChange }: Props) {
   return (
-    <Selector label='Category' optionNames={categoryNames} selectedOptionNo={selectedCategoryNo} onChange={onChange} />
+    <Selector optionNames={categoryNames} selectedOptionNo={selectedCategoryNo} onChange={onChange} displayAsTabs />
   );
 }
 

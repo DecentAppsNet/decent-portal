@@ -1,0 +1,39 @@
+@value colors: "@/components/commonPalette.module.css";
+@value primary-off-white, button-highlight from colors;
+
+.container {
+  font-size: 1vh;
+  display: flex;
+  margin-bottom: .5vh;
+}
+
+.label {
+  margin-left: 1vh;
+  min-width: 15vw;
+  display: inline-block;
+}
+
+.heading {
+  padding-left: .5vh;
+  margin-bottom: .5vh;
+  background: linear-gradient(
+    to bottom,
+    #fdca87 0%,
+    primary-off-white 80%,
+    primary-off-white 100%
+  );
+}
+
+.heading > p {
+  font-size: 1.1vh;
+  font-weight: bold;
+  padding-top: .5vh;
+  padding-bottom: .5vh;
+}
+
+.heading > hr {
+  margin: 0;
+  border: none;
+  height: 0.1vh;
+  background-color: button-highlight;
+}

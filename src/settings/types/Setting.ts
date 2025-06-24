@@ -1,12 +1,12 @@
 import BooleanToggleSetting from "./BooleanToggleSetting";
 import Heading from "./Heading";
-import NumericRangeSetting from "./NumericRangeSetting";
+import NumericSetting from "./NumericSetting";
 import TextSetting from "./TextSetting";
 
 type Setting = 
   BooleanToggleSetting |
   Heading |
-  NumericRangeSetting | 
+  NumericSetting | 
   TextSetting;
 
 export default Setting;

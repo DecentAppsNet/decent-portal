@@ -31,6 +31,13 @@
     margin-bottom: .1rem;
 }
 
+.tabButton {
+    border-top-left-radius: .5rem;
+    border-top-right-radius: .5rem;
+    margin-bottom: 0; /* Because it's often good to put the tabs directly attached to the top of some container for tab content. */
+    margin-right: .1vh;
+}
+
 .selectorButton:hover {
     background: button-highlight radial-gradient(circle, transparent 1%, button 1%) center/23000%;
 }
