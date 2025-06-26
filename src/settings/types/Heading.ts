@@ -6,7 +6,8 @@ import SettingType from "./SettingType"
 type Heading = SettingBase & {
   type:SettingType.HEADING,
   buttons?:{label:string, value:string}[],
-  onButtonClick?:(value:string) => void
+  onButtonClick?:(value:string) => void,
+  indentLevel?:number
 }
 
 export default Heading;
