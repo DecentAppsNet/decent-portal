@@ -8,6 +8,7 @@ import Setting from './settings/types/Setting';
 import ValidationFailure, { LAST_VALID_VALUE } from './components/settingsDialog/types/ValidationFailure';
 import BooleanToggleSetting from './settings/types/BooleanToggleSetting';
 import TextSetting from './settings/types/TextSetting';
+import NumericSetting from './settings/types/NumericSetting';
 
 function testMinimal() {
   return <>
@@ -132,6 +133,8 @@ function testAppSettings() {
       {id:'3', type:SettingType.HEADING, label:'Numeric Examples'},
         {id:'3a', type:SettingType.NUMERIC, label:'Whole numbers 0-100', value:52, minValue:0, maxValue:100},
         {id:'3b', type:SettingType.NUMERIC, label:'Decimals 0-1', value:0.52, minValue:0, maxValue:1, allowDecimals:true},
+        {id:'3c', type:SettingType.NUMERIC, label:'Should be even 0-10', value:4, minValue:0, maxValue:10, allowDecimals:false},
+        {id:'3d', type:SettingType.NUMERIC, label:'Must have < than 2 decimal places', value:0.52, minValue:0, maxValue:1, allowDecimals:true},
       {id:'4', type:SettingType.HEADING, label:'Heading Examples'},
         {id:'4a', type:SettingType.HEADING, label:'Heading with Buttons', indentLevel:1, buttons: [
           { label: 'Button 1', value: 'button1' },
@@ -150,15 +153,23 @@ function testAppSettings() {
       case '1f': return !(setting as BooleanToggleSetting).value ? { failReason:'Yes required.', nextValue:LAST_VALID_VALUE } : null;
       case '1g': return (setting as BooleanToggleSetting).value ? { failReason:'No required.', nextValue:LAST_VALID_VALUE } : null;
       case '2c': return (setting as TextSetting).value.length ? null : { failReason:'Should be specified.' };
-      case '2d': {
+      case '2d': 
         const originalValue = (setting as TextSetting).value;
         const nextValue = originalValue.trim();
-        return nextValue === originalValue ? null : { nextValue };
-      }
-      case '2e': {
-        const value = (setting as TextSetting).value;
-        return value.includes('apple') ? null : { failReason:'Must contain "apple".', nextValue:LAST_VALID_VALUE };
-      }
+      return nextValue === originalValue ? null : { nextValue };
+      
+      case '2e': 
+      return (setting as TextSetting).value.includes('apple') ? null : { failReason:'Must contain "apple".', nextValue:LAST_VALID_VALUE };
+      
+      case '3c':
+      return (setting as NumericSetting).value % 2 !== 0 ? { failReason:'Should be even.' } : null;
+
+      case '3d': 
+        const numericSetting = setting as NumericSetting;
+        // Round to 1 decimal place
+        const roundedValue = Math.round(numericSetting.value * 10) / 10;
+      return roundedValue !== numericSetting.value ? { failReason:'Must have less than 2 decimal places.', nextValue:roundedValue } : null;
+
       default: return null;
     }
   }
