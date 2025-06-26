@@ -25,8 +25,9 @@ function getDigitCount(value: number): number {
   return digitCount;
 }
 
-function _createDigitWidthStyle(minValue:number, maxValue:number, digitWidth?:number):CSSProperties {
+function _createDigitWidthStyle(minValue:number, maxValue:number, allowDecimals?:boolean, digitWidth?:number):CSSProperties {
   let digitCount = digitWidth ?? Math.max(getDigitCount(minValue), getDigitCount(maxValue));
+  if (allowDecimals) digitCount += 2; // Account for decimal point and one digit after it.
   if (!digitCount) return {};
   return {width: `calc(${digitCount}ch + 1vh)`};
 }
@@ -41,9 +42,9 @@ function NumericInput({minValue, maxValue, value, onChange, className, allowDeci
   }, [value]);
 
   useEffect(() => {
-    const nextDigitWidthStyle:CSSProperties = _createDigitWidthStyle(minValue, maxValue, digitWidth);
+    const nextDigitWidthStyle:CSSProperties = _createDigitWidthStyle(minValue, maxValue, allowDecimals, digitWidth);
     setDigitWidthStyle(nextDigitWidthStyle);
-  }, [digitWidth]);
+  }, [digitWidth, minValue, maxValue, allowDecimals]);
 
   function _textToValidNumber(text: string): number {
     try {
