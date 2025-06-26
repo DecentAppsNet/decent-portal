@@ -1,5 +1,5 @@
 @value colors: "@/components/commonPalette.module.css";
-@value primary-off-white, button-highlight from colors;
+@value background-alt-content, button-highlight from colors;
 
 .container {
   height: 50vh;
@@ -7,7 +7,7 @@
   border-style: solid;
   border-width: 0.2vh;
   border-image: linear-gradient(to bottom, button-highlight, #fdebd7) 1;
-  background-color: primary-off-white;
+  background-color: background-alt-content;
 }
 
 .container > p {
@@ -19,7 +19,13 @@
   background: linear-gradient(
     to bottom,
     button-highlight 0%,
-    primary-off-white 80%,
-    primary-off-white 100%
+    background-alt-content 80%,
+    background-alt-content 100%
   );
+}
+
+.setterList {
+  
+  overflow-y: auto;
+  height: 46vh;
 }

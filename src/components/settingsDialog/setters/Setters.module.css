@@ -1,5 +1,5 @@
 @value colors: "@/components/commonPalette.module.css";
-@value primary-off-white, button-highlight from colors;
+@value background-alt-content, button-highlight from colors;
 
 .container {
   font-size: 1vh;
@@ -19,7 +19,7 @@
   background: linear-gradient(
     to bottom,
     #ffe6c1 0%,
-    primary-off-white 100%
+    background-alt-content 100%
   );
 }
 
