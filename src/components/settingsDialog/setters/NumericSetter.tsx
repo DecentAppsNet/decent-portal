@@ -4,7 +4,7 @@ import NumericRangeSetting from "@/settings/types/NumericSetting";
 import styles from "./Setters.module.css";
 import NumericInput from "@/components/numericInput/NumericInput";
 import { ValidateSettingCallback } from "@/components/settingsDialog/types/AppSettingsCallbacks";
-import { LAST_VALID_VALUE } from "@/components/settingsDialog/types/ValidationFailure";
+import { handleValidation } from "./setterUtil";
 
 type Props = {
   setting:NumericRangeSetting,
@@ -13,22 +13,13 @@ type Props = {
 }
 
 function NumericSetter({ setting, onChange, onValidateSetting }:Props) {
+  const [lastValidValue, setLastValidValue] = useState<number>(setting.value);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   
   function _onChange(value:number) {
     const nextSetting = { ...setting, value };
-    let isValid = true;
-    if (onValidateSetting) {
-      const validationFailure = onValidateSetting(nextSetting);
-      if (validationFailure) {
-        isValid = false;
-        setValidationMessage(validationFailure.failReason);
-        if (validationFailure.nextValue === LAST_VALID_VALUE) return;
-        if (validationFailure.nextValue !== undefined) nextSetting.value = validationFailure.nextValue;
-      } else {
-        setValidationMessage(null);
-      }
-    }
+    const isValid = handleValidation(nextSetting, lastValidValue, setValidationMessage, onValidateSetting);
+    if (isValid) setLastValidValue(nextSetting.value);
     onChange(nextSetting, isValid);
   }
   const validationContent = validationMessage ? <div className={styles.validationMessage}>{validationMessage}</div> : null;

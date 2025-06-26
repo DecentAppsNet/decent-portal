@@ -7,6 +7,7 @@ import SettingCategory from './settings/types/SettingCategory';
 import Setting from './settings/types/Setting';
 import ValidationFailure, { LAST_VALID_VALUE } from './components/settingsDialog/types/ValidationFailure';
 import BooleanToggleSetting from './settings/types/BooleanToggleSetting';
+import TextSetting from './settings/types/TextSetting';
 
 function testMinimal() {
   return <>
@@ -125,6 +126,9 @@ function testAppSettings() {
       {id:'2', type:SettingType.HEADING, label:'Text Examples'},
         {id:'2a', type:SettingType.TEXT, label:'Default', value:'Default Text'},
         {id:'2b', type:SettingType.TEXT, label:'Placeholder', value:'', placeholder:'This is a placeholder'},
+        {id:'2c', type:SettingType.TEXT, label:'Should Be Specified', value:'Valid Text'},
+        {id:'2d', type:SettingType.TEXT, label:'Trim spaces', value:'Valid Text'},
+        {id:'2e', type:SettingType.TEXT, label:'Must contain apple', value:'an apple'},
       {id:'3', type:SettingType.HEADING, label:'Numeric Examples'},
         {id:'3a', type:SettingType.NUMERIC, label:'Whole numbers 0-100', value:52, minValue:0, maxValue:100},
         {id:'3b', type:SettingType.NUMERIC, label:'Decimals 0-1', value:0.52, minValue:0, maxValue:1, allowDecimals:true},
@@ -145,6 +149,16 @@ function testAppSettings() {
       case '1e': return (setting as BooleanToggleSetting).value ? { failReason:'Say no!' } : null;
       case '1f': return !(setting as BooleanToggleSetting).value ? { failReason:'Yes required.', nextValue:LAST_VALID_VALUE } : null;
       case '1g': return (setting as BooleanToggleSetting).value ? { failReason:'No required.', nextValue:LAST_VALID_VALUE } : null;
+      case '2c': return (setting as TextSetting).value.length ? null : { failReason:'Should be specified.' };
+      case '2d': {
+        const originalValue = (setting as TextSetting).value;
+        const nextValue = originalValue.trim();
+        return nextValue === originalValue ? null : { nextValue };
+      }
+      case '2e': {
+        const value = (setting as TextSetting).value;
+        return value.includes('apple') ? null : { failReason:'Must contain "apple".', nextValue:LAST_VALID_VALUE };
+      }
       default: return null;
     }
   }

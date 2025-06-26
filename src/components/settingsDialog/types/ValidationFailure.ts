@@ -5,7 +5,7 @@ export const LAST_VALID_VALUE = 'LAST_VALID_VALUE';
 // display of validation failures to a "save" or "submit" action.
 
 type ValidationFailure = {
-  failReason: string;
+  failReason?: string; // Undefined - don't show a failure message. (Useful for a silent correction made with nextValue.)
   nextValue?: any; // Undefined - allow the invalid value. LAST_VALID_VALUE - revert to the last valid value.
 }
 

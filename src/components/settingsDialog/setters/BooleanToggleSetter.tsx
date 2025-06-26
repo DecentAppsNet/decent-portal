@@ -2,9 +2,9 @@ import { useState } from "react";
 
 import BooleanToggleSetting from "@/settings/types/BooleanToggleSetting";
 import { ValidateSettingCallback } from "@/components/settingsDialog/types/AppSettingsCallbacks";
-import { LAST_VALID_VALUE } from "@/components/settingsDialog/types/ValidationFailure";
 import styles from "./Setters.module.css";
 import Selector from "@/components/selector/Selector";
+import { handleValidation } from "./setterUtil";
 
 type Props = {
   setting:BooleanToggleSetting,
@@ -13,22 +13,13 @@ type Props = {
 }
 
 function BooleanToggleSetter({ setting, onChange, onValidateSetting }:Props) {
+  const [lastValidValue, setLastValidValue] = useState<boolean>(setting.value);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   
   function _onChange(value:boolean) {
     const nextSetting = { ...setting, value };
-    let isValid = true;
-    if (onValidateSetting) {
-      const validationFailure = onValidateSetting(nextSetting);
-      if (validationFailure) {
-        isValid = false;
-        setValidationMessage(validationFailure.failReason);
-        if (validationFailure.nextValue === LAST_VALID_VALUE) return;
-        if (validationFailure.nextValue !== undefined) nextSetting.value = validationFailure.nextValue;
-      } else {
-        setValidationMessage(null);
-      }
-    }
+    const isValid = handleValidation(nextSetting, lastValidValue, setValidationMessage, onValidateSetting);
+    if (isValid) setLastValidValue(nextSetting.value);
     onChange(nextSetting, isValid);
   }
 

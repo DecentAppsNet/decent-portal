@@ -2,8 +2,8 @@ import { useState } from "react";
 
 import TextSetting from "@/settings/types/TextSetting";
 import { ValidateSettingCallback } from "../types/AppSettingsCallbacks";
-import { LAST_VALID_VALUE } from "@/components/settingsDialog/types/ValidationFailure";
 import styles from "./Setters.module.css";
+import { handleValidation } from "./setterUtil";
 
 type Props = {
   setting:TextSetting,
@@ -13,21 +13,12 @@ type Props = {
 
 function TextSetter({ setting, onChange, onValidateSetting }:Props) {
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
+  const [lastValidValue, setLastValidValue] = useState<string>(setting.value);
   
   function _onChange(value:string) {
     const nextSetting = { ...setting, value };
-    let isValid = true;
-    if (onValidateSetting) {
-      const validationFailure = onValidateSetting(nextSetting);
-      if (validationFailure) {
-        isValid = false;
-        setValidationMessage(validationFailure.failReason);
-        if (validationFailure.nextValue === LAST_VALID_VALUE) return;
-        if (validationFailure.nextValue !== undefined) nextSetting.value = validationFailure.nextValue;
-      } else {
-        setValidationMessage(null);
-      }
-    }
+    const isValid = handleValidation(nextSetting, lastValidValue, setValidationMessage, onValidateSetting);
+    if (isValid) setLastValidValue(nextSetting.value);
     onChange(nextSetting, isValid);
   }
 
