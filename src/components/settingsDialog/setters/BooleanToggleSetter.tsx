@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import BooleanToggleSetting from "@/settings/types/BooleanToggleSetting";
 import { ValidateSettingCallback } from "@/components/settingsDialog/types/AppSettingsCallbacks";
@@ -33,7 +33,7 @@ function BooleanToggleSetter({ setting, onChange, onValidateSetting }:Props) {
   }
 
   const validationContent = validationMessage ? <div className={styles.validationContent}>{validationMessage}</div> : null;
-  const optionNames = useMemo(() => [setting.falseLabel ?? "No", setting.trueLabel ?? "Yes"], [setting.falseLabel, setting.trueLabel]);
+  const optionNames = [setting.falseLabel ?? "No", setting.trueLabel ?? "Yes"];
 
   return (
     <div className={styles.container}>
