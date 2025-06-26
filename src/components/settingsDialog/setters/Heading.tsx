@@ -17,9 +17,9 @@ function _renderButtons(heading:HeadingType) {
 
 function Heading({heading}:Props) {
   const buttonsContent = !heading.buttons ? null : <div className={styles.buttonsContainer}>{_renderButtons(heading)}</div>;
+  const indentStyle = heading.indentLevel ? { marginLeft: `${heading.indentLevel * 1}vh` } : {};
   return (
-    <div className={styles.heading}>
-      <hr/>
+    <div className={styles.heading} style={indentStyle}>
       <p>{heading.label}</p>
       {buttonsContent}
     </div>
