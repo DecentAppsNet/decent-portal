@@ -26,11 +26,17 @@ function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings,
   const initialAppSettingsRef = useRef<SettingCategory>(defaultAppSettings);
   const [categories, setCategories] = useState<SettingCategory[]>([]);
   const [selectedCategoryNo, setSelectedCategoryNo] = useState(0);
+  const [categoryValidities, setCategoryValidities] = useState<boolean[]>(Array(categories.length).fill(true));
 
   const categoryNames = useMemo(() => categories.map(c => c.name), [categories]);
   const selectedCategory = categories[selectedCategoryNo];
 
-  function _updateCategory(categoryNo: number, nextCategory: SettingCategory) {
+  function _updateCategory(categoryNo:number, nextCategory:SettingCategory, isValid:boolean) {
+    const nextCategoryValidities = [...categoryValidities];
+    if (categoryValidities[categoryNo] !== isValid) {
+      nextCategoryValidities[categoryNo] = isValid;
+      setCategoryValidities(nextCategoryValidities);
+    }
     const nextCategories = [...categories];
     nextCategories[categoryNo] = nextCategory;
     setCategories(nextCategories);
@@ -43,13 +49,16 @@ function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings,
 
   if (!isOpen || !categories.length) return null;
 
+  const isSaveDisabled = categoryValidities.includes(false);
+
   return (
     <ModalDialog title="Device Settings" isOpen={isOpen} onCancel={() => onClose(categories[0].settings)}>
       <SettingCategorySelector selectedCategoryNo={selectedCategoryNo} categoryNames={categoryNames} onChange={setSelectedCategoryNo} />
-      <SettingCategoryPanel category={selectedCategory} onValidateSetting={onValidateSetting} onChange={(nextCategory) => _updateCategory(selectedCategoryNo, nextCategory)}/>
+      <SettingCategoryPanel category={selectedCategory} onValidateSetting={onValidateSetting} 
+        onChange={(nextCategory, isValid) => _updateCategory(selectedCategoryNo, nextCategory, isValid)}/>
       <DialogFooter>
         <DialogButton text="Cancel" onClick={onClose} />
-        <DialogButton text="Save and Exit" onClick={onClose} isPrimary />
+        <DialogButton text="Save and Exit" onClick={onClose} isPrimary disabled={isSaveDisabled}/>
       </DialogFooter>
     </ModalDialog>
   );
