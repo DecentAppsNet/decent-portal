@@ -3,11 +3,7 @@ import Link from './components/decentBar/types/Link';
 import { getBaseUrl } from './components/decentBar/decentBarUtil';
 import style from './Gallery.module.css'
 import SettingType from './settings/types/SettingType';
-import TextSetting from './settings/types/TextSetting';
-import BooleanToggleSetting from './settings/types/BooleanToggleSetting';
 import SettingCategory from './settings/types/SettingCategory';
-import NumericSetting from './settings/types/NumericSetting';
-import Heading from './settings/types/Heading';
 
 function testMinimal() {
   return <>
@@ -111,45 +107,29 @@ function testOverrideCss() {
 }
 
 function testAppSettings() {
-  const textSetting:TextSetting = {
-    id: 'app-text-setting',
-    type: SettingType.TEXT,
-    label: 'App Text Setting',
-    value: 'Default Text',
-    placeholder: 'This is a text setting for the app.',
-  }
-  const booleanToggleSetting:BooleanToggleSetting = {
-    id: 'app-boolean-toggle-setting',
-    type: SettingType.BOOLEAN_TOGGLE,
-    label: 'App Boolean Toggle Setting',
-    value: true,
-    trueLabel: 'Enabled',
-    falseLabel: 'Disabled'
-  }
-  const numericSetting:NumericSetting = {
-    id: 'app-numeric-setting',
-    type: SettingType.NUMERIC,
-    label: 'App Numeric Setting',
-    value: 52,
-    min: 0,
-    max: 100
-  }
-  const heading:Heading = {
-    id: 'app-heading',
-    type: SettingType.HEADING,
-    label: 'Special Settings',
-    buttons: [
-      { label: 'Button 1', value: 'button1' },
-      { label: 'Button 2', value: 'button2' }
-    ],
-    onButtonClick: (value) => {
-      window.alert(`Button clicked: ${value}`);
-    }
-  }
   const defaultAppSettings:SettingCategory = {
     name: 'This App',
     description: `These are some great settings. You're going to love them.`,
-    settings: [textSetting,booleanToggleSetting,heading,numericSetting]
+    settings: [
+      {id:'1', type:SettingType.HEADING, label:'Boolean Toggle Examples'},
+        {id:'1a', type:SettingType.BOOLEAN_TOGGLE, label:'Default', value:true},
+        {id:'1b', type:SettingType.BOOLEAN_TOGGLE, label:'False value', value:false},
+        {id:'1c', type:SettingType.BOOLEAN_TOGGLE, label:'Custom True/False Labels', value:true, trueLabel:'True', falseLabel:'False'},
+      {id:'2', type:SettingType.HEADING, label:'Text Examples'},
+        {id:'2a', type:SettingType.TEXT, label:'Default', value:'Default Text'},
+        {id:'2b', type:SettingType.TEXT, label:'Placeholder', value:'', placeholder:'This is a placeholder'},
+      {id:'3', type:SettingType.HEADING, label:'Numeric Examples'},
+        {id:'3a', type:SettingType.NUMERIC, label:'Whole numbers 0-100', value:52, minValue:0, maxValue:100},
+        {id:'3b', type:SettingType.NUMERIC, label:'Decimals 0-1', value:0.52, minValue:0, maxValue:1, allowDecimals:true},
+      {id:'4', type:SettingType.HEADING, label:'Heading Examples'},
+        {id:'4a', type:SettingType.HEADING, label:'Heading with Buttons', indentLevel:1, buttons: [
+          { label: 'Button 1', value: 'button1' },
+          { label: 'Button 2', value: 'button2' }
+        ], onButtonClick: (value) => {
+          window.alert(`Heading button clicked: ${value}`);
+        }},
+        {id:'4b', type:SettingType.HEADING, indentLevel:1, label:'Heading with lengthy label that should wrap to multiple lines if necessary.'}
+    ]
   };
   return <>
     <h3>Test: Settings Dialog</h3>
