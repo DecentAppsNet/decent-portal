@@ -31,7 +31,7 @@ function NumericSetter({ setting, onChange, onValidateSetting }:Props) {
     }
     onChange(nextSetting, isValid);
   }
-  const validationContent = validationMessage ? <div className={styles.validationContent}>{validationMessage}</div> : null;
+  const validationContent = validationMessage ? <div className={styles.validationMessage}>{validationMessage}</div> : null;
 
   return (
     <div className={styles.container}>

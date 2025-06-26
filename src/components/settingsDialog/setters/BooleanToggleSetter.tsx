@@ -32,7 +32,7 @@ function BooleanToggleSetter({ setting, onChange, onValidateSetting }:Props) {
     onChange(nextSetting, isValid);
   }
 
-  const validationContent = validationMessage ? <div className={styles.validationContent}>{validationMessage}</div> : null;
+  const validationContent = validationMessage ? <div className={styles.validationMessage}>{validationMessage}</div> : null;
   const optionNames = [setting.falseLabel ?? "No", setting.trueLabel ?? "Yes"];
 
   return (

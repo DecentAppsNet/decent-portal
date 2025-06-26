@@ -4,6 +4,9 @@ import { getBaseUrl } from './components/decentBar/decentBarUtil';
 import style from './Gallery.module.css'
 import SettingType from './settings/types/SettingType';
 import SettingCategory from './settings/types/SettingCategory';
+import Setting from './settings/types/Setting';
+import ValidationFailure, { LAST_VALID_VALUE } from './components/settingsDialog/types/ValidationFailure';
+import BooleanToggleSetting from './settings/types/BooleanToggleSetting';
 
 function testMinimal() {
   return <>
@@ -115,6 +118,10 @@ function testAppSettings() {
         {id:'1a', type:SettingType.BOOLEAN_TOGGLE, label:'Default', value:true},
         {id:'1b', type:SettingType.BOOLEAN_TOGGLE, label:'False value', value:false},
         {id:'1c', type:SettingType.BOOLEAN_TOGGLE, label:'Custom True/False Labels', value:true, trueLabel:'True', falseLabel:'False'},
+        {id:'1d', type:SettingType.BOOLEAN_TOGGLE, label:'Should Say Yes', value:true},
+        {id:'1e', type:SettingType.BOOLEAN_TOGGLE, label:'Should Say No', value:false},
+        {id:'1f', type:SettingType.BOOLEAN_TOGGLE, label:'Must Say Yes', value:true},
+        {id:'1g', type:SettingType.BOOLEAN_TOGGLE, label:'Must Say No', value:false},
       {id:'2', type:SettingType.HEADING, label:'Text Examples'},
         {id:'2a', type:SettingType.TEXT, label:'Default', value:'Default Text'},
         {id:'2b', type:SettingType.TEXT, label:'Placeholder', value:'', placeholder:'This is a placeholder'},
@@ -131,11 +138,23 @@ function testAppSettings() {
         {id:'4b', type:SettingType.HEADING, indentLevel:1, label:'Heading with lengthy label that should wrap to multiple lines if necessary.'}
     ]
   };
+  
+  function _onValidateSetting(setting:Setting):ValidationFailure|null {
+    switch (setting.id) {
+      case '1d': return !(setting as BooleanToggleSetting).value ? { failReason:'Say yes!' } : null;
+      case '1e': return (setting as BooleanToggleSetting).value ? { failReason:'Say no!' } : null;
+      case '1f': return !(setting as BooleanToggleSetting).value ? { failReason:'Yes required.', nextValue:LAST_VALID_VALUE } : null;
+      case '1g': return (setting as BooleanToggleSetting).value ? { failReason:'No required.', nextValue:LAST_VALID_VALUE } : null;
+      default: return null;
+    }
+  }
+
   return <>
     <h3>Test: Settings Dialog</h3>
     <DecentBar
       appName="My App"
       defaultAppSettings={defaultAppSettings}
+      onValidateSetting={_onValidateSetting}
     />
   </>;
 }

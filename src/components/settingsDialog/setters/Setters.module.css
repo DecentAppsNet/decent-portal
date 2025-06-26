@@ -36,3 +36,13 @@
   height: 0.1vh;
   background-color: button-highlight;
 }
+
+.validationMessage {
+  position: absolute;
+  right: 4vh;
+  font-size: .8vh;
+}
+
+.validationMessage::before {
+  content: "⬅ ";
+}
