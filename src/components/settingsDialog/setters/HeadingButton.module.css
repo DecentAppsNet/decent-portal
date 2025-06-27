@@ -1,0 +1,48 @@
+@value colors: "@/components/commonPalette.module.css";
+@value button, button-text, button-highlight, button-text-highlight, button-disabled, button-text-disabled from colors;
+@value commonStyles: "@/components/commonStyles.module.css";
+@value disableSelect from commonStyles;
+
+.headingButton {
+    composes: disableSelect;
+    justify-content: center;
+    background-color: button;
+    border-style: none;
+    background-position: center;
+    transition: background 0.2s;
+    cursor: pointer;
+    margin-right: .3vh;
+    margin-bottom: .1vh;
+    padding-left: .3vh;
+    padding-right: .3vh;
+}
+
+.headingButton:hover {
+    background: button-highlight radial-gradient(circle, transparent 1%, button 1%) center/23000%;
+}
+.headingButton:active {
+    background-color: button-highlight;
+    background-size: 100%;
+    transition: background 0s;
+}
+
+.headingButtonText {
+    font-size: .9vh;
+    letter-spacing: .1vh;
+    color: button-text;
+}
+
+.headingButtonDisabled {
+    composes: headingButton;
+    background-color: button-disabled;
+    cursor: default;
+}
+
+.headingButtonDisabled:hover {
+    background: button-disabled;
+}
+
+.headingButtonTextDisabled {
+    composes: headingButtonText;
+    color: button-text-disabled;
+}

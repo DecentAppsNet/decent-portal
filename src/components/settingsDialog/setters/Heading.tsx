@@ -1,6 +1,6 @@
 import HeadingType from "@/settings/types/Heading";
 import styles from "./Setters.module.css";
-import ContentButton from "@/components/contentButton/ContentButton";
+import HeadingButton from "./HeadingButton";
 
 type Props = {
   heading:HeadingType,
@@ -11,7 +11,7 @@ function _renderButtons(heading:HeadingType, disabled?:boolean) {
   if (!heading.buttons) return null;
   return heading.buttons.map(button => {
     return (
-        <ContentButton key={button.value} text={button.label} onClick={() => heading.onButtonClick?.(button.value)} disabled={disabled}/>
+        <HeadingButton key={button.value} text={button.label} onClick={() => heading.onButtonClick?.(button.value)} disabled={disabled}/>
     );
   });
 }
