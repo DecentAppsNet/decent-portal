@@ -8,6 +8,7 @@ import NumericSetter from "./setters/NumericSetter";
 import TextSetter from "./setters/TextSetter";
 import Heading from "./setters/Heading";
 import { useState } from "react";
+import { findDisabledSettings } from "@/settings/settingsUtil";
 
 type Props = {
   category:SettingCategory,
@@ -34,28 +35,33 @@ function _onChangeSetting(category:SettingCategory, settingNo:number, nextSettin
 
 function _renderSetters(category:SettingCategory, validities:boolean[], setValidities:Function, 
     onChange:Function, onValidateSetting?:ValidateSettingCallback) {
+  
+  const disabledSettings = findDisabledSettings(category);
   return category.settings.map((setting, settingNo) => {
     switch (setting.type) {
       case SettingType.BOOLEAN_TOGGLE: 
       return <BooleanToggleSetter key={setting.id} setting={setting}
         onValidateSetting={onValidateSetting} 
         onChange={(nextSetting, isValid) => _onChangeSetting(category, settingNo, nextSetting, isValid, validities, setValidities, onChange)} 
+        disabled={disabledSettings.includes(setting.id)}
       />
 
       case SettingType.NUMERIC:
       return <NumericSetter key={setting.id} setting={setting}
         onValidateSetting={onValidateSetting} 
         onChange={(nextSetting, isValid) => _onChangeSetting(category, settingNo, nextSetting, isValid, validities, setValidities, onChange)} 
+        disabled={disabledSettings.includes(setting.id)}
       />
 
       case SettingType.TEXT:
       return <TextSetter key={setting.id} setting={setting}
         onValidateSetting={onValidateSetting}
         onChange={(nextSetting, isValid) => _onChangeSetting(category, settingNo, nextSetting, isValid, validities, setValidities, onChange)} 
+        disabled={disabledSettings.includes(setting.id)}
       />
 
       case SettingType.HEADING:
-      return <Heading key={setting.id} heading={setting} />
+      return <Heading key={setting.id} heading={setting} disabled={disabledSettings.includes(setting.id)} />
       
       default:
         throw Error('Unexpected');

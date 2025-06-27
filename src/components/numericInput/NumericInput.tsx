@@ -10,6 +10,7 @@ type Props = {
   allowDecimals?: boolean;
   value: number;
   onChange(value:number): void;  // Guaranteed to only return valid numbers between minValue and maxValue.
+  disabled?: boolean; 
 }
 
 // Allow for digits, minus sign, and decimal point. Strip out all other characters.
@@ -32,7 +33,7 @@ function _createDigitWidthStyle(minValue:number, maxValue:number, allowDecimals?
   return {width: `calc(${digitCount}ch + 1vh)`};
 }
 
-function NumericInput({minValue, maxValue, value, onChange, className, allowDecimals, digitWidth}: Props) {
+function NumericInput({minValue, maxValue, value, onChange, className, allowDecimals, digitWidth, disabled}: Props) {
   const [inputValue, setInputValue] = useState<string>(value.toString());
   const [digitWidthStyle, setDigitWidthStyle] = useState<CSSProperties>({});
 
@@ -75,6 +76,7 @@ function NumericInput({minValue, maxValue, value, onChange, className, allowDeci
     <input 
       type='text' value={inputValue} style={digitWidthStyle} className={className} 
       onChange={(event) => _handleChange(event.target.value)} onBlur={(event) => _handleBlur(event.target.value)} 
+      disabled={disabled}
     />
   );
 }

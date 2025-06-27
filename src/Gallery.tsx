@@ -142,7 +142,19 @@ function testAppSettings() {
         ], onButtonClick: (value) => {
           window.alert(`Heading button clicked: ${value}`);
         }},
-        {id:'4b', type:SettingType.HEADING, indentLevel:1, label:'Heading with lengthy label that should wrap to multiple lines if necessary.'}
+        {id:'4b', type:SettingType.HEADING, indentLevel:1, label:'Heading with lengthy label that should wrap to multiple lines if necessary.'},
+      {id:'5', type:SettingType.HEADING, label:'Disablement Handling Examples'},
+        {id:'5a', type:SettingType.BOOLEAN_TOGGLE, label:'Enable settings below?', value:true},
+        {id:'5b', type:SettingType.NUMERIC, label:'Numeric setting', value:5, minValue:0, maxValue:10, allowDecimals:false},
+        {id:'5c', type:SettingType.TEXT, label:'Text setting', value:'Some text'},
+        {id:'5d', type:SettingType.BOOLEAN_TOGGLE, label:'Boolean setting', value:true},
+        {id:'5e', type:SettingType.HEADING, label:'Heading', indentLevel:1, buttons:[{ label: 'Button 1', value: 'button1' }]},
+    ],
+    disablementRules: [
+      { targetSettingId:'5b', criteriaSettingId:'5a', criteriaValue:false },
+      { targetSettingId:'5c', criteriaSettingId:'5a', criteriaValue:false },
+      { targetSettingId:'5d', criteriaSettingId:'5a', criteriaValue:false },
+      { targetSettingId:'5e', criteriaSettingId:'5a', criteriaValue:false }
     ]
   };
   

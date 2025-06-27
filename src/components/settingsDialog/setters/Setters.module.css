@@ -13,12 +13,27 @@
   display: inline-block;
 }
 
+.labelDisabled {
+  composes: label;
+  color: gray;
+}
+
 .heading {
   padding-left: .5vh;
   margin-bottom: .5vh;
   background: linear-gradient(
     to bottom,
     #ffe6c1 0%,
+    background-alt-content 100%
+  );
+}
+
+.headingDisabled {
+  composes: heading;
+  color: gray;
+  background: linear-gradient(
+    to bottom,
+    #e1e1e1 0%,
     background-alt-content 100%
   );
 }
@@ -45,4 +60,10 @@
 
 .validationMessage::before {
   content: "⬅ ";
+}
+
+.container input:focus, button:focus {
+  outline: none;
+  border-color: button-highlight;
+  box-shadow: 0 0 0.5vh button-highlight;
 }

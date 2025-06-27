@@ -29,6 +29,19 @@ export function getLoggingDefaultSettings():SettingCategory {
         ],
         onButtonClick: (value) => { console.log(`Button clicked: ${value}`); } // Placeholder for actual button actions
       } 
-    ]
+    ],
+    disablementRules:[{ targetSettingId:"maxRetentionDays", criteriaSettingId:"enableLogging", criteriaValue:false }]
   };
+}
+
+export function findDisabledSettings(category:SettingCategory):string[] {
+  if (!category.disablementRules) return [];
+  const disabledSettings:string[] = [];
+  category.disablementRules.forEach(rule => {
+    const criteriaSetting = category.settings.find(s => s.id === rule.criteriaSettingId);
+    if (!criteriaSetting) { console.error(`Disablement rule for setting ${rule.targetSettingId} references non-existent criteria setting ${rule.criteriaSettingId}`); return; }
+    const criteriaValue:any = (criteriaSetting as any).value;
+    if (criteriaValue === rule.criteriaValue) disabledSettings.push(rule.targetSettingId);
+  });
+  return disabledSettings;
 }

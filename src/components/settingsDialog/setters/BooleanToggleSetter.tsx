@@ -10,9 +10,10 @@ type Props = {
   setting:BooleanToggleSetting,
   onChange:(setting:BooleanToggleSetting, isValid:boolean) => void,
   onValidateSetting?:ValidateSettingCallback,
+  disabled?:boolean
 }
 
-function BooleanToggleSetter({ setting, onChange, onValidateSetting }:Props) {
+function BooleanToggleSetter({ setting, onChange, onValidateSetting, disabled }:Props) {
   const [lastValidValue, setLastValidValue] = useState<boolean>(setting.value);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   
@@ -26,10 +27,11 @@ function BooleanToggleSetter({ setting, onChange, onValidateSetting }:Props) {
   const validationContent = validationMessage ? <div className={styles.validationMessage}>{validationMessage}</div> : null;
   const optionNames = [setting.falseLabel ?? "No", setting.trueLabel ?? "Yes"];
 
+  const labelClass = disabled ? styles.labelDisabled : styles.label;
   return (
     <div className={styles.container}>
-      <span className={styles.label}>{setting.label}</span>
-      <Selector optionNames={optionNames} selectedOptionNo={setting.value ? 1 : 0} onChange={optionNo => _onChange(optionNo === 1)} />
+      <span className={labelClass}>{setting.label}</span>
+      <Selector optionNames={optionNames} selectedOptionNo={setting.value ? 1 : 0} onChange={optionNo => _onChange(optionNo === 1)} disabled={disabled}/>
       {validationContent}
     </div>
   );

@@ -1,6 +1,6 @@
 import styles from './Selector.module.css';
 
-interface IProps {
+type Props = {
   disabled?:boolean,
   label?:string,
   selectedOptionNo:number,
@@ -10,8 +10,7 @@ interface IProps {
   onClick?:(optionNo:number) => void
 }
 
-function Selector(props:IProps) {
-  const { disabled, label, optionNames, onClick, onChange, selectedOptionNo, displayAsTabs } = props;
+function Selector({ disabled, label, optionNames, onClick, onChange, selectedOptionNo, displayAsTabs }:Props) {
 
   function _onOptionClick(optionNo:number) {
     if (disabled) return;
@@ -38,8 +37,8 @@ function Selector(props:IProps) {
       if (optionNo === optionNames.length-1) buttonClass = `${buttonClass} ${styles.lastSelectorButton}`;
     }
     return (
-      <button key={optionName} className={buttonClass} onClick={() => _onOptionClick(optionNo)} >
-    <span className={textClass}>{optionName}</span>
+      <button key={optionName} className={buttonClass} onClick={() => _onOptionClick(optionNo) } disabled={disabled}>
+        <span className={textClass}>{optionName}</span>
       </button>)
   });
 

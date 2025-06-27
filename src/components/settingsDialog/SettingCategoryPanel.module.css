@@ -1,5 +1,5 @@
 @value colors: "@/components/commonPalette.module.css";
-@value background-alt-content, button-highlight from colors;
+@value button, background-alt-content, button-highlight from colors;
 
 .container {
   height: 50vh;
@@ -24,8 +24,11 @@
   );
 }
 
-.setterList {
-  
+.setterList { 
   overflow-y: auto;
   height: 46vh;
+}
+
+.setterList:hover {
+  scrollbar-color: button white;
 }

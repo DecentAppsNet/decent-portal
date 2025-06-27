@@ -95,6 +95,9 @@
 .selectorButtonDisabled:hover {
     background-color: button-disabled;
 }
+.selectorButtonDisabled:active {
+    background-color: button-disabled;
+}
 
 .selectorButtonTextDisabled {
     composes: selectorButtonText;

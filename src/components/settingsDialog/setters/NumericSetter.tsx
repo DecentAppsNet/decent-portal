@@ -9,10 +9,11 @@ import { handleValidation } from "./setterUtil";
 type Props = {
   setting:NumericRangeSetting,
   onChange:(setting:NumericRangeSetting, isValid:boolean) => void,
-  onValidateSetting?:ValidateSettingCallback
+  onValidateSetting?:ValidateSettingCallback,
+  disabled?:boolean
 }
 
-function NumericSetter({ setting, onChange, onValidateSetting }:Props) {
+function NumericSetter({ setting, onChange, onValidateSetting, disabled }:Props) {
   const [lastValidValue, setLastValidValue] = useState<number>(setting.value);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
 
@@ -24,10 +25,18 @@ function NumericSetter({ setting, onChange, onValidateSetting }:Props) {
   }
   const validationContent = validationMessage ? <div className={styles.validationMessage}>{validationMessage}</div> : null;
 
+  const labelClass = disabled ? styles.labelDisabled : styles.label;
   return (
     <div className={styles.container}>
-      <span className={styles.label}>{setting.label}</span>
-      <NumericInput minValue={setting.minValue} maxValue={setting.maxValue} allowDecimals={setting.allowDecimals} value={setting.value} onChange={_onChange} />
+      <span className={labelClass}>{setting.label}</span>
+      <NumericInput 
+        minValue={setting.minValue} 
+        maxValue={setting.maxValue} 
+        allowDecimals={setting.allowDecimals} 
+        value={setting.value} 
+        onChange={_onChange} 
+        disabled={disabled}
+      />
       {validationContent}
     </div>
   );
