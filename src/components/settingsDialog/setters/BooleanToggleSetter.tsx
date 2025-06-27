@@ -9,7 +9,7 @@ import { handleValidation } from "./setterUtil";
 type Props = {
   setting:BooleanToggleSetting,
   onChange:(setting:BooleanToggleSetting, isValid:boolean) => void,
-  onValidateSetting?:ValidateSettingCallback
+  onValidateSetting?:ValidateSettingCallback,
 }
 
 function BooleanToggleSetter({ setting, onChange, onValidateSetting }:Props) {

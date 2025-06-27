@@ -11,6 +11,7 @@ import { useState } from "react";
 
 type Props = {
   category:SettingCategory,
+  isOpen:boolean,
   onChange:(nextCategory:SettingCategory, isValid:boolean) => void,
   onValidateSetting?:ValidateSettingCallback
 };
@@ -36,19 +37,19 @@ function _renderSetters(category:SettingCategory, validities:boolean[], setValid
   return category.settings.map((setting, settingNo) => {
     switch (setting.type) {
       case SettingType.BOOLEAN_TOGGLE: 
-      return <BooleanToggleSetter key={setting.id} setting={setting} 
+      return <BooleanToggleSetter key={setting.id} setting={setting}
         onValidateSetting={onValidateSetting} 
         onChange={(nextSetting, isValid) => _onChangeSetting(category, settingNo, nextSetting, isValid, validities, setValidities, onChange)} 
       />
 
       case SettingType.NUMERIC:
-      return <NumericSetter key={setting.id} setting={setting} 
+      return <NumericSetter key={setting.id} setting={setting}
         onValidateSetting={onValidateSetting} 
         onChange={(nextSetting, isValid) => _onChangeSetting(category, settingNo, nextSetting, isValid, validities, setValidities, onChange)} 
       />
 
       case SettingType.TEXT:
-      return <TextSetter key={setting.id} setting={setting} 
+      return <TextSetter key={setting.id} setting={setting}
         onValidateSetting={onValidateSetting}
         onChange={(nextSetting, isValid) => _onChangeSetting(category, settingNo, nextSetting, isValid, validities, setValidities, onChange)} 
       />
@@ -62,9 +63,12 @@ function _renderSetters(category:SettingCategory, validities:boolean[], setValid
   });
 }
 
-function SettingCategoryPanel({ category, onValidateSetting, onChange }: Props) {
+function SettingCategoryPanel({ category, onValidateSetting, onChange, isOpen }: Props) {
   const [validities, setValidities] = useState<boolean[]>(Array(category.settings.length).fill(true));
+
   const settersContent = _renderSetters(category, validities, setValidities, onChange, onValidateSetting);
+
+  if (!isOpen) return null;
   
   return (
     <div className={styles.container}>

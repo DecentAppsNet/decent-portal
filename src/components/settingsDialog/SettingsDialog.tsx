@@ -29,7 +29,6 @@ function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings,
   const [categoryValidities, setCategoryValidities] = useState<boolean[]>(Array(categories.length).fill(true));
 
   const categoryNames = useMemo(() => categories.map(c => c.name), [categories]);
-  const selectedCategory = categories[selectedCategoryNo];
 
   function _updateCategory(categoryNo:number, nextCategory:SettingCategory, isValid:boolean) {
     const nextCategoryValidities = [...categoryValidities];
@@ -53,9 +52,12 @@ function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings,
 
   return (
     <ModalDialog title="Device Settings" isOpen={isOpen} onCancel={() => onClose(categories[0].settings)}>
-      <SettingCategorySelector selectedCategoryNo={selectedCategoryNo} categoryNames={categoryNames} onChange={setSelectedCategoryNo} />
-      <SettingCategoryPanel category={selectedCategory} onValidateSetting={onValidateSetting} 
-        onChange={(nextCategory, isValid) => _updateCategory(selectedCategoryNo, nextCategory, isValid)}/>
+      <SettingCategorySelector selectedCategoryNo={selectedCategoryNo} categoryNames={categoryNames} onChange={setSelectedCategoryNo} disabled={isSaveDisabled} />
+      { categories.map((category, categoryNo) => (
+        <SettingCategoryPanel key={category.name} category={category} isOpen={selectedCategoryNo === categoryNo} 
+          onValidateSetting={onValidateSetting}
+          onChange={(nextCategory, isValid) => _updateCategory(categoryNo, nextCategory, isValid)} />
+      )) }
       <DialogFooter>
         <DialogButton text="Cancel" onClick={onClose} />
         <DialogButton text="Save and Exit" onClick={onClose} isPrimary disabled={isSaveDisabled}/>

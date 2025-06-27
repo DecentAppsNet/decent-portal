@@ -15,7 +15,7 @@ type Props = {
 function NumericSetter({ setting, onChange, onValidateSetting }:Props) {
   const [lastValidValue, setLastValidValue] = useState<number>(setting.value);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
-  
+
   function _onChange(value:number) {
     const nextSetting = { ...setting, value };
     const isValid = handleValidation(nextSetting, lastValidValue, setValidationMessage, onValidateSetting);

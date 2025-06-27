@@ -13,7 +13,7 @@ type Props = {
 
 function TextSetter({ setting, onChange, onValidateSetting }:Props) {
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
-  const [lastValidValue, setLastValidValue] = useState<string>(setting.value);
+  const [lastValidValue, setLastValidValue] = useState<string|null>(null);
   
   function _onChange(value:string) {
     const nextSetting = { ...setting, value };
