@@ -15,7 +15,7 @@ type Props = {
 
 function BooleanToggleSetter({ setting, onChange, onValidateSetting, disabled }:Props) {
   const [lastValidValue, setLastValidValue] = useState<boolean>(setting.value);
-  const [validationMessage, setValidationMessage] = useState<string | null>(null);
+  const [validationMessage, setValidationMessage] = useState<boolean|null>(null);
   
   function _onChange(value:boolean) {
     const nextSetting = { ...setting, value };
