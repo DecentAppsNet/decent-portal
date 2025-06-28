@@ -9,4 +9,13 @@ type NumericRangeSetting = SettingBase & {
   allowDecimals?:boolean
 }
 
+export function isNumericSettingFormat(maybeSetting:any):boolean {
+  return !!maybeSetting && 
+         maybeSetting.type === SettingType.NUMERIC &&
+         typeof maybeSetting.value === 'number' &&
+         typeof maybeSetting.minValue === 'number' &&
+         typeof maybeSetting.maxValue === 'number' &&
+         (maybeSetting.allowDecimals === undefined || typeof maybeSetting.allowDecimals === 'boolean');
+}
+
 export default NumericRangeSetting;

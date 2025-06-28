@@ -9,7 +9,7 @@ type Props = {
   setting:TextSetting,
   onChange:(setting:TextSetting, isValid:boolean) => void,
   onValidateSetting?:ValidateSettingCallback
-  disabled?:boolean
+  disabled?:boolean,
 }
 
 function TextSetter({ setting, onChange, onValidateSetting, disabled }:Props) {

@@ -1,11 +1,10 @@
 import BooleanToggleSetting from "./BooleanToggleSetting";
-import Heading from "./Heading";
 import NumericSetting from "./NumericSetting";
 import TextSetting from "./TextSetting";
 
+// Don't add any types that aren't intended to persist setting data. Presentation-only types can be added to SettingCategory type instead.
 type Setting = 
   BooleanToggleSetting |
-  Heading |
   NumericSetting | 
   TextSetting;
 

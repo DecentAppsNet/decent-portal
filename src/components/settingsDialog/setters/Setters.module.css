@@ -20,7 +20,7 @@
 
 .heading {
   padding-left: .5vh;
-  margin-bottom: .5vh;
+  margin-bottom: 1vh;
   background: linear-gradient(
     to bottom,
     #ffe6c1 0%,
@@ -42,7 +42,7 @@
   font-size: 1.1vh;
   font-weight: bold;
   padding-top: .5vh;
-  padding-bottom: .5vh;
+  padding-bottom: 0;
 }
 
 .heading > hr {

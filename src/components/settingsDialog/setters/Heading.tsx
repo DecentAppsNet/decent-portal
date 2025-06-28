@@ -18,11 +18,10 @@ function _renderButtons(heading:HeadingType, disabled?:boolean) {
 
 function Heading({heading, disabled}:Props) {
   const buttonsContent = !heading.buttons ? null : <div className={styles.buttonsContainer}>{_renderButtons(heading, disabled)}</div>;
-  const indentStyle = heading.indentLevel ? { marginLeft: `${heading.indentLevel * 1}vh` } : {};
   const headingClass = disabled ? styles.headingDisabled : styles.heading;
   return (
-    <div className={headingClass} style={indentStyle}>
-      <p>{heading.label}</p>
+    <div className={headingClass}>
+      <p>{heading.description}</p>
       {buttonsContent}
     </div>
   );

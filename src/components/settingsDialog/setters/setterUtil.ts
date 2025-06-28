@@ -1,7 +1,6 @@
 import Setting from "@/settings/types/Setting";
 import { ValidateSettingCallback } from "@/components/settingsDialog/types/AppSettingsCallbacks";
 import { LAST_VALID_VALUE } from "@/components/settingsDialog/types/ValidationFailure";
-import { _ } from "vitest/dist/chunks/reporters.d.BFLkQcL6";
 
 const theValidationMessageTimers = new Map<string, NodeJS.Timeout>();
 

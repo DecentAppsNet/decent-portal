@@ -8,7 +8,11 @@ import NumericSetter from "./setters/NumericSetter";
 import TextSetter from "./setters/TextSetter";
 import Heading from "./setters/Heading";
 import { useState } from "react";
-import { findDisabledSettings } from "@/settings/settingsUtil";
+import { collateSettingRows, findDisabledSettings } from "@/settings/settingsUtil";
+import { HEADING_TYPE } from "@/settings/types/Heading";
+import BooleanToggleSetting from "@/settings/types/BooleanToggleSetting";
+import NumericSetting from "@/settings/types/NumericSetting";
+import TextSetting from "@/settings/types/TextSetting";
 
 type Props = {
   category:SettingCategory,
@@ -35,33 +39,40 @@ function _onChangeSetting(category:SettingCategory, settingNo:number, nextSettin
 
 function _renderSetters(category:SettingCategory, validities:boolean[], setValidities:Function, 
     onChange:Function, onValidateSetting?:ValidateSettingCallback) {
+
+  const setterRows = collateSettingRows(category);
+  if (!setterRows.length) return <p>No settings are available.</p>;
   
   const disabledSettings = findDisabledSettings(category);
-  return category.settings.map((setting, settingNo) => {
-    switch (setting.type) {
-      case SettingType.BOOLEAN_TOGGLE: 
-      return <BooleanToggleSetter key={setting.id} setting={setting}
+  return setterRows.map((settingRow, settingRowNo) => {
+    const settingNo = category.settings.findIndex((s) => s.id === settingRow.id);
+    switch (settingRow.type) {
+      case SettingType.BOOLEAN_TOGGLE:
+        const booleanToggleSetting = settingRow as BooleanToggleSetting; 
+      return <BooleanToggleSetter key={settingRow.id} setting={booleanToggleSetting}
         onValidateSetting={onValidateSetting} 
         onChange={(nextSetting, isValid) => _onChangeSetting(category, settingNo, nextSetting, isValid, validities, setValidities, onChange)} 
-        disabled={disabledSettings.includes(setting.id)}
+        disabled={disabledSettings.includes(booleanToggleSetting.id)}
       />
 
       case SettingType.NUMERIC:
-      return <NumericSetter key={setting.id} setting={setting}
+        const numericSetting = settingRow as NumericSetting;
+      return <NumericSetter key={settingRow.id} setting={numericSetting}
         onValidateSetting={onValidateSetting} 
         onChange={(nextSetting, isValid) => _onChangeSetting(category, settingNo, nextSetting, isValid, validities, setValidities, onChange)} 
-        disabled={disabledSettings.includes(setting.id)}
+        disabled={disabledSettings.includes(numericSetting.id)}
       />
 
       case SettingType.TEXT:
-      return <TextSetter key={setting.id} setting={setting}
+        const textSetting = settingRow as TextSetting;
+      return <TextSetter key={settingRow.id} setting={textSetting}
         onValidateSetting={onValidateSetting}
         onChange={(nextSetting, isValid) => _onChangeSetting(category, settingNo, nextSetting, isValid, validities, setValidities, onChange)} 
-        disabled={disabledSettings.includes(setting.id)}
+        disabled={disabledSettings.includes(textSetting.id)}
       />
 
-      case SettingType.HEADING:
-      return <Heading key={setting.id} heading={setting} disabled={disabledSettings.includes(setting.id)} />
+      case HEADING_TYPE:
+      return <Heading key={`heading@${settingRowNo}`} heading={settingRow} />
       
       default:
         throw Error('Unexpected');

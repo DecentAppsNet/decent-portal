@@ -2,7 +2,8 @@ import SettingCategory from "@/settings/types/SettingCategory";
 import { LoadAppSettingsCallback } from "../types/AppSettingsCallbacks";
 import Setting from "@/settings/types/Setting";
 import { getCategorySettings } from "@/persistence/settings";
-import { getLlmDefaultSettings, getLoggingDefaultSettings } from "@/settings/settingsUtil";
+import { getLlmDefaultSettings } from "@/settings/llmSettingsUtil";
+import { getLoggingDefaultSettings } from "@/settings/loggingSettingsUtil";
 
 function _getAppCategoryName() { // TODO refactor?
   const parts = window.location.pathname.split('/').filter(part => part.length);
