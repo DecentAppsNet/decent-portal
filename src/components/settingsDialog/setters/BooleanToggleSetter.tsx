@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import BooleanToggleSetting from "@/settings/types/BooleanToggleSetting";
-import { ValidateSettingCallback } from "@/components/settingsDialog/types/AppSettingsCallbacks";
+import { ValidateSettingCallback } from "@/settings/types/AppSettingsCallbacks";
 import styles from "./Setters.module.css";
 import Selector from "@/components/selector/Selector";
 import { handleValidation } from "./setterUtil";

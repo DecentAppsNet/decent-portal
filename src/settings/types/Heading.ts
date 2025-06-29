@@ -10,4 +10,11 @@ type Heading = {
   onButtonClick?:(value:string) => void,
 }
 
+export function duplicateHeading(heading:Heading):Heading {
+  return {
+    ...heading, 
+    buttons: heading.buttons ? [...heading.buttons] : undefined
+  };
+}
+
 export default Heading;

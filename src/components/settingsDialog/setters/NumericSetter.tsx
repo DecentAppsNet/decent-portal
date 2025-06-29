@@ -3,7 +3,7 @@ import { useState } from "react";
 import NumericRangeSetting from "@/settings/types/NumericSetting";
 import styles from "./Setters.module.css";
 import NumericInput from "@/components/numericInput/NumericInput";
-import { ValidateSettingCallback } from "@/components/settingsDialog/types/AppSettingsCallbacks";
+import { ValidateSettingCallback } from "@/settings/types/AppSettingsCallbacks";
 import { handleValidation } from "./setterUtil";
 
 type Props = {

@@ -16,4 +16,8 @@ export function isBooleanToggleSettingFormat(maybeSetting:any):boolean {
          (maybeSetting.falseLabel === undefined || typeof maybeSetting.falseLabel === 'string');
 }
 
+export function duplicateBooleanToggleSetting(setting:BooleanToggleSetting):BooleanToggleSetting {
+  return { ...setting };
+}
+
 export default BooleanToggleSetting;

@@ -1,5 +1,5 @@
 import Setting from "@/settings/types/Setting";
-import { getText } from "./pathStore";
+import { getText, setText } from "./pathStore";
 import { isSettingsFormat } from "@/settings/settingsUtil";
 
 function _categoryNameToPath(categoryName:string) {
@@ -18,5 +18,8 @@ export async function getCategorySettings(categoryName:string):Promise<Setting[]
    return settings.length ? settings : null;
 }
 
-export async function saveCategorySettings(_categoryName:string, _settings:Setting[]):Promise<void> {
+export async function setCategorySettings(categoryName:string, settings:Setting[]):Promise<void> {
+  const path = _categoryNameToPath(categoryName);
+  const settingsJson = JSON.stringify(settings);
+  await setText(path, settingsJson);
 }

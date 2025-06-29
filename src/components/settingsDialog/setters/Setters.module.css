@@ -53,9 +53,10 @@
 }
 
 .validationMessage {
-  position: absolute;
-  right: 4vh;
+  margin-left: 1vh;
+  padding-top: .1vh;
   font-size: .8vh;
+  color: red;
 }
 
 .validationMessage::before {

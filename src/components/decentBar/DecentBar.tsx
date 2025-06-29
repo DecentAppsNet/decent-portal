@@ -6,9 +6,9 @@ import { getBaseUrl, isServingFromEnabledDomain } from './decentBarUtil';
 import DecentBarCssOverrides from './types/DecentBarCssOverrides';
 import Link from './types/Link';
 import SettingsIcon from './icons/cog.svg';
-import SettingsDialog from '../settingsDialog/SettingsDialog';
-import SettingCategory from '@/settings/types/SettingCategory';
-import { LoadAppSettingsCallback, SaveAppSettingsCallback, ValidateSettingCallback } from '../settingsDialog/types/AppSettingsCallbacks';
+import SettingsDialog from '@/components/settingsDialog/SettingsDialog';
+import { LoadAppSettingsCallback, SaveAppSettingsCallback, ValidateSettingCallback } from '@/settings/types/AppSettingsCallbacks';
+import AppSettingCategory from '@/settings/types/AppSettingCategory';
 
 // Default domains where the decent bar is rendered. Can be overridden in props.
 const DEFAULT_ENABLED_DOMAINS = ['decentapps.net', '127.0.0.1', 'localhost'];
@@ -21,7 +21,7 @@ type Props = {
   homeUrl?:string,
   onClickLink?:(link:Link) => void,
   classNameOverrides?:DecentBarCssOverrides,
-  defaultAppSettings?:SettingCategory,
+  defaultAppSettings?:AppSettingCategory,
   onLoadAppSettings?:LoadAppSettingsCallback,
   onSaveAppSettings?:SaveAppSettingsCallback,
   onValidateSetting?:ValidateSettingCallback
@@ -52,9 +52,8 @@ function _appLinksContent(links:Link[], onClickLink:Function) {
   return <>Links:<br />{linkButtons}</>;
 }
 
-function _createDefaultAppSettings(appName:string):SettingCategory {
+function _createDefaultAppSettings(appName:string):AppSettingCategory {
   return {
-    name: 'This App',
     description: `There are no settings for ${appName}. But this is where you’d find them if they existed!`,
     settings: []
   }
@@ -73,7 +72,7 @@ function DecentBar({
     onSaveAppSettings,
     onValidateSetting
   }: Props) {
-  const initialAppSettings = useRef<SettingCategory>(defaultAppSettings || _createDefaultAppSettings(appName));
+  const initialAppSettings = useRef<AppSettingCategory>(defaultAppSettings || _createDefaultAppSettings(appName));
   const [favIconUrl, setFavIconUrl] = useState<string | null>(null);
   const [modalDialogName, setModalDialogName] = useState<string | null>(null);
 

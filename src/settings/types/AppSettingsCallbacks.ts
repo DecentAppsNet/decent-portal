@@ -1,5 +1,5 @@
 import Setting from "@/settings/types/Setting";
-import ValidationFailure from "@/components/settingsDialog/types/ValidationFailure";
+import ValidationFailure from "@/settings/types/ValidationFailure";
 
 /*  Called when settings dialog is opened and loaded app settings have not yet been shown.
     App code may use this to provide its own loading mechanism for settings, or

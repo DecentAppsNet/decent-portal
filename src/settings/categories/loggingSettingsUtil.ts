@@ -1,9 +1,12 @@
-import SettingCategory from "./types/SettingCategory";
-import SettingType from "./types/SettingType";
+import { getCategorySettings } from "@/persistence/settings";
+import SettingCategory from "../types/SettingCategory";
+import SettingType from "../types/SettingType";
+import { mergeSettingsIntoCategory } from "./settingCategoryUtil";
 
 export function getLoggingDefaultSettings():SettingCategory {
   return {
     name: "Logging",
+    storageName: "logging",
     description: "Settings for locally logging application events and errors. Logs are never sent to a server.",
     settings: [
       {type: SettingType.BOOLEAN_TOGGLE, id:"enableLogging", label:"Logging enabled?", value:true},
@@ -21,4 +24,9 @@ export function getLoggingDefaultSettings():SettingCategory {
     ],
     disablementRules:[{ targetSettingId:"maxRetentionDays", criteriaSettingId:"enableLogging", criteriaValue:false }]
   };
+}
+
+export async function loadLoggingSettingCategory():Promise<SettingCategory> {
+  const settings = await getCategorySettings("logging");
+  return mergeSettingsIntoCategory(getLoggingDefaultSettings(), settings);
 }

@@ -1,11 +1,13 @@
 import SettingRow from "@/settings/types/SettingRow";
-import { isBooleanToggleSettingFormat } from "./types/BooleanToggleSetting";
 import Heading, { HEADING_TYPE } from "./types/Heading";
-import { isNumericSettingFormat } from "./types/NumericSetting";
-import { isSettingBaseFormat } from "./types/SettingBase";
 import SettingCategory from "./types/SettingCategory";
-import SettingType from "./types/SettingType";
-import { isTextSettingFormat } from "./types/TextSetting";
+import { LoadAppSettingsCallback, SaveAppSettingsCallback } from "./types/AppSettingsCallbacks";
+import { getAppCategoryStorageName, loadAppSettingCategory } from "./categories/appSettingsUtil";
+import { loadLlmSettingCategory } from "./categories/llmSettingsUtil";
+import { loadLoggingSettingCategory } from "./categories/loggingSettingsUtil";
+import { isSettingFormat } from "./types/Setting";
+import { setCategorySettings } from "@/persistence/settings";
+import AppSettingCategory from "./types/AppSettingCategory";
 
 export function collateSettingRows(category:SettingCategory):SettingRow[] {
   const rows:SettingRow[] = [];
@@ -34,17 +36,36 @@ export function findDisabledSettings(category:SettingCategory):string[] {
   return disabledSettings;
 }
 
-function _isSettingFormat(maybeSetting:any):boolean {
-  if (!isSettingBaseFormat(maybeSetting)) return false;
-  if (maybeSetting.type === SettingType.NUMERIC) return isNumericSettingFormat(maybeSetting);
-  if (maybeSetting.type === SettingType.BOOLEAN_TOGGLE) return isBooleanToggleSettingFormat(maybeSetting);
-  if (maybeSetting.type === SettingType.TEXT) return isTextSettingFormat(maybeSetting);
-  return false;
-}
-
 export function isSettingsFormat(maybeSettings:any):boolean {
   if (!maybeSettings || typeof maybeSettings !== 'object') return false;
-  if (!Array.isArray(maybeSettings.settings)) return false;
+  if (!Array.isArray(maybeSettings)) return false;
   const settingsArray:any[] = maybeSettings;
-  return settingsArray.every(setting => _isSettingFormat(setting));
+  return settingsArray.every(setting => isSettingFormat(setting));
+}
+
+export async function loadSettingCategories(defaultAppCategory:AppSettingCategory, onLoadAppSettings?:LoadAppSettingsCallback):Promise<SettingCategory[]> {
+  const appCategory = await loadAppSettingCategory(defaultAppCategory, onLoadAppSettings);
+  const llmCategory = await loadLlmSettingCategory();
+  const loggingCategory = await loadLoggingSettingCategory();
+  return [appCategory, llmCategory, loggingCategory];
+}
+
+export async function saveSettingCategories(categories:SettingCategory[], onSaveAppSettings?:SaveAppSettingsCallback):Promise<void> {
+  const appCategoryStorageName = getAppCategoryStorageName();
+  const promises = categories.map(category => {
+    let settings = category.settings;
+    if (category.storageName === appCategoryStorageName) {
+      if (onSaveAppSettings) {
+        const overrideAppSettings = onSaveAppSettings(settings);
+        if (overrideAppSettings) settings = overrideAppSettings;
+      }
+    }
+    return setCategorySettings(category.storageName, settings);
+  });
+  try {
+    await Promise.all(promises);
+  } catch (error) {
+    console.error("Error saving settings:", error);
+    throw new Error("Failed to save settings. Please try again later.");
+  }
 }

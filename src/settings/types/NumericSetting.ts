@@ -18,4 +18,8 @@ export function isNumericSettingFormat(maybeSetting:any):boolean {
          (maybeSetting.allowDecimals === undefined || typeof maybeSetting.allowDecimals === 'boolean');
 }
 
+export function duplicateNumericSetting(setting:NumericRangeSetting):NumericRangeSetting {
+  return { ...setting };
+}
+
 export default NumericRangeSetting;

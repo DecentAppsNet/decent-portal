@@ -1,5 +1,5 @@
 import SettingCategory from "@/settings/types/SettingCategory";
-import { ValidateSettingCallback } from "./types/AppSettingsCallbacks";
+import { ValidateSettingCallback } from "../../settings/types/AppSettingsCallbacks";
 import Setting from "@/settings/types/Setting";
 import styles from "./SettingCategoryPanel.module.css";
 import SettingType from "@/settings/types/SettingType";

@@ -3,12 +3,12 @@ import Link from './components/decentBar/types/Link';
 import { getBaseUrl } from './components/decentBar/decentBarUtil';
 import style from './Gallery.module.css'
 import SettingType from './settings/types/SettingType';
-import SettingCategory from './settings/types/SettingCategory';
 import Setting from './settings/types/Setting';
-import ValidationFailure, { LAST_VALID_VALUE } from './components/settingsDialog/types/ValidationFailure';
+import ValidationFailure, { LAST_VALID_VALUE } from './settings/types/ValidationFailure';
 import BooleanToggleSetting from './settings/types/BooleanToggleSetting';
 import TextSetting from './settings/types/TextSetting';
 import NumericSetting from './settings/types/NumericSetting';
+import AppSettingCategory from './settings/types/AppSettingCategory';
 
 function testMinimal() {
   return <>
@@ -112,8 +112,7 @@ function testOverrideCss() {
 }
 
 function testAppSettings() {
-  const defaultAppSettings:SettingCategory = {
-    name: 'This App',
+  const defaultAppSettings:AppSettingCategory = {
     description: `These are some great settings. You're going to love them.`,
     settings: [
       {id:'1a', type:SettingType.BOOLEAN_TOGGLE, label:'Default', value:true},
@@ -171,8 +170,7 @@ function testAppSettings() {
 
       case '3d': 
         const numericSetting = setting as NumericSetting;
-        // Round to 1 decimal place
-        const roundedValue = Math.round(numericSetting.value * 10) / 10;
+        const roundedValue = Math.round(numericSetting.value * 10) / 10; // Round to 1 decimal place
       return roundedValue !== numericSetting.value ? { failReason:'Must have less than 2 decimal places.', nextValue:roundedValue } : null;
 
       default: return null;

@@ -14,4 +14,8 @@ export function isTextSettingFormat(maybeSetting:any):boolean {
          (maybeSetting.placeholder === undefined || typeof maybeSetting.placeholder === 'string');
 }
 
+export function duplicateTextSetting(setting:TextSetting):TextSetting {
+  return { ...setting };
+}
+
 export default TextSetting;

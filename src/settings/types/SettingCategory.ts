@@ -1,16 +1,28 @@
-import DisablementRule from "./DisablementRule";
-import Heading from "./Heading";
-import Setting from "./Setting";
+import DisablementRule, { duplicateDisablementRule } from "./DisablementRule";
+import Heading, { duplicateHeading } from "./Heading";
+import Setting, { duplicateSetting } from "./Setting";
 
-/* A category is a container for settings and the rules and presentation of them. Some setting-specific data
-   (disablementRules) is purposefully put in the SettingCategory rather than in the Setting type to keep 
+/* A category is a container for settings and the rules for their presentation. Some setting-specific data
+   (e.g., disablementRules) is purposefully put in the SettingCategory rather than in the Setting type to keep 
    the settings member representing data that changes and needs persistence. */
 type SettingCategory = {
-  name:string;
+  name:string; // Display name shown on the settings page.
+  storageName:string; // Name used to store the settings in the persistence layer.
   description:string;
   headings?:Heading[];
   settings:Setting[];
   disablementRules?:DisablementRule[]; // Rules to disable settings based on other settings' values.
 };
+
+export function duplicateSettingCategory(category:SettingCategory):SettingCategory {
+  return {
+    name: category.name,
+    storageName: category.storageName,
+    description: category.description,
+    headings: category.headings ? category.headings.map(duplicateHeading) : undefined,
+    settings: category.settings.map(duplicateSetting),
+    disablementRules: category.disablementRules ? category.disablementRules.map(duplicateDisablementRule) : undefined
+  };
+}
 
 export default SettingCategory;

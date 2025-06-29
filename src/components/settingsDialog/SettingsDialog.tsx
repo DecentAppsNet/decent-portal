@@ -1,13 +1,16 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+
 import ModalDialog from "@/components/modalDialogs/ModalDialog";
 import Setting from "@/settings/types/Setting";
-import { LoadAppSettingsCallback, SaveAppSettingsCallback, ValidateSettingCallback } from "./types/AppSettingsCallbacks";
+import { LoadAppSettingsCallback, SaveAppSettingsCallback, ValidateSettingCallback } from "@/settings/types/AppSettingsCallbacks";
 import SettingCategory from "@/settings/types/SettingCategory";
 import { init } from "./interactions/initialization";
 import SettingCategorySelector from "./SettingCategorySelector";
 import SettingCategoryPanel from "./SettingCategoryPanel";
 import DialogFooter from "../modalDialogs/DialogFooter";
 import DialogButton from "../modalDialogs/DialogButton";
+import AppSettingCategory from "@/settings/types/AppSettingCategory";
+import { saveAndClose } from "./interactions/saving";
 
 // The settings dialog is intended to eventually contain cross-device settings. But as I write this, there are no
 // cross-device capabilities. So the dialog has the title "Device Settings" for now, and later it may be renamed to "Settings",
@@ -15,15 +18,15 @@ import DialogButton from "../modalDialogs/DialogButton";
 
 type Props = {
   isOpen:boolean,
-  defaultAppSettings:SettingCategory,
+  defaultAppSettings:AppSettingCategory,
   onClose:(appSettings:Setting[]) => void,
   onLoadAppSettings?:LoadAppSettingsCallback,
   onSaveAppSettings?:SaveAppSettingsCallback,
   onValidateSetting?:ValidateSettingCallback
 }
 
-function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings, onValidateSetting}: Props) {
-  const initialAppSettingsRef = useRef<SettingCategory>(defaultAppSettings);
+function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings, onSaveAppSettings, onValidateSetting}: Props) {
+  const initialAppSettingsRef = useRef<AppSettingCategory>(defaultAppSettings);
   const [categories, setCategories] = useState<SettingCategory[]>([]);
   const [selectedCategoryNo, setSelectedCategoryNo] = useState(0);
   const [categoryValidities, setCategoryValidities] = useState<boolean[]>(Array(categories.length).fill(true));
@@ -60,7 +63,7 @@ function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings,
       )) }
       <DialogFooter>
         <DialogButton text="Cancel" onClick={onClose} />
-        <DialogButton text="Save and Exit" onClick={onClose} isPrimary disabled={isSaveDisabled}/>
+        <DialogButton text="Save and Exit" onClick={() => saveAndClose(categories, onClose, onSaveAppSettings)} isPrimary disabled={isSaveDisabled}/>
       </DialogFooter>
     </ModalDialog>
   );
