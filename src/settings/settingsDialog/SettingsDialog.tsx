@@ -7,8 +7,8 @@ import SettingCategory from "@/settings/types/SettingCategory";
 import { init } from "./interactions/initialization";
 import SettingCategorySelector from "./SettingCategorySelector";
 import SettingCategoryPanel from "./SettingCategoryPanel";
-import DialogFooter from "../modalDialogs/DialogFooter";
-import DialogButton from "../modalDialogs/DialogButton";
+import DialogFooter from "../../components/modalDialogs/DialogFooter";
+import DialogButton from "../../components/modalDialogs/DialogButton";
 import AppSettingCategory from "@/settings/types/AppSettingCategory";
 import { saveAndClose } from "./interactions/saving";
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import TextSetting from "@/settings/types/TextSetting";
-import { ValidateSettingCallback } from "../../../settings/types/AppSettingsCallbacks";
+import { ValidateSettingCallback } from "../../types/AppSettingsCallbacks";
 import styles from "./Setters.module.css";
 import { handleValidation } from "./setterUtil";
 

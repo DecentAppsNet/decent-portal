@@ -1,4 +1,4 @@
-import Selector from "../selector/Selector"
+import Selector from "../../components/selector/Selector"
 
 type Props = {
   categoryNames: string[],

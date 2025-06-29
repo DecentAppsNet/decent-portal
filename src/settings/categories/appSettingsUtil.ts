@@ -22,6 +22,10 @@ export function getAppCategoryStorageName() {
   return `app-${parts[0]}`;
 }
 
+/**
+ * Retrieves application settings.
+ * @returns {Setting[]} An array of settings.
+ */
 export async function getAppSettings():Promise<Setting[]|null> {
   const appStorageName = getAppCategoryStorageName();
   return await getCategorySettings(appStorageName);

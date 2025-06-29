@@ -6,13 +6,28 @@ import { getBaseUrl, isServingFromEnabledDomain } from './decentBarUtil';
 import DecentBarCssOverrides from './types/DecentBarCssOverrides';
 import Link from './types/Link';
 import SettingsIcon from './icons/cog.svg';
-import SettingsDialog from '@/components/settingsDialog/SettingsDialog';
+import SettingsDialog from '@/settings/settingsDialog/SettingsDialog';
 import { LoadAppSettingsCallback, SaveAppSettingsCallback, ValidateSettingCallback } from '@/settings/types/AppSettingsCallbacks';
 import AppSettingCategory from '@/settings/types/AppSettingCategory';
 
 // Default domains where the decent bar is rendered. Can be overridden in props.
 const DEFAULT_ENABLED_DOMAINS = ['decentapps.net', '127.0.0.1', 'localhost'];
 
+/**
+ * Props for the DecentBar component.
+ * @typedef {Object} Props
+ * @property {string} appName - The name of the application displayed in the bar.
+ * @property {Link[]} [appLinks] - Optional array of links displayed as buttons in the bar.
+ * @property {string} [contributorText] - Optional text displayed in the contributor section.
+ * @property {string[]} [enabledDomains] - Optional list of domains where the bar is enabled. Defaults to ['decentapps.net', '127.0.0.1', 'localhost'].
+ * @property {string} [homeUrl] - Optional URL for the home link. Defaults to the base URL.
+ * @property {(link: Link) => void} [onClickLink] - Optional callback for handling link clicks. Defaults to `defaultOnClickLink`.
+ * @property {DecentBarCssOverrides} [classNameOverrides] - Optional overrides for CSS class names.
+ * @property {AppSettingCategory} [defaultAppSettings] - Optional default application settings.
+ * @property {LoadAppSettingsCallback} [onLoadAppSettings] - Optional callback for loading application settings.
+ * @property {SaveAppSettingsCallback} [onSaveAppSettings] - Optional callback for saving application settings.
+ * @property {ValidateSettingCallback} [onValidateSetting] - Optional callback for validating application settings.
+ */
 type Props = {
   appName:string,
   appLinks?:Link[],
@@ -27,6 +42,12 @@ type Props = {
   onValidateSetting?:ValidateSettingCallback
 }
 
+/**
+ * Default callback for handling link clicks.
+ * Opens the link in a new tab if it is an external link, or in the same tab if it is on the same domain.
+ * Logs an error if the link URL does not start with "http".
+ * @param {Link} link - The link object containing the URL and description.
+ */
 export function defaultOnClickLink(link:Link) {
   if (link.url.startsWith('http')) {
     const isSameDomain = link.url.startsWith(getBaseUrl());
@@ -59,6 +80,12 @@ function _createDefaultAppSettings(appName:string):AppSettingCategory {
   }
 }
 
+/**
+ * DecentBar component.
+ * Renders a customizable bar with application links, contributor text, and settings.
+ * @param {Props} props - The props for the DecentBar component.
+ * @returns {JSX.Element | null} The rendered DecentBar component or null if conditions are not met.
+ */
 function DecentBar({ 
     appName, 
     appLinks, 
