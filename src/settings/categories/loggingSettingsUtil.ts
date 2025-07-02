@@ -2,7 +2,9 @@ import { getCategorySettings } from "@/persistence/settings";
 import SettingCategory from "@/settings/types/SettingCategory";
 import SettingType from "@/settings/types/SettingType";
 import { mergeSettingsIntoCategory } from "./settingCategoryUtil";
-import { infoToast } from "@/components/toasts/toastUtil";
+import { errorToast, infoToast } from "@/components/toasts/toastUtil";
+import { copyLogsToClipboard, deleteAllLogMessages, log } from "@/localLogging/logUtil";
+import Setting from "../types/Setting";
 
 export const LOGGING_CATEGORY_ID = "logging";
 export const LOGGING_SETTING_ENABLE = "enableLogging";
@@ -14,16 +16,40 @@ enum ButtonAction {
   CLEAR_LOGS = 'clearLogs'
 };
 
-function _onButtonClick(value:ButtonAction):void {
+async function _onButtonClick(value:ButtonAction) {
   switch (value) {
     case ButtonAction.COPY_ALL_LOGS:
-      infoToast("All logs copied to clipboard. You can paste them into an email, issue, etc.");
+      try {
+        if (await copyLogsToClipboard()) {
+          infoToast("All logs copied to clipboard. You can paste them into an email, issue, etc.");
+        } else {
+          infoToast("No logs found.");
+        }
+      } catch (e) {
+        console.error(e);
+        errorToast("Could not copy logs to the clipboard.");
+      }
       break;
     case ButtonAction.COPY_TODAY_LOGS:
-      infoToast("Today's logs copied to clipboard. You can paste them into an email, issue, etc.");
+      try{
+        if (await copyLogsToClipboard(1)) {
+          infoToast("Today's logs copied to clipboard. You can paste them into an email, issue, etc.");
+        } else {
+          infoToast("No logs found for today.");
+        }
+      } catch (e) {
+        console.error(e);
+        errorToast("Could not copy logs to the clipboard.");
+      }
       break;
     case ButtonAction.CLEAR_LOGS:
-      infoToast("Logs cleared.");
+      try {
+        await deleteAllLogMessages();
+        infoToast("Logs cleared.");
+      } catch (e) {
+        console.error(e);
+        errorToast("Could not copy logs to the clipboard.");
+      }
       break;
     default:
       throw Error(`Unexpected button action: ${value}`);
@@ -44,7 +70,7 @@ export function getLoggingDefaultSettings():SettingCategory {
         buttons: [
           { label:'Copy All Logs', value:ButtonAction.COPY_ALL_LOGS },
           { label:'Copy Logs from Today', value:ButtonAction.COPY_TODAY_LOGS },
-          { label:'Clear Logs', value:ButtonAction.CLEAR_LOGS }
+          { label:'Clear Logs', value:ButtonAction.CLEAR_LOGS },
         ],
         onButtonClick:(value) => _onButtonClick(value as ButtonAction)
       }
@@ -56,4 +82,11 @@ export function getLoggingDefaultSettings():SettingCategory {
 export async function loadLoggingSettingCategory():Promise<SettingCategory> {
   const settings = await getCategorySettings(LOGGING_CATEGORY_ID);
   return mergeSettingsIntoCategory(getLoggingDefaultSettings(), settings);
+}
+
+export async function getLoggingSettings():Promise<Setting[]> {
+  const loggingSettings = await getCategorySettings(LOGGING_CATEGORY_ID);
+  if (loggingSettings) return loggingSettings;
+  const defaultSettings = getLoggingDefaultSettings();
+  return defaultSettings.settings;
 }

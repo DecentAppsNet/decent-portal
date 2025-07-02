@@ -5,10 +5,16 @@ import { LoadAppSettingsCallback } from "../types/AppSettingsCallbacks";
 import SettingCategory from "../types/SettingCategory";
 import AppSettingCategory from "../types/AppSettingCategory";
 
+export function getAppCategoryId() {
+  const parts = window.location.pathname.split('/').filter(part => part.length);
+  if (!parts.length) return `app-root`;
+  return `app-${parts[0]}`;
+}
+
 function _appSettingCategoryToSettingCategory(appCategory:AppSettingCategory):SettingCategory {
   return {
     name: 'This App',
-    storageName: getAppCategoryStorageName(),
+    id: getAppCategoryId(),
     description: appCategory.description,
     headings: appCategory.headings,
     settings: appCategory.settings,
@@ -16,19 +22,13 @@ function _appSettingCategoryToSettingCategory(appCategory:AppSettingCategory):Se
   }
 }
 
-export function getAppCategoryStorageName() {
-  const parts = window.location.pathname.split('/').filter(part => part.length);
-  if (!parts.length) return `app-root`;
-  return `app-${parts[0]}`;
-}
-
 /**
  * Retrieves application settings.
  * @returns {Setting[]} An array of settings.
  */
 export async function getAppSettings():Promise<Setting[]|null> {
-  const appStorageName = getAppCategoryStorageName();
-  return await getCategorySettings(appStorageName);
+  const id = getAppCategoryId();
+  return await getCategorySettings(id);
 }
 
 export async function loadAppSettingCategory(defaultAppCategory:AppSettingCategory, onLoadAppSettings?:LoadAppSettingsCallback):Promise<SettingCategory> {

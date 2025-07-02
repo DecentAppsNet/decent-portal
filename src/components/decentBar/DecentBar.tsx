@@ -1,14 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, JSX } from 'react';
 
 import styles from './DecentBar.module.css';
 import ContentButton from '@/components/contentButton/ContentButton';
-import { getBaseUrl, isServingFromEnabledDomain } from './decentBarUtil';
+import { getBaseUrl } from './decentBarUtil';
 import DecentBarCssOverrides from './types/DecentBarCssOverrides';
 import Link from './types/Link';
 import SettingsIcon from './icons/cog.svg';
 import SettingsDialog from '@/settings/settingsDialog/SettingsDialog';
 import { LoadAppSettingsCallback, SaveAppSettingsCallback, ValidateSettingCallback } from '@/settings/types/AppSettingsCallbacks';
 import AppSettingCategory from '@/settings/types/AppSettingCategory';
+import ToastPane from '../toasts/ToastPane';
+import { init } from './interactions/initialization';
 
 // Default domains where the decent bar is rendered. Can be overridden in props.
 const DEFAULT_ENABLED_DOMAINS = ['decentapps.net', '127.0.0.1', 'localhost'];
@@ -58,11 +60,6 @@ export function defaultOnClickLink(link:Link) {
   }
 }
 
-function _findFavIconLink() {
-  return document.querySelector<HTMLLinkElement>('link[rel~="icon"][sizes="192x192"]') ||
-    document.querySelector<HTMLLinkElement>('link[rel~="icon"]');
-}
-
 function _appLinksContent(links:Link[], onClickLink:Function) {
   if (!links.length) return <>&nbsp;</>; // Returning something keeps the layout from breaking or needing more complexity to handle empty links.
   const linkButtons = links.map((link, buttonNo) => {
@@ -98,19 +95,23 @@ function DecentBar({
     onLoadAppSettings,
     onSaveAppSettings,
     onValidateSetting
-  }: Props) {
+  }: Props): JSX.Element | null {
   const initialAppSettings = useRef<AppSettingCategory>(defaultAppSettings || _createDefaultAppSettings(appName));
   const [favIconUrl, setFavIconUrl] = useState<string | null>(null);
   const [modalDialogName, setModalDialogName] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isServingFromEnabledDomain(enabledDomains)) {
-      console.log('DecentBar did not render because the current domain is not in the enabled domains list.'); // This is sometimes what the developer wants.
-      return;
-    }
-    const link = _findFavIconLink();
-    if (!link) { console.error('DecentBar did not render because no favicon image was set.'); return; }
-    setFavIconUrl(link.href);
+    init(enabledDomains).then(initResults => {
+      if (!initResults.isDecentBarEnabled) {
+        console.log('DecentBar did not render because the current domain is not in the enabled domains list.'); // This is sometimes what the developer wants.
+        return;
+      }
+      if (!initResults.favIconUrl) {
+        console.error('DecentBar did not render because no favicon image was set.');
+        return;
+      }
+      setFavIconUrl(initResults.favIconUrl);
+    });
   }, []);
 
   if (!favIconUrl) return null; // First render, no favicon is found, or not serving from an enabled domain.
@@ -155,6 +156,7 @@ function DecentBar({
         onSaveAppSettings={onSaveAppSettings}
         onValidateSetting={onValidateSetting}
       />
+      <ToastPane />
     </>
   )
 }

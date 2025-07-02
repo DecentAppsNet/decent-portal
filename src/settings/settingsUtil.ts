@@ -2,10 +2,10 @@ import SettingRow from "@/settings/types/SettingRow";
 import Heading, { HEADING_TYPE } from "./types/Heading";
 import SettingCategory from "./types/SettingCategory";
 import { LoadAppSettingsCallback, SaveAppSettingsCallback } from "./types/AppSettingsCallbacks";
-import { getAppCategoryStorageName, loadAppSettingCategory } from "./categories/appSettingsUtil";
+import { getAppCategoryId, loadAppSettingCategory } from "./categories/appSettingsUtil";
 import { loadLlmSettingCategory } from "./categories/llmSettingsUtil";
 import { loadLoggingSettingCategory } from "./categories/loggingSettingsUtil";
-import { isSettingFormat } from "./types/Setting";
+import Setting, { isSettingFormat } from "./types/Setting";
 import { setCategorySettings } from "@/persistence/settings";
 import AppSettingCategory from "./types/AppSettingCategory";
 
@@ -51,16 +51,16 @@ export async function loadSettingCategories(defaultAppCategory:AppSettingCategor
 }
 
 export async function saveSettingCategories(categories:SettingCategory[], onSaveAppSettings?:SaveAppSettingsCallback):Promise<void> {
-  const appCategoryStorageName = getAppCategoryStorageName();
+  const id = getAppCategoryId();
   const promises = categories.map(category => {
     let settings = category.settings;
-    if (category.storageName === appCategoryStorageName) {
+    if (category.id === id) {
       if (onSaveAppSettings) {
         const overrideAppSettings = onSaveAppSettings(settings);
         if (overrideAppSettings) settings = overrideAppSettings;
       }
     }
-    return setCategorySettings(category.storageName, settings);
+    return setCategorySettings(category.id, settings);
   });
   try {
     await Promise.all(promises);
@@ -68,4 +68,11 @@ export async function saveSettingCategories(categories:SettingCategory[], onSave
     console.error("Error saving settings:", error);
     throw new Error("Failed to save settings. Please try again later.");
   }
+}
+
+export function settingValue(settingId:string, settings?:Setting[]|null):number|string|boolean|null {
+  if (!settings) return null;
+  const setting = settings.find(s => s.id === settingId);
+  if (!setting) return null;
+  return (setting as any).value ?? null;
 }

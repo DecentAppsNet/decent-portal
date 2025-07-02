@@ -6,7 +6,7 @@ import { mergeSettingsIntoCategory } from "./settingCategoryUtil";
 export function getLlmDefaultSettings():SettingCategory {
   return {
     name: "LLM",
-    storageName: "llm",
+    id: "llm",
     description: "Settings for loading and using LLMs (Large Language Models) on this device.",
     settings: [
       {type: SettingType.NUMERIC, id:"llmMaxSize", label:"Max LLM size (GB)", value:8, minValue:1, maxValue:256}
