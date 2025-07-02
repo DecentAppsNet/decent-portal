@@ -1,4 +1,4 @@
-import { applyLoggingSettings } from "@/localLogging/logUtil";
+import { applyLoggingSettings, setAppName } from "@/localLogging/logUtil";
 import { getLoggingSettings } from "@/settings/categories/loggingSettingsUtil";
 import { isServingFromEnabledDomain } from "../decentBarUtil";
 
@@ -12,10 +12,11 @@ export type InitResults = {
   isDecentBarEnabled:boolean
 }
 
-export async function init(enabledDomains:string[]) {
+export async function init(appName:string, enabledDomains:string[]) {
   try {
     const loggingSettings = await getLoggingSettings();
     await applyLoggingSettings(loggingSettings);
+    setAppName(appName);
   } catch(e) {
     console.error('Error applying logging settings:', e);
   }

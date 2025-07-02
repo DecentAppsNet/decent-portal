@@ -101,7 +101,7 @@ function DecentBar({
   const [modalDialogName, setModalDialogName] = useState<string | null>(null);
 
   useEffect(() => {
-    init(enabledDomains).then(initResults => {
+    init(appName, enabledDomains).then(initResults => {
       if (!initResults.isDecentBarEnabled) {
         console.log('DecentBar did not render because the current domain is not in the enabled domains list.'); // This is sometimes what the developer wants.
         return;

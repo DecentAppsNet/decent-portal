@@ -3,11 +3,12 @@ import Heading, { HEADING_TYPE } from "./types/Heading";
 import SettingCategory from "./types/SettingCategory";
 import { LoadAppSettingsCallback, SaveAppSettingsCallback } from "./types/AppSettingsCallbacks";
 import { getAppCategoryId, loadAppSettingCategory } from "./categories/appSettingsUtil";
-import { loadLlmSettingCategory } from "./categories/llmSettingsUtil";
-import { loadLoggingSettingCategory } from "./categories/loggingSettingsUtil";
+import { applyLlmSettings, LLM_CATEGORY_ID, loadLlmSettingCategory } from "./categories/llmSettingsUtil";
+import { loadLoggingSettingCategory, LOGGING_CATEGORY_ID } from "./categories/loggingSettingsUtil";
 import Setting, { isSettingFormat } from "./types/Setting";
 import { setCategorySettings } from "@/persistence/settings";
 import AppSettingCategory from "./types/AppSettingCategory";
+import { applyLoggingSettings } from "@/localLogging/logUtil";
 
 export function collateSettingRows(category:SettingCategory):SettingRow[] {
   const rows:SettingRow[] = [];
@@ -51,14 +52,24 @@ export async function loadSettingCategories(defaultAppCategory:AppSettingCategor
 }
 
 export async function saveSettingCategories(categories:SettingCategory[], onSaveAppSettings?:SaveAppSettingsCallback):Promise<void> {
-  const id = getAppCategoryId();
+  const appCategoryId = getAppCategoryId();
   const promises = categories.map(category => {
     let settings = category.settings;
-    if (category.id === id) {
-      if (onSaveAppSettings) {
-        const overrideAppSettings = onSaveAppSettings(settings);
-        if (overrideAppSettings) settings = overrideAppSettings;
-      }
+    switch (category.id) {
+      case appCategoryId:
+        if (onSaveAppSettings) {
+          const overrideAppSettings = onSaveAppSettings(settings);
+          if (overrideAppSettings) settings = overrideAppSettings;
+        }
+      break;
+
+      case LOGGING_CATEGORY_ID:
+        applyLoggingSettings(settings);
+      break;
+
+      case LLM_CATEGORY_ID:
+        applyLlmSettings(settings);
+      break;
     }
     return setCategorySettings(category.id, settings);
   });
