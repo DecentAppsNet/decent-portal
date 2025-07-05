@@ -1,0 +1,8 @@
+enum ModelDeviceProblemType { 
+  INSUFFICIENT_VRAM, 
+  INSUFFICIENT_STORAGE, 
+  BAD_LOAD_SUCCESS_HISTORY, 
+  BAD_PERFORMANCE_HISTORY
+}
+
+export default ModelDeviceProblemType;

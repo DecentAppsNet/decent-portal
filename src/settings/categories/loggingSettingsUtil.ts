@@ -3,7 +3,7 @@ import SettingCategory from "@/settings/types/SettingCategory";
 import SettingType from "@/settings/types/SettingType";
 import { mergeSettingsIntoCategory } from "./settingCategoryUtil";
 import { errorToast, infoToast } from "@/components/toasts/toastUtil";
-import { copyLogsToClipboard, deleteAllLogMessages, log } from "@/localLogging/logUtil";
+import { copyLogsToClipboard, deleteAllLogMessages } from "@/localLogging/logUtil";
 import Setting from "../types/Setting";
 
 export const LOGGING_CATEGORY_ID = "logging";
@@ -33,7 +33,7 @@ async function _onButtonClick(value:ButtonAction) {
     case ButtonAction.COPY_TODAY_LOGS:
       try{
         if (await copyLogsToClipboard(1)) {
-          infoToast("Today's logs copied to clipboard. You can paste them into an email, issue, etc.");
+          infoToast("Todays logs copied to clipboard. You can paste them into an email, issue, etc.");
         } else {
           infoToast("No logs found for today.");
         }

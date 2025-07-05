@@ -130,7 +130,7 @@ function testAppSettings() {
       {id:'3a', type:SettingType.NUMERIC, label:'Whole numbers 0-100', value:52, minValue:0, maxValue:100},
       {id:'3b', type:SettingType.NUMERIC, label:'Decimals 0-1', value:0.52, minValue:0, maxValue:1, allowDecimals:true},
       {id:'3c', type:SettingType.NUMERIC, label:'Should be even 0-10', value:4, minValue:0, maxValue:10, allowDecimals:false},
-      {id:'3d', type:SettingType.NUMERIC, label:'Must have < than 2 decimal places', value:0.52, minValue:0, maxValue:1, allowDecimals:true},
+      {id:'3d', type:SettingType.NUMERIC, label:'Must have < than 2 decimal places', value:0.5, minValue:0, maxValue:1, allowDecimals:true},
       {id:'5a', type:SettingType.BOOLEAN_TOGGLE, label:'Enable settings below?', value:true},
       {id:'5b', type:SettingType.NUMERIC, label:'Numeric setting', value:5, minValue:0, maxValue:10, allowDecimals:false},
       {id:'5c', type:SettingType.TEXT, label:'Text setting', value:'Some text'},

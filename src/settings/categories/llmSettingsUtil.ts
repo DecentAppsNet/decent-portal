@@ -3,9 +3,28 @@ import SettingCategory from "../types/SettingCategory";
 import SettingType from "../types/SettingType";
 import { mergeSettingsIntoCategory } from "./settingCategoryUtil";
 import Setting from "../types/Setting";
+import { estimateSystemMemory, GIGABYTE } from "@/deviceCapabilities/memoryUtil";
 
 export const LLM_CATEGORY_ID = "llm";
 export const LLM_SETTING_MAX_SIZE = "llmMaxSize";
+
+/*
+  The system memory has nothing to do with GPU memory... sorta. Due to web API limitations, I can't directly query GPU memory available.
+  So we won't really know how much GPU memory is available until we successfully allocate. I'm saying "GPU memory" instead of "video memory", 
+  because WebGPU can allocate beyond video memory on devices with unified memory architecture (Macs). There is a danger of system 
+  instability (hangs, hard reboots) by overallocating on unified memory devices. Browser code can crash the O/S. So by choosing a number 
+  based on available memory as reported by the browser, I can stop allocation beyond the point where system stability becomes a risk.
+
+  Where does 8gb AT_LEAST_THIS_MUCH magic number come from? It's to allow a device to try loading some smaller models, as a unified memory
+  architecture is very unlikely to crash in this range.
+*/
+function _getDefaultMaxLlmSize():number {
+  const AT_LEAST_THIS_MUCH = 8;
+  const availableMemory = estimateSystemMemory();
+  const availableMemoryGB = Math.round(availableMemory / GIGABYTE);
+  console.log(availableMemory);
+  return Math.max(AT_LEAST_THIS_MUCH, availableMemoryGB);
+}
 
 export function getLlmDefaultSettings():SettingCategory {
   return {
@@ -13,7 +32,7 @@ export function getLlmDefaultSettings():SettingCategory {
     id: LLM_CATEGORY_ID,
     description: "Settings for loading and using LLMs (Large Language Models) on this device.",
     settings: [
-      {type: SettingType.NUMERIC, id:LLM_SETTING_MAX_SIZE, label:"Max LLM size (GB)", value:8, minValue:1, maxValue:256}
+      {type: SettingType.NUMERIC, id:LLM_SETTING_MAX_SIZE, label:"Max LLM size (GB)", value:_getDefaultMaxLlmSize(), minValue:1, maxValue:256}
     ],
     headings: [
       {precedeSettingId:'llmMaxSize', description:`The max LLM size prevents attempting to load models that are unlikely to succeed and could cause system instability.`}
