@@ -1,3 +1,4 @@
+import { assert, assertNonNullable } from "@/common/assertUtil";
 import { deleteLogTextForDay, findAllLoggedDays, getDayPath, getLogTextForDay, setLogTextForDay } from "@/persistence/localLog";
 import { LOGGING_SETTING_ENABLE, LOGGING_SETTING_MAX_RETENTION_DAYS } from "@/settings/categories/loggingSettingsUtil";
 import { settingValue } from "@/settings/settingsUtil";
@@ -30,9 +31,9 @@ function _isRunningOnDedicatedWorker():boolean {
 async function _writeDayBuffer() {
   if (!theDayBuffer.length) return; // Nothing to write.
   try {
-    if (!theDayBufferPath) throw Error('Unexpected');
+    assertNonNullable(theDayBufferPath);
     if (thePreviousDayEntryCount) {
-      if (thePreviousDayPath === UNINITIALIZED_DAY_PATH) throw Error('Unexpected');
+      assert(thePreviousDayPath === UNINITIALIZED_DAY_PATH);
       const previousDayBuffer = theDayBuffer.slice(0, thePreviousDayEntryCount);
       theDayBuffer = theDayBuffer.slice(thePreviousDayEntryCount); // Keep only the current day's entries in the buffer.
       await setLogTextForDay(thePreviousDayPath, previousDayBuffer.join('\n'));
@@ -121,7 +122,7 @@ export async function copyLogsToClipboard(includeDayCount:number = Infinity):Pro
 export async function deleteOldLogMessages() {
   // Generate the key for the oldest day to preserve.
   const olderThanDayCount = _getMaxRetentionDays();
-  if (olderThanDayCount <= 0) throw Error('Unexpected'); // Don't call this function if retention days not set.
+  assert(olderThanDayCount <= 0); // Don't call this function if retention days not set.
   const oldestDayPath = _getPastDayPath(olderThanDayCount);
 
   // Because the keys are stored as `/log/YYYY-MM-DD.txt`, they are chronologically sortable.

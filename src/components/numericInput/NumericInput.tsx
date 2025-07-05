@@ -1,5 +1,7 @@
 import { useEffect, useState, CSSProperties } from "react";
 
+import { assert } from "@/common/assertUtil";
+
 // TODO - refactor to sl-react-ui.
 
 type Props = {
@@ -38,7 +40,7 @@ function NumericInput({minValue, maxValue, value, onChange, className, allowDeci
   const [digitWidthStyle, setDigitWidthStyle] = useState<CSSProperties>({});
 
   useEffect(() => {
-    if (value < minValue || value > maxValue) throw Error('Unexpected'); // Caller error: supplying a value outside the range.
+    assert(value < minValue || value > maxValue); // Caller error: supplying a value outside the range.
     setInputValue(value.toString());
   }, [value]);
 

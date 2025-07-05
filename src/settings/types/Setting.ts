@@ -1,3 +1,4 @@
+import { botch } from "@/common/assertUtil";
 import BooleanToggleSetting, { duplicateBooleanToggleSetting, isBooleanToggleSettingFormat } from "./BooleanToggleSetting";
 import NumericSetting, { duplicateNumericSetting, isNumericSettingFormat } from "./NumericSetting";
 import { isSettingBaseFormat } from "./SettingBase";
@@ -23,7 +24,7 @@ export function duplicateSetting(setting:Setting):Setting {
     case SettingType.BOOLEAN_TOGGLE: return duplicateBooleanToggleSetting(setting);
     case SettingType.NUMERIC: return duplicateNumericSetting(setting);
     case SettingType.TEXT: return duplicateTextSetting(setting);
-    default: throw Error('Unexpected');
+    default: botch();
   }
 }
 

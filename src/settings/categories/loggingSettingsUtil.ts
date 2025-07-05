@@ -5,6 +5,7 @@ import { mergeSettingsIntoCategory } from "./settingCategoryUtil";
 import { errorToast, infoToast } from "@/components/toasts/toastUtil";
 import { copyLogsToClipboard, deleteAllLogMessages } from "@/localLogging/logUtil";
 import Setting from "../types/Setting";
+import { botch } from "@/common/assertUtil";
 
 export const LOGGING_CATEGORY_ID = "logging";
 export const LOGGING_SETTING_ENABLE = "enableLogging";
@@ -52,7 +53,7 @@ async function _onButtonClick(value:ButtonAction) {
       }
       break;
     default:
-      throw Error(`Unexpected button action: ${value}`);
+      botch();
   }
 }
 
