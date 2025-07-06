@@ -1,21 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { prebuiltAppConfig } from "@mlc-ai/web-llm";
-
-import ModelDeviceHistory from "../types/ModelDeviceHistory";
-import { createMovingAverage, updateMovingAverage } from "@/common/movingAverageUtil";
-
-function _createModelDeviceHistory():ModelDeviceHistory {
-  return {
-    loadSuccessRate: createMovingAverage(LOAD_SUCCESS_RATE_SAMPLE_COUNT),
-    loadTime: createMovingAverage(LOAD_TIME_SAMPLE_COUNT),
-    inputTokensPerSec: createMovingAverage(INPUT_TOKENS_SAMPLE_COUNT),
-    outputTokensPerSec: createMovingAverage(OUTPUT_TOKENS_SAMPLE_COUNT),
-  };
-};
-
-let theSystemMemory = 0;
-let theAvailableStorage = 0;
-let theModelDeviceHistory:ModelDeviceHistory = _createModelDeviceHistory();
+// Mocks first before importing modules that may use them.
 
 vi.mock("@/deviceCapabilities/memoryUtil", async () => ({
   ...(await vi.importActual("@/deviceCapabilities/memoryUtil")),
@@ -33,15 +16,38 @@ vi.mock('@/persistence/deviceHistory', async () => ({
   setModelDeviceHistory: vi.fn((_id, next) => { theModelDeviceHistory = next; })
 }));
 
-// This import must be after the mocks to ensure they are used.
-import { clearCachedModelInfo, predictModelDeviceProblems, updateModelDeviceLoadHistory, updateModelDevicePerformanceHistory } from "../modelUtil"; 
+vi.mock("@/developer/devEnvUtil", async () => ({
+  ...(await vi.importActual("@/developer/devEnvUtil")),
+  isServingLocally: vi.fn(() => false)
+}));
+
+// Import section after mocking.
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { prebuiltAppConfig } from "@mlc-ai/web-llm";
+
+import ModelDeviceHistory from "../types/ModelDeviceHistory";
+import { createMovingAverage, updateMovingAverage } from "@/common/movingAverageUtil";
 import ModelDeviceProblem from "../types/ModelDeviceProblem";
 import ModelDeviceProblemType from "../types/ModelDeviceProblemType";
 import { INPUT_TOKENS_SAMPLE_COUNT, LOAD_SUCCESS_RATE_SAMPLE_COUNT, LOAD_TIME_SAMPLE_COUNT, OUTPUT_TOKENS_SAMPLE_COUNT } from "@/persistence/deviceHistory";
+import { clearCachedModelInfo, predictModelDeviceProblems, updateModelDeviceLoadHistory, updateModelDevicePerformanceHistory } from "../modelUtil"; 
 
 // These constants based on model settings found at https://github.com/mlc-ai/web-llm/blob/main/src/config.ts
 const MODEL_ID = "Llama-3.1-8B-Instruct-q4f32_1-MLC-1k";
 const MODEL_VRAM_REQUIRED_MB = 5295.7; // 5.3 GB
+
+let theSystemMemory = 0;
+let theAvailableStorage = 0;
+let theModelDeviceHistory:ModelDeviceHistory = _createModelDeviceHistory();
+
+function _createModelDeviceHistory():ModelDeviceHistory {
+  return {
+    loadSuccessRate: createMovingAverage(LOAD_SUCCESS_RATE_SAMPLE_COUNT),
+    loadTime: createMovingAverage(LOAD_TIME_SAMPLE_COUNT),
+    inputTokensPerSec: createMovingAverage(INPUT_TOKENS_SAMPLE_COUNT),
+    outputTokensPerSec: createMovingAverage(OUTPUT_TOKENS_SAMPLE_COUNT),
+  };
+};
 
 function _findProblemFromResult(result:any, type:ModelDeviceProblemType):ModelDeviceProblem {
   expect(!!result || !Array.isArray(result));
