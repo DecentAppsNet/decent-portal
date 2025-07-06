@@ -15,6 +15,7 @@ import ModelDeviceProblem from './models/types/ModelDeviceProblem';
 import ModelDeviceProblemType from './models/types/ModelDeviceProblemType';
 import ModelDeviceProblemDialog from './models/ModelDeviceProblemsDialog';
 import ContentButton from './components/contentButton/ContentButton';
+import { predictModelDeviceProblems } from './models/modelUtil';
 
 function testMinimal() {
   return <>
@@ -194,6 +195,7 @@ function testAppSettings() {
 }
 
 function _testModelDeviceProblems(modalDialogName:string|null, setModalDialogName:Function) {
+  const DIALOG_NAME = ModelDeviceProblemDialog.name;
   const problems:ModelDeviceProblem[] = [
     {type:ModelDeviceProblemType.BAD_LOAD_SUCCESS_HISTORY, description:`The model didn't load before.`},
     {type:ModelDeviceProblemType.BAD_PERFORMANCE_HISTORY, description:`The model performed poorly before.`},
@@ -204,17 +206,63 @@ function _testModelDeviceProblems(modalDialogName:string|null, setModalDialogNam
   return <>
     <h3>Test: Model Device Problems Dialog</h3>
     <ModelDeviceProblemDialog 
-      isOpen={modalDialogName === ModelDeviceProblemDialog.name}
+      modelId={'Fake Model'}
+      isOpen={modalDialogName === DIALOG_NAME}
       problems={problems}
       onConfirm={() => setModalDialogName(null)}
       onCancel={() => setModalDialogName(null)}
     />
-    <ContentButton onClick={() => setModalDialogName(ModelDeviceProblemDialog.name)} text='Open' />
+    <ContentButton onClick={() => setModalDialogName(DIALOG_NAME)} text='Open' />
+  </>;
+}
+
+function _testModelDeviceProblemsDevMode(modalDialogName:string|null, setModalDialogName:Function) {
+  const DIALOG_NAME = `${ModelDeviceProblemDialog.name}2`;
+  const problems:ModelDeviceProblem[] = [
+    {type:ModelDeviceProblemType.DEVELOPER_MODE, description:`We aren't actually loading a model. This is just a UI test!`}
+  ];
+  return <>
+    <h3>Test: Model Device Problems Dialog - Developer Mode</h3>
+    <ModelDeviceProblemDialog 
+      modelId={'Fake Model'}
+      isOpen={modalDialogName === DIALOG_NAME}
+      problems={problems}
+      onConfirm={() => setModalDialogName(null)}
+      onCancel={() => setModalDialogName(null)}
+    />
+    <ContentButton onClick={() => setModalDialogName(DIALOG_NAME)} text='Open' />
+  </>;
+}
+
+function _testModelDeviceProblemsRealData(modalDialogName:string|null, 
+    modelDeviceProblems:ModelDeviceProblem[]|null, setModelDeviceProblems:Function, setModalDialogName:Function) {
+  const DIALOG_NAME = `${ModelDeviceProblemDialog.name}3`;
+  const MODEL_ID = "Llama-3-70B-Instruct-q3f16_1-MLC"; // A larger model more likely to have problems.
+  if (!modelDeviceProblems) modelDeviceProblems = [];
+  return <>
+    <h3>Test: Model Device Problems Dialog - Real Device Data</h3>
+    <ModelDeviceProblemDialog 
+      isOpen={modalDialogName === DIALOG_NAME}
+      modelId={MODEL_ID}
+      problems={modelDeviceProblems}
+      onConfirm={() => setModalDialogName(null)}
+      onCancel={() => setModalDialogName(null)}
+    />
+    <ContentButton onClick={async () => {
+      const nextProblems = await predictModelDeviceProblems(MODEL_ID);
+      setModelDeviceProblems(nextProblems);
+      if (nextProblems) { 
+        setModalDialogName(DIALOG_NAME);
+      } else {
+        alert(`No problems found for loading ${MODEL_ID} on this device.`);
+      }
+    }} text='Check for Problems' />
   </>;
 }
 
 function Gallery() {
   const [modalDialogName, setModalDialogName] = useState<string|null>(null);
+  const [modelDeviceProblems, setModelDeviceProblems] = useState<ModelDeviceProblem[]|null>(null);
 
   return (
     <div className={style.container}>
@@ -232,7 +280,11 @@ function Gallery() {
       { testOverrideHomeUrl() }
       { testOverrideCss() }
       { testAppSettings() }
+
+      <h2>Model Device Problems Tests</h2>
       { _testModelDeviceProblems(modalDialogName, setModalDialogName) }
+      { _testModelDeviceProblemsDevMode(modalDialogName, setModalDialogName) }
+      { _testModelDeviceProblemsRealData(modalDialogName, modelDeviceProblems, setModelDeviceProblems, setModalDialogName) }
     </div>
   );
 }

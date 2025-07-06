@@ -3,7 +3,7 @@ import ModalDialog from "@/components/modalDialogs/ModalDialog";
 import ModelDeviceProblem from "./types/ModelDeviceProblem"
 import DialogFooter from "@/components/modalDialogs/DialogFooter";
 import DialogButton from "@/components/modalDialogs/DialogButton";
-import styles from './ModelDeviceProblems.module.css';
+import styles from './ModelDeviceProblemsDialog.module.css';
 import InsufficientMemoryIcon from './icons/memory.svg';
 import InsufficientStorageIcon from './icons/database.svg';
 import BadLoadSuccessIcon from './icons/message-alert.svg';
@@ -13,6 +13,7 @@ import ModelDeviceProblemType from './types/ModelDeviceProblemType';
 
 type Props = {
   isOpen:boolean,
+  modelId:string,
   onConfirm:() => void,
   onCancel:() => void,
   problems:ModelDeviceProblem[]
@@ -29,7 +30,7 @@ function _renderProblemIcon(problemType:ModelDeviceProblemType) {
   }
 }
 
-function ModelDeviceProblemDialog({isOpen, problems, onConfirm, onCancel}:Props) {
+function ModelDeviceProblemDialog({isOpen, problems, onConfirm, onCancel, modelId}:Props) {
   if (!isOpen) return null;
 
   assert(problems.length >= 1);
@@ -39,20 +40,20 @@ function ModelDeviceProblemDialog({isOpen, problems, onConfirm, onCancel}:Props)
   const isDeveloperMode = problems.length === 1 && problems[0].type === ModelDeviceProblemType.DEVELOPER_MODE;
   if (problems.length > 1) problems = problems.filter(p => p.type !== ModelDeviceProblemType.DEVELOPER_MODE);
 
-  const summaryText = isDeveloperMode 
-    ? `This looks like a development environment. Pausing before starting the heavy work of loading the model.`
+  const summaryContent = isDeveloperMode 
+    ? <p>Development environment detected. Paused loading <span className={styles.modelIdText}>{modelId}</span> until you confirm.</p>
     : problems.length === 1 
-      ? 'The following problem was found:' 
-      : 'The following problems were found:'
-  const problemsContent = problems.map(problem => {
-    return <li>{_renderProblemIcon(problem.type)}{problem.description}</li>
+      ? <p>The following problem was found for loading <span className={styles.modelIdText}>{modelId}</span>:</p>
+      : <p>The following problems were found for loading <span className={styles.modelIdText}>{modelId}</span>:</p>;
+  const problemsContent = problems.map((problem, problemI) => {
+    return <li key={problemI}>{_renderProblemIcon(problem.type)}{problem.description}</li>
   });
 
   return (
     <ModalDialog isOpen={isOpen} title='Continue Loading Model?' onCancel={onCancel}>
-      <p>{summaryText}</p>
+      {summaryContent}
       <ul className={styles.problemList}>{problemsContent}</ul>
-      <p>You can continue loading the model if you want.</p>
+      <p className={styles.continueText}>You can continue loading the model if you want.</p>
       <DialogFooter>
         <DialogButton text={'Cancel'} onClick={onCancel} />
         <DialogButton text={'Load Model'} onClick={onConfirm} isPrimary />

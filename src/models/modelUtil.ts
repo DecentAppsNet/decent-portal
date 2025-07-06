@@ -78,7 +78,7 @@ function _describeInsufficientMemory(wasSuccessfulBefore:boolean, requiredMemory
     return `Couldn't determine how much memory is available on the device. There might not be enough to load the model.`;
   }
   if (wasSuccessfulBefore) return `It looks like you may not have enough video memory. But you did have previous success loading this model.`;
-  return `You need ${requiredMemoryGb} GB of video memory to load this model. It seems unlikely to load, but you can try it.`;
+  return `You need ${requiredMemoryGb.toFixed(1)} GB of video memory to load this model. It seems unlikely to load, but you can try it.`;
 }
 
 // Used for testing.
