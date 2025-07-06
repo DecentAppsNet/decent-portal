@@ -2,8 +2,8 @@ import { defineConfig } from 'vite'
 import path from 'path';
 import react from '@vitejs/plugin-react'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'; 
+import { coverageConfigDefaults } from 'vitest/config';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), cssInjectedByJsPlugin()],
   server: {
@@ -13,6 +13,16 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src')
     }
+  },
+  test: {
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        '**/*.tsx',                        
+        ...coverageConfigDefaults.exclude,
+      ],
+    },
   },
   build: {
     lib: {
@@ -36,6 +46,6 @@ export default defineConfig({
         pure_funcs: ['assert', 'assertNonNullable', 'assertTruthy', 'botch']
       }
     },
-    sourcemap: true
+    sourcemap: true,
   }
 });
