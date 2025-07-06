@@ -1,0 +1,25 @@
+.problemList {
+  margin: 2vh;
+  font-size: 1vh;;
+}
+
+.problemList li {
+  display: flex;
+  align-items: center;
+  height: 2vh;
+}
+
+.problemList li img {
+  height: 2vh;
+  margin-right: 0.5vh;
+}
+
+.problemList li span {
+  line-height: 1vh;
+  margin-top: 0.5vh;
+  margin-bottom: 0.5vh;
+}
+
+.icon {
+  width: 2vh;
+}

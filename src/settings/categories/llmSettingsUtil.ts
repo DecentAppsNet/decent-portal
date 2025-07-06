@@ -22,7 +22,6 @@ function _getDefaultMaxLlmSize():number {
   const AT_LEAST_THIS_MUCH = 8;
   const availableMemory = estimateSystemMemory();
   const availableMemoryGB = Math.round(availableMemory / GIGABYTE);
-  console.log(availableMemory);
   return Math.max(AT_LEAST_THIS_MUCH, availableMemoryGB);
 }
 

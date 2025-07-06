@@ -40,7 +40,7 @@ function NumericInput({minValue, maxValue, value, onChange, className, allowDeci
   const [digitWidthStyle, setDigitWidthStyle] = useState<CSSProperties>({});
 
   useEffect(() => {
-    assert(value < minValue || value > maxValue); // Caller error: supplying a value outside the range.
+    assert(value >= minValue && value <= maxValue); // Caller error: supplying a value outside the range.
     setInputValue(value.toString());
   }, [value]);
 

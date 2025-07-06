@@ -30,6 +30,12 @@ export default defineConfig({
         }
       }
     },
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        pure_funcs: ['assert', 'assertNonNullable', 'assertTruthy', 'botch']
+      }
+    },
     sourcemap: true
   }
 });

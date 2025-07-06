@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import DecentBar from './components/decentBar/DecentBar';
 import Link from './components/decentBar/types/Link';
 import { getBaseUrl } from './components/decentBar/decentBarUtil';
@@ -9,6 +11,10 @@ import BooleanToggleSetting from './settings/types/BooleanToggleSetting';
 import TextSetting from './settings/types/TextSetting';
 import NumericSetting from './settings/types/NumericSetting';
 import AppSettingCategory from './settings/types/AppSettingCategory';
+import ModelDeviceProblem from './models/types/ModelDeviceProblem';
+import ModelDeviceProblemType from './models/types/ModelDeviceProblemType';
+import ModelDeviceProblemDialog from './models/ModelDeviceProblemsDialog';
+import ContentButton from './components/contentButton/ContentButton';
 
 function testMinimal() {
   return <>
@@ -187,7 +193,29 @@ function testAppSettings() {
   </>;
 }
 
+function _testModelDeviceProblems(modalDialogName:string|null, setModalDialogName:Function) {
+  const problems:ModelDeviceProblem[] = [
+    {type:ModelDeviceProblemType.BAD_LOAD_SUCCESS_HISTORY, description:`The model didn't load before.`},
+    {type:ModelDeviceProblemType.BAD_PERFORMANCE_HISTORY, description:`The model performed poorly before.`},
+    {type:ModelDeviceProblemType.INSUFFICIENT_STORAGE, description:`You might not have enough storage for this bad boy.`},
+    {type:ModelDeviceProblemType.INSUFFICIENT_VRAM, description:`Got enough VRAM? I don't think so, buddy.`},
+    {type:ModelDeviceProblemType.DEVELOPER_MODE, description:`We aren't actually loading a model. This is just a UI test!`}
+  ];
+  return <>
+    <h3>Test: Model Device Problems Dialog</h3>
+    <ModelDeviceProblemDialog 
+      isOpen={modalDialogName === ModelDeviceProblemDialog.name}
+      problems={problems}
+      onConfirm={() => setModalDialogName(null)}
+      onCancel={() => setModalDialogName(null)}
+    />
+    <ContentButton onClick={() => setModalDialogName(ModelDeviceProblemDialog.name)} text='Open' />
+  </>;
+}
+
 function Gallery() {
+  const [modalDialogName, setModalDialogName] = useState<string|null>(null);
+
   return (
     <div className={style.container}>
       <h1>Decent Portal Test App</h1>
@@ -204,6 +232,7 @@ function Gallery() {
       { testOverrideHomeUrl() }
       { testOverrideCss() }
       { testAppSettings() }
+      { _testModelDeviceProblems(modalDialogName, setModalDialogName) }
     </div>
   );
 }

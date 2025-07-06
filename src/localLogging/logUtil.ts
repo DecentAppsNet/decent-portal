@@ -122,7 +122,7 @@ export async function copyLogsToClipboard(includeDayCount:number = Infinity):Pro
 export async function deleteOldLogMessages() {
   // Generate the key for the oldest day to preserve.
   const olderThanDayCount = _getMaxRetentionDays();
-  assert(olderThanDayCount <= 0); // Don't call this function if retention days not set.
+  assert(olderThanDayCount > 0); // Don't call this function if retention days not set.
   const oldestDayPath = _getPastDayPath(olderThanDayCount);
 
   // Because the keys are stored as `/log/YYYY-MM-DD.txt`, they are chronologically sortable.

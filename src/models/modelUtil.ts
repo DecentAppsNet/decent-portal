@@ -8,6 +8,7 @@ import { estimateAvailableStorage } from "@/deviceCapabilities/storageUtil";
 import { getModelDeviceHistory, setModelDeviceHistory } from "@/persistence/deviceHistory";
 import { assertNonNullable } from "@/common/assertUtil";
 import MovingAverageData from "@/common/types/MovingAverageData";
+import { isServingLocally } from "@/developer/devEnvUtil";
 
 let theCurrentModelInfo:ModelInfo|null = null;
 
@@ -137,6 +138,13 @@ export async function predictModelDeviceProblems(modelId:string):Promise<ModelDe
     problems.push({
       type: ModelDeviceProblemType.INSUFFICIENT_STORAGE,
       description: _describeInsufficientStorage(wasSuccessfulBefore, theCurrentModelInfo.requiredStorageGb, availableStorage)
+    });
+  }
+
+  if (isServingLocally()) {
+    problems.push({
+      type: ModelDeviceProblemType.DEVELOPER_MODE,
+      description: `You are running this web app from a local server, probably for development.`
     });
   }
   
