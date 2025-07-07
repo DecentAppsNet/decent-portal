@@ -7,5 +7,6 @@ export function hasWasmSupport():boolean {
 }
 
 export function hasStorageSupport():boolean {
+  /* v8 ignore next */
   return (!!globalThis.navigator.storage && !!globalThis.navigator.storage.estimate);
 }

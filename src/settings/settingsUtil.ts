@@ -2,7 +2,7 @@ import SettingRow from "@/settings/types/SettingRow";
 import Heading, { HEADING_TYPE } from "./types/Heading";
 import SettingCategory from "./types/SettingCategory";
 import { LoadAppSettingsCallback, SaveAppSettingsCallback } from "./types/AppSettingsCallbacks";
-import { getAppCategoryId, loadAppSettingCategory } from "./categories/appSettingsUtil";
+import { getAppCategoryId, loadAppSettingCategory } from "@/settings/categories/appSettingsUtil";
 import { applyLlmSettings, LLM_CATEGORY_ID, loadLlmSettingCategory } from "./categories/llmSettingsUtil";
 import { loadLoggingSettingCategory, LOGGING_CATEGORY_ID } from "./categories/loggingSettingsUtil";
 import Setting, { isSettingFormat } from "./types/Setting";
@@ -30,7 +30,7 @@ export function findDisabledSettings(category:SettingCategory):string[] {
   const disabledSettings:string[] = [];
   category.disablementRules.forEach(rule => {
     const criteriaSetting = category.settings.find(s => s.id === rule.criteriaSettingId);
-    if (!criteriaSetting) { console.error(`Disablement rule for setting ${rule.targetSettingId} references non-existent criteria setting ${rule.criteriaSettingId}`); return; }
+    if (!criteriaSetting) throw new Error(`Disablement rule for setting ${rule.targetSettingId} references non-existent criteria setting ${rule.criteriaSettingId}`);
     const criteriaValue:any = (criteriaSetting as any).value;
     if (criteriaValue === rule.criteriaValue) disabledSettings.push(rule.targetSettingId);
   });
@@ -84,6 +84,5 @@ export async function saveSettingCategories(categories:SettingCategory[], onSave
 export function settingValue(settingId:string, settings?:Setting[]|null):number|string|boolean|null {
   if (!settings) return null;
   const setting = settings.find(s => s.id === settingId);
-  if (!setting) return null;
-  return (setting as any).value ?? null;
+  return !setting ? null : setting.value;
 }

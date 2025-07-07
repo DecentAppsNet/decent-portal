@@ -13,10 +13,15 @@ type Setting =
 
 export function isSettingFormat(maybeSetting:any):boolean {
   if (!isSettingBaseFormat(maybeSetting)) return false;
-  if (maybeSetting.type === SettingType.NUMERIC) return isNumericSettingFormat(maybeSetting);
-  if (maybeSetting.type === SettingType.BOOLEAN_TOGGLE) return isBooleanToggleSettingFormat(maybeSetting);
-  if (maybeSetting.type === SettingType.TEXT) return isTextSettingFormat(maybeSetting);
-  return false;
+  switch (maybeSetting.type) {
+    case SettingType.BOOLEAN_TOGGLE: return isBooleanToggleSettingFormat(maybeSetting);
+    case SettingType.NUMERIC: return isNumericSettingFormat(maybeSetting);
+    case SettingType.TEXT: return isTextSettingFormat(maybeSetting);
+    /* v8 ignore start */
+    default: 
+      botch(); // isSettingBaseFormat() should have caught this.
+    /* v8 ignore end */
+  }
 }
 
 export function duplicateSetting(setting:Setting):Setting {
@@ -24,7 +29,10 @@ export function duplicateSetting(setting:Setting):Setting {
     case SettingType.BOOLEAN_TOGGLE: return duplicateBooleanToggleSetting(setting);
     case SettingType.NUMERIC: return duplicateNumericSetting(setting);
     case SettingType.TEXT: return duplicateTextSetting(setting);
-    default: botch();
+    /* v8 ignore start */
+    default: 
+      botch();
+    /* v8 ignore end */
   }
 }
 

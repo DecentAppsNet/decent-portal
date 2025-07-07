@@ -1,4 +1,4 @@
-import { isTextSettingFormat } from "../TextSetting";
+import TextSetting, { isTextSettingFormat, duplicateTextSetting } from "../TextSetting";
 import { describe, expect, it } from "vitest";
 import SettingType from "../SettingType";
 
@@ -57,6 +57,27 @@ describe('TextSetting', () => {
         placeholder: 'Enter text here'
       };
       expect(isTextSettingFormat(setting)).toBe(true);
+    });
+  });
+
+  describe('duplicateTextSetting()', () => {
+    it('returns a new text setting with the same properties', () => {
+      const original:TextSetting = {
+        id: 'test',
+        type: SettingType.TEXT,
+        label: 'Test Text Setting',
+        value: 'some text',
+        placeholder: 'Enter text here'
+      };
+      const duplicate = duplicateTextSetting(original);
+
+      expect(duplicate).toEqual({
+        id: 'test',
+        type: SettingType.TEXT,
+        label: 'Test Text Setting',
+        value: 'some text',
+        placeholder: 'Enter text here'
+      });
     });
   });
 });

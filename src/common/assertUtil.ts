@@ -1,4 +1,4 @@
-/* istanbul ignore file */
+/* v8 ignore start */
 
 /* Keep the terser config of pure functions within vite.config.ts including
    any exports from this module so that they strip out of bundles. */
@@ -21,3 +21,5 @@ export function assert(condition:boolean, message:string = 'Assertion failed.'):
 export function botch(message:string = 'Botched!'):never {
   throw new Error(message);
 }
+
+/* v8 ignore end */

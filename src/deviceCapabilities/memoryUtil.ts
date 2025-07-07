@@ -29,8 +29,10 @@ export function formatByteCount(byteCount:number):string {
   else return `${byteCountToGb(byteCount)} GB`;
 }
 
+/* v8 ignore start */
 export function estimateSystemMemory():number {
   if ('deviceMemory' in navigator) return (navigator as any).deviceMemory;
   if ('memory' in performance) return Math.floor((performance as any).memory.jsHeapSizeLimit / GIGABYTE);
   return 0;
 }
+/* v8 ignore end */

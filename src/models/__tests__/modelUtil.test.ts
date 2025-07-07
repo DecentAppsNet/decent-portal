@@ -18,11 +18,11 @@ vi.mock('@/persistence/deviceHistory', async () => ({
 
 vi.mock("@/developer/devEnvUtil", async () => ({
   ...(await vi.importActual("@/developer/devEnvUtil")),
-  isServingLocally: vi.fn(() => false)
+  isServingLocally: vi.fn(() => theIsServingLocally)
 }));
 
 // Import section after mocking.
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import { prebuiltAppConfig } from "@mlc-ai/web-llm";
 
 import ModelDeviceHistory from "../types/ModelDeviceHistory";
@@ -35,10 +35,12 @@ import { clearCachedModelInfo, predictModelDeviceProblems, updateModelDeviceLoad
 // These constants based on model settings found at https://github.com/mlc-ai/web-llm/blob/main/src/config.ts
 const MODEL_ID = "Llama-3.1-8B-Instruct-q4f32_1-MLC-1k";
 const MODEL_VRAM_REQUIRED_MB = 5295.7; // 5.3 GB
+const ALT_MODEL_ID = 'Llama-3-70B-Instruct-q3f16_1-MLC';
 
 let theSystemMemory = 0;
 let theAvailableStorage = 0;
 let theModelDeviceHistory:ModelDeviceHistory = _createModelDeviceHistory();
+let theIsServingLocally = false;
 
 function _createModelDeviceHistory():ModelDeviceHistory {
   return {
@@ -58,12 +60,10 @@ function _findProblemFromResult(result:any, type:ModelDeviceProblemType):ModelDe
 }
 
 describe('modelUtil', () => {
-  describe("WebLLM dependency", () => {
-    it('matches assumptions of tests', () => {
-      const model = prebuiltAppConfig.model_list.find(m => m.model_id === MODEL_ID);
-      expect(model).toBeDefined();
-      expect(model?.vram_required_MB).toBe(MODEL_VRAM_REQUIRED_MB);
-    });
+  it('WebLLM matches assumptions of tests', () => {
+    const model = prebuiltAppConfig.model_list.find(m => m.model_id === MODEL_ID);
+    expect(model).toBeDefined();
+    expect(model?.vram_required_MB).toBe(MODEL_VRAM_REQUIRED_MB);
   });
 
   describe("predictModelDeviceProblems()", () => {
@@ -81,6 +81,25 @@ describe('modelUtil', () => {
       theAvailableStorage = 100;
       const result = await predictModelDeviceProblems(MODEL_ID);
       expect(result).toBeNull();
+    });
+
+    it('throws if model ID is not found', async () => {
+      const badModelId = "not-a-real-model";
+      await expect(predictModelDeviceProblems(badModelId)).rejects.toThrow(`Model ${badModelId} not found or has no required memory.`);
+    });
+
+    it('can make predictions for same model', async () => {
+      const result = await predictModelDeviceProblems(MODEL_ID);
+      expect(result).toBeNull();
+      const result2 = await predictModelDeviceProblems(MODEL_ID);
+      expect(result2).toBeNull();
+    });
+
+    it('can make predictions for different models', async () => {
+      const result = await predictModelDeviceProblems(MODEL_ID);
+      expect(result).toBeNull();
+      const altResult = await predictModelDeviceProblems(ALT_MODEL_ID);
+      expect(altResult).not.toBeNull();
     });
 
     describe('when past load history has failures', () => {
@@ -274,6 +293,24 @@ describe('modelUtil', () => {
         expect(uniqueProblemDescriptions.includes(problem.description)).toBeFalsy();
         uniqueProblemDescriptions.push(problem.description);
       });
+    });
+
+    describe('when serving locally', () => {
+      beforeEach(() => {
+        theIsServingLocally = true;
+      });
+
+      it('returns DEVELOPER_MODE', async () => {
+        const result = await predictModelDeviceProblems(MODEL_ID);
+        expect(result).not.toBeNull();
+        const problems:ModelDeviceProblem[] = result as unknown as ModelDeviceProblem[];
+        expect(problems.length).toBe(1);
+        expect(problems[0].type).toBe(ModelDeviceProblemType.DEVELOPER_MODE);
+      });
+    });
+
+    afterAll(() => {
+      theIsServingLocally = false;
     });
   });
 

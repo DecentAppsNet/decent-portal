@@ -1,4 +1,4 @@
-
+/* v8 ignore next */
 export const LAST_VALID_VALUE = 'LAST_VALID_VALUE';
 
 // Because settings always begin in a valid default state, there is no need to delay

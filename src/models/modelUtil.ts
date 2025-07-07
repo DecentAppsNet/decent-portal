@@ -23,6 +23,7 @@ async function _setCurrentModel(modelId:string) {
   if (theCurrentModelInfo?.modelId === modelId) return;
   const history = await getModelDeviceHistory(modelId);
   const requiredMemoryGb = _findModelRequiredMemory(modelId);
+  if (!requiredMemoryGb) throw new Error(`Model ${modelId} not found or has no required memory.`);
   const requiredStorageGb = requiredMemoryGb * WEBLLM_MEMORY_TO_STORAGE_RATIO;
   theCurrentModelInfo = { modelId, history, requiredMemoryGb, requiredStorageGb};
 }

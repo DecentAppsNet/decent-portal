@@ -2,6 +2,7 @@ import Setting from "@/settings/types/Setting";
 import { ValidateSettingCallback } from "@/settings/types/AppSettingsCallbacks";
 import { LAST_VALID_VALUE } from "@/settings/types/ValidationFailure";
 
+let theValidationMessageDelayMs = 3000;
 const theValidationMessageTimers = new Map<string, NodeJS.Timeout>();
 
 function _clearValidationMessageTimer(settingId:string) {
@@ -17,12 +18,16 @@ function _setValidationMessageTimer(settingId:string, setValidationMessage:Funct
   const timer = setTimeout(() => {
     setValidationMessage(null);
     theValidationMessageTimers.delete(settingId);
-  }, 3000);
+  }, theValidationMessageDelayMs);
   theValidationMessageTimers.set(settingId, timer);
 }
 
+export function setClearValidationMessageDelay(delayMs:number) {
+  theValidationMessageDelayMs = delayMs;
+}
+
 export function handleValidation(nextSetting:Setting, lastValidValue:any, setValidationMessage:Function, onValidateSetting?:ValidateSettingCallback):boolean {
-  if (!onValidateSetting) return true;
+  if (!onValidateSetting) { setValidationMessage(null); return true; }
   const validationFailure = onValidateSetting(nextSetting);
   if (validationFailure) {
     _clearValidationMessageTimer(nextSetting.id);

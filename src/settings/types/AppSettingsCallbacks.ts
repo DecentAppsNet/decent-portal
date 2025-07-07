@@ -12,7 +12,7 @@ import ValidationFailure from "@/settings/types/ValidationFailure";
       an array of overriding settings. 
 */
 
-export type LoadAppSettingsCallback = (appSettings:Setting[]|null) => null | Setting[];
+export type LoadAppSettingsCallback = (appSettings:Setting[]|null) => null|Setting[];
 
 /*  Called when the user initiates a save of the settings. App code may use this to
     provide its own saving mechanism for settings.
@@ -22,7 +22,7 @@ export type LoadAppSettingsCallback = (appSettings:Setting[]|null) => null | Set
       null to not save settings, (implies app code will handle the save itself),
       an array of settings to save, which may or may not be the same as appSettings.
 */
-export type SaveAppSettingsCallback = (appSettings:Setting[]) => null | Setting[];
+export type SaveAppSettingsCallback = (appSettings:Setting[]) => null|Setting[];
 
 /* Called after each change user makes to a setting. 
 

@@ -1,10 +1,11 @@
 import { assert, assertNonNullable } from "@/common/assertUtil";
+import { now } from "@/common/dateUtil";
 import { deleteLogTextForDay, findAllLoggedDays, getDayPath, getLogTextForDay, setLogTextForDay } from "@/persistence/localLog";
 import { LOGGING_SETTING_ENABLE, LOGGING_SETTING_MAX_RETENTION_DAYS } from "@/settings/categories/loggingSettingsUtil";
 import { settingValue } from "@/settings/settingsUtil";
 import Setting from "@/settings/types/Setting";
 
-const WRITE_DELAY_MS = 3000;
+const DEFAULT_WRITE_DELAY_MS = 3000;
 const DAY = 24 * 60 * 60 * 1000;
 const UNINITIALIZED_DAY_PATH = 'UNINITIALIZED_DAY_PATH';
 
@@ -15,6 +16,7 @@ let thePreviousDayEntryCount:number = 0; // When >0, it means the buffer has ent
 let theDebouncedWriteTimer:number|null = null;
 let theAppName:string = '';
 let theLoggingSettings:Setting[]|null = null;
+let theWriteDelayMs:number = DEFAULT_WRITE_DELAY_MS;
 
 function _getMaxRetentionDays():number {
   return settingValue(LOGGING_SETTING_MAX_RETENTION_DAYS, theLoggingSettings) as number || 0;
@@ -25,15 +27,17 @@ function _isLoggingEnabled():boolean {
 }
 
 function _isRunningOnDedicatedWorker():boolean {
+  /* v8 ignore next */
   return typeof self !== 'undefined' && self.constructor.name === 'DedicatedWorkerGlobalScope';
 }
 
 async function _writeDayBuffer() {
-  if (!theDayBuffer.length) return; // Nothing to write.
+  /* v8 ignore next */
+  assert(theDayBuffer.length > 0);
   try {
     assertNonNullable(theDayBufferPath);
     if (thePreviousDayEntryCount) {
-      assert(thePreviousDayPath === UNINITIALIZED_DAY_PATH);
+      assert(thePreviousDayPath !== UNINITIALIZED_DAY_PATH);
       const previousDayBuffer = theDayBuffer.slice(0, thePreviousDayEntryCount);
       theDayBuffer = theDayBuffer.slice(thePreviousDayEntryCount); // Keep only the current day's entries in the buffer.
       await setLogTextForDay(thePreviousDayPath, previousDayBuffer.join('\n'));
@@ -41,9 +45,11 @@ async function _writeDayBuffer() {
       thePreviousDayPath = UNINITIALIZED_DAY_PATH;
     }
     await setLogTextForDay(theDayBufferPath, theDayBuffer.join('\n'));
+  /* v8 ignore start */
   } catch (error) {
     console.error('Unexpected error writing log buffer:', error);
   }
+  /* v8 ignore end */
 }
 
 async function _initDayBuffer(dayPath:string) {
@@ -53,6 +59,7 @@ async function _initDayBuffer(dayPath:string) {
 }
 
 export async function log(text:string, flushImmediately:boolean = false) {
+  /* v8 ignore if */
   if (_isRunningOnDedicatedWorker()) throw Error('Unexpected - log() should not be called in worker thread.');
   if (!theLoggingSettings) {
     console.warn('Logging settings have not been applied yet. Failed to log:', text);
@@ -60,7 +67,7 @@ export async function log(text:string, flushImmediately:boolean = false) {
   }
   if (!_isLoggingEnabled()) return; // Logging is disabled, so do nothing.
 
-  const timestamp = Date.now();
+  const timestamp = now();
   const dayPath = getDayPath(timestamp);
   if (theDayBufferPath === UNINITIALIZED_DAY_PATH) await _initDayBuffer(dayPath);
 
@@ -82,12 +89,12 @@ export async function log(text:string, flushImmediately:boolean = false) {
   theDebouncedWriteTimer = setTimeout(async () => {
     await _writeDayBuffer();
     theDebouncedWriteTimer = null;
-  }, WRITE_DELAY_MS) as unknown as number;
+  }, theWriteDelayMs) as unknown as number;
 }
 
 // If today is 4/2/25 and you pass 1, returns "2025-04-01".
 function _getPastDayPath(daysAgo:number):string {
-  return getDayPath(Date.now() - daysAgo * DAY);
+  return getDayPath(now() - daysAgo * DAY);
 }
 
 // Intentionally not exported as a roadbump against sending logs to a service.
@@ -128,7 +135,7 @@ export async function deleteOldLogMessages() {
   // Because the keys are stored as `/log/YYYY-MM-DD.txt`, they are chronologically sortable.
   // Find each key that came before the threshold key and delete it.
   const dayPaths = await findAllLoggedDays();
-  const dayPathsToDelete = dayPaths.filter(dayPath => dayPath < oldestDayPath);
+  const dayPathsToDelete = dayPaths.filter(dayPath => dayPath <= oldestDayPath);
   const promises = dayPathsToDelete.map(deleteLogTextForDay);
   return await Promise.all(promises);
 }
@@ -150,4 +157,8 @@ export function setAppName(appName:string) {
     theAppName = appName;
     log(`*** ${appName} session ***`);
   }
+}
+
+export function setWriteDelay(delayMs:number) {
+  theWriteDelayMs = delayMs;
 }

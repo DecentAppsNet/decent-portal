@@ -15,11 +15,13 @@ export default defineConfig({
     }
   },
   test: {
+    include: ["src/**/*.test.ts"],
     coverage: {
       provider: 'v8',
-      include: ['src/**/*.{ts,tsx}'],
+      include: ['src/**/*.ts'],
       exclude: [
-        '**/*.tsx',                        
+        'src/persistence/**',
+        '**/interactions/**',
         ...coverageConfigDefaults.exclude,
       ],
     },

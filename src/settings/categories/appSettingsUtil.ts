@@ -4,9 +4,10 @@ import { mergeSettingsIntoCategory } from "./settingCategoryUtil";
 import { LoadAppSettingsCallback } from "../types/AppSettingsCallbacks";
 import SettingCategory from "../types/SettingCategory";
 import AppSettingCategory from "../types/AppSettingCategory";
+import { windowLocationPathname } from "@/common/windowUtil";
 
 export function getAppCategoryId() {
-  const parts = window.location.pathname.split('/').filter(part => part.length);
+  const parts = windowLocationPathname().split('/').filter(part => part.length);
   if (!parts.length) return `app-root`;
   return `app-${parts[0]}`;
 }
