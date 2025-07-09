@@ -48,7 +48,7 @@ function _describeBadLoadSuccessHistory(loadSuccessRate:MovingAverageData):strin
     return `This model loaded successfully ${successCount} in ${attemptCount} tries.`;
 }
 
-const SLOW_INPUT_TOKEN_THRESHOLD = 4, SLOW_OUTPUT_TOKEN_THRESHOLD = 2;
+const SLOW_INPUT_TOKEN_THRESHOLD = 6, SLOW_OUTPUT_TOKEN_THRESHOLD = 3;
 function _areTokenRatesSlow(inputTokensPerSec:MovingAverageData, outputTokensPerSec:MovingAverageData):boolean {
   return ((inputTokensPerSec.series.length > 0 && inputTokensPerSec.lastAverage < SLOW_INPUT_TOKEN_THRESHOLD) ||
     (outputTokensPerSec.series.length > 0 && outputTokensPerSec.lastAverage < SLOW_OUTPUT_TOKEN_THRESHOLD));
@@ -87,20 +87,33 @@ export async function clearCachedModelInfo() {
   theCurrentModelInfo = null;
 }
 
-export async function updateModelDevicePerformanceHistory(modelId:string, inputTokensPerSec:number, outputTokensPerSec:number) {
+function _calculatePerformance(requestTimestamp:number, firstResponseTimestamp:number, lastResponseTimestamp:number, 
+    inputCharCount:number, outputCharCount:number):{inputCharsPerSec:number, outputCharsPerSec:number} {
+  const inputTime = firstResponseTimestamp - requestTimestamp;
+  const inputCharsPerSec = inputTime === 0 ? 0 : inputCharCount / inputTime * 1000;
+  const outputTime = lastResponseTimestamp - firstResponseTimestamp;
+  const outputCharsPerSec = outputTime === 0 ? 0 : outputCharCount / outputTime * 1000;
+  return {inputCharsPerSec, outputCharsPerSec};
+}
+
+export async function updateModelDevicePerformanceHistory(modelId:string, requestTime:number, firstResponseTime:number, lastResponseTime:number, 
+    inputCharCount:number, outputCharCount:number) {
+  const {inputCharsPerSec, outputCharsPerSec} = _calculatePerformance(requestTime, firstResponseTime, lastResponseTime, inputCharCount, outputCharCount);
+  if (inputCharsPerSec === 0 && outputCharsPerSec === 0) return; // I don't trust these values, so don't update history.
   await _setCurrentModel(modelId);
   assertNonNullable(theCurrentModelInfo);
-  updateMovingAverage(inputTokensPerSec, theCurrentModelInfo.history.inputTokensPerSec);
-  updateMovingAverage(outputTokensPerSec, theCurrentModelInfo.history.outputTokensPerSec);
+  if (inputCharsPerSec) updateMovingAverage(inputCharsPerSec, theCurrentModelInfo.history.inputCharsPerSec);
+  if (outputCharsPerSec) updateMovingAverage(outputCharsPerSec, theCurrentModelInfo.history.outputCharsPerSec);
   await _saveCurrentModel();
 }
 
-export async function updateModelDeviceLoadHistory(modelId:string, successfulLoad:boolean, loadTime:number) {
+export async function updateModelDeviceLoadHistory(modelId:string, successfulLoad:boolean, loadTime:number = 0) {
   await _setCurrentModel(modelId);
   assertNonNullable(theCurrentModelInfo);
   const loadSuccessRate = successfulLoad ? 1 : 0;
   updateMovingAverage(loadSuccessRate, theCurrentModelInfo.history.loadSuccessRate);
-  updateMovingAverage(loadTime, theCurrentModelInfo.history.loadTime);
+  if (successfulLoad) updateMovingAverage(loadTime, theCurrentModelInfo.history.loadTime);
+  await _saveCurrentModel();
 }
 
 export async function predictModelDeviceProblems(modelId:string):Promise<ModelDeviceProblem[]|null> {
@@ -117,11 +130,11 @@ export async function predictModelDeviceProblems(modelId:string):Promise<ModelDe
     });
   }
 
-  const { inputTokensPerSec, outputTokensPerSec } = theCurrentModelInfo.history;
-  if (_areTokenRatesSlow(inputTokensPerSec, outputTokensPerSec)) {
+  const { inputCharsPerSec, outputCharsPerSec } = theCurrentModelInfo.history;
+  if (_areTokenRatesSlow(inputCharsPerSec, outputCharsPerSec)) {
     problems.push({
       type: ModelDeviceProblemType.BAD_PERFORMANCE_HISTORY,
-      description: _describeBadPerformanceHistory(inputTokensPerSec, outputTokensPerSec)
+      description: _describeBadPerformanceHistory(inputCharsPerSec, outputCharsPerSec)
     })
   }
 

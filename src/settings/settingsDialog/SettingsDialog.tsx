@@ -18,6 +18,7 @@ import { saveAndClose } from "./interactions/saving";
 
 type Props = {
   isOpen:boolean,
+  appName:string, // Only used if the URL of the hosted web page does not include an app name (e.g. local development from /). Otherwise, app name is retrieved from the URL.
   defaultAppSettings:AppSettingCategory,
   onClose:(appSettings:Setting[]) => void,
   onLoadAppSettings?:LoadAppSettingsCallback,
@@ -25,7 +26,7 @@ type Props = {
   onValidateSetting?:ValidateSettingCallback
 }
 
-function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings, onSaveAppSettings, onValidateSetting}: Props) {
+function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings, onSaveAppSettings, onValidateSetting, appName}: Props) {
   const initialAppSettingsRef = useRef<AppSettingCategory>(defaultAppSettings);
   const [categories, setCategories] = useState<SettingCategory[]>([]);
   const [selectedCategoryNo, setSelectedCategoryNo] = useState(0);
@@ -46,7 +47,7 @@ function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings,
 
   useEffect(() => {
     if (!isOpen) return;
-    init(initialAppSettingsRef.current, onLoadAppSettings).then(setCategories);
+    init(initialAppSettingsRef.current, appName, onLoadAppSettings).then(setCategories);
   }, [isOpen, onLoadAppSettings]);
 
   if (!isOpen || !categories.length) return null;
@@ -63,7 +64,7 @@ function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings,
       )) }
       <DialogFooter>
         <DialogButton text="Cancel" onClick={onClose} />
-        <DialogButton text="Save and Exit" onClick={() => saveAndClose(categories, onClose, onSaveAppSettings)} isPrimary disabled={isSaveDisabled}/>
+        <DialogButton text="Save and Exit" onClick={() => saveAndClose(categories, appName, onClose, onSaveAppSettings)} isPrimary disabled={isSaveDisabled}/>
       </DialogFooter>
     </ModalDialog>
   );

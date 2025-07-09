@@ -46,8 +46,8 @@ function _createModelDeviceHistory():ModelDeviceHistory {
   return {
     loadSuccessRate: createMovingAverage(LOAD_SUCCESS_RATE_SAMPLE_COUNT),
     loadTime: createMovingAverage(LOAD_TIME_SAMPLE_COUNT),
-    inputTokensPerSec: createMovingAverage(INPUT_TOKENS_SAMPLE_COUNT),
-    outputTokensPerSec: createMovingAverage(OUTPUT_TOKENS_SAMPLE_COUNT),
+    inputCharsPerSec: createMovingAverage(INPUT_TOKENS_SAMPLE_COUNT),
+    outputCharsPerSec: createMovingAverage(OUTPUT_TOKENS_SAMPLE_COUNT),
   };
 };
 
@@ -61,9 +61,11 @@ function _findProblemFromResult(result:any, type:ModelDeviceProblemType):ModelDe
 
 describe('modelUtil', () => {
   it('WebLLM matches assumptions of tests', () => {
-    const model = prebuiltAppConfig.model_list.find(m => m.model_id === MODEL_ID);
+    let model = prebuiltAppConfig.model_list.find(m => m.model_id === MODEL_ID);
     expect(model).toBeDefined();
     expect(model?.vram_required_MB).toBe(MODEL_VRAM_REQUIRED_MB);
+    model = prebuiltAppConfig.model_list.find(m => m.model_id === ALT_MODEL_ID);
+    expect(model).toBeDefined();
   });
 
   describe("predictModelDeviceProblems()", () => {
@@ -163,7 +165,7 @@ describe('modelUtil', () => {
       let uniqueProblemDescriptions:string[] = [];
 
       it('returns BAD_PERFORMANCE_HISTORY', async () => {
-        updateMovingAverage(0.1, theModelDeviceHistory.inputTokensPerSec);
+        updateMovingAverage(0.1, theModelDeviceHistory.inputCharsPerSec);
         const result = await predictModelDeviceProblems(MODEL_ID);
         expect(result).not.toBeNull();
         const problems:ModelDeviceProblem[] = result as unknown as ModelDeviceProblem[];
@@ -172,7 +174,7 @@ describe('modelUtil', () => {
       });
 
       it('returns a unique description for input rate being slow', async () => {
-        updateMovingAverage(0.1, theModelDeviceHistory.inputTokensPerSec);
+        updateMovingAverage(0.1, theModelDeviceHistory.inputCharsPerSec);
         const result = await predictModelDeviceProblems(MODEL_ID);
         const problem = _findProblemFromResult(result, ModelDeviceProblemType.BAD_PERFORMANCE_HISTORY);
         expect(uniqueProblemDescriptions.includes(problem.description)).toBeFalsy();
@@ -180,7 +182,7 @@ describe('modelUtil', () => {
       });
 
       it('returns a unique description for output rate being slow', async () => {
-        updateMovingAverage(0.1, theModelDeviceHistory.outputTokensPerSec);
+        updateMovingAverage(0.1, theModelDeviceHistory.outputCharsPerSec);
         const result = await predictModelDeviceProblems(MODEL_ID);
         const problem = _findProblemFromResult(result, ModelDeviceProblemType.BAD_PERFORMANCE_HISTORY);
         expect(uniqueProblemDescriptions.includes(problem.description)).toBeFalsy();
@@ -188,8 +190,8 @@ describe('modelUtil', () => {
       });
 
       it('returns a unique description for input and output rate being slow', async () => {
-        updateMovingAverage(0.1, theModelDeviceHistory.inputTokensPerSec);
-        updateMovingAverage(0.1, theModelDeviceHistory.outputTokensPerSec);
+        updateMovingAverage(0.1, theModelDeviceHistory.inputCharsPerSec);
+        updateMovingAverage(0.1, theModelDeviceHistory.outputCharsPerSec);
         const result = await predictModelDeviceProblems(MODEL_ID);
         const problem = _findProblemFromResult(result, ModelDeviceProblemType.BAD_PERFORMANCE_HISTORY);
         expect(uniqueProblemDescriptions.includes(problem.description)).toBeFalsy();
@@ -320,10 +322,28 @@ describe('modelUtil', () => {
       theModelDeviceHistory = _createModelDeviceHistory();
     });
 
-    it('updates the input and output token rates', async () => {
-      await updateModelDevicePerformanceHistory(MODEL_ID, 10, 20);
-      expect(theModelDeviceHistory.inputTokensPerSec.lastAverage).toBe(10);
-      expect(theModelDeviceHistory.outputTokensPerSec.lastAverage).toBe(20);
+    it('updates the input and output rates', async () => {
+      await updateModelDevicePerformanceHistory(MODEL_ID, 0, 1000, 2000, 100, 200);
+      expect(theModelDeviceHistory.inputCharsPerSec.lastAverage).toBe(100);
+      expect(theModelDeviceHistory.outputCharsPerSec.lastAverage).toBe(200);
+    });
+
+    it('skips update of input rate for 0 time window on input', async () => {
+      await updateModelDevicePerformanceHistory(MODEL_ID, 0, 0, 1000, 100, 200);
+      expect(theModelDeviceHistory.inputCharsPerSec.lastAverage).toBe(0);
+      expect(theModelDeviceHistory.outputCharsPerSec.lastAverage).toBe(200);
+    });
+
+    it('skips update of output rate for 0 time window on output', async () => {
+      await updateModelDevicePerformanceHistory(MODEL_ID, 0, 1000, 1000, 100, 200);
+      expect(theModelDeviceHistory.inputCharsPerSec.lastAverage).toBe(100);
+      expect(theModelDeviceHistory.outputCharsPerSec.lastAverage).toBe(0);
+    });
+
+    it('skips update of both rates for 0 time window on input and output', async () => {
+      await updateModelDevicePerformanceHistory(MODEL_ID, 0, 0, 0, 100, 200);
+      expect(theModelDeviceHistory.inputCharsPerSec.lastAverage).toBe(0);
+      expect(theModelDeviceHistory.outputCharsPerSec.lastAverage).toBe(0);
     });
   });
 
@@ -339,10 +359,15 @@ describe('modelUtil', () => {
       expect(theModelDeviceHistory.loadTime.lastAverage).toBe(100);
     });
 
-    it('updates the load success rate and load time for a failed load', async () => {
-      await updateModelDeviceLoadHistory(MODEL_ID, false, 200);
+    it('updates the load success rate for a failed load', async () => {
+      await updateModelDeviceLoadHistory(MODEL_ID, false);
       expect(theModelDeviceHistory.loadSuccessRate.lastAverage).toBe(0);
-      expect(theModelDeviceHistory.loadTime.lastAverage).toBe(200);
+      expect(theModelDeviceHistory.loadTime.lastAverage).toBe(0);
+    });
+
+    it('ignores load time for a failed load', async () => {
+      await updateModelDeviceLoadHistory(MODEL_ID, false, 200);
+      expect(theModelDeviceHistory.loadTime.lastAverage).toBe(0);
     });
   });
 });

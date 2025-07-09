@@ -1,4 +1,4 @@
-import { botch } from "@/common/assertUtil";
+import { botch } from "../../common/assertUtil";
 import BooleanToggleSetting, { duplicateBooleanToggleSetting, isBooleanToggleSettingFormat } from "./BooleanToggleSetting";
 import NumericSetting, { duplicateNumericSetting, isNumericSettingFormat } from "./NumericSetting";
 import { isSettingBaseFormat } from "./SettingBase";

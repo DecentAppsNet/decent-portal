@@ -1,5 +1,5 @@
-import Heading, { HEADING_TYPE } from "@/settings/types/Heading";
-import Setting from "@/settings/types/Setting";
+import Heading, { HEADING_TYPE } from "../../settings/types/Heading";
+import Setting from "../../settings/types/Setting";
 import SettingType from "./SettingType";
 
 type SettingRow = (Heading|Setting) & {

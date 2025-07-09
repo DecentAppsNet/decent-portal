@@ -47,7 +47,7 @@ describe('settingsUtil_store', () => {
 
     it('loads categories', async () => {
       const defaultAppCategory = { description:'d', settings:[] };
-      const categories = await loadSettingCategories(defaultAppCategory);
+      const categories = await loadSettingCategories(defaultAppCategory, 'root');
       expect(categories.length > 0);
     });
   });
@@ -58,7 +58,7 @@ describe('settingsUtil_store', () => {
       const llmCategory = { id:LLM_CATEGORY_ID, name:'llm', description:'d', settings:[] };
       const loggingCategory = { id:LOGGING_CATEGORY_ID, name:'logging', description:'d', settings:[] };
       const categories:SettingCategory[] = [appCategory, llmCategory, loggingCategory];
-      await saveSettingCategories(categories);
+      await saveSettingCategories(categories, 'root');
       expect(theFakeStore[_idToKey(appCategory.id)]).toBeDefined();
       expect(theFakeStore[_idToKey(llmCategory.id)]).toBeDefined();
       expect(theFakeStore[_idToKey(loggingCategory.id)]).toBeDefined();
@@ -70,7 +70,7 @@ describe('settingsUtil_store', () => {
         settings:[{ id:'s1', type:SettingType.TEXT, label:'Test Setting', value:'test' }] 
       };
       const categories:SettingCategory[] = [appCategory];
-      await saveSettingCategories(categories);
+      await saveSettingCategories(categories, 'root');
       const savedSettings = JSON.parse(theFakeStore[_idToKey(appCategory.id)]);
       expect(savedSettings.length).toBe(1);
       expect(savedSettings[0].id).toBe('s1');
@@ -83,7 +83,7 @@ describe('settingsUtil_store', () => {
         settings:[{ id:'s1', type:SettingType.TEXT, label:'Test Setting', value:'test' }] 
       };
       const categories:SettingCategory[] = [appCategory];
-      await saveSettingCategories(categories, () => null);
+      await saveSettingCategories(categories, 'root', () => null);
       const savedSettings = JSON.parse(theFakeStore[_idToKey(appCategory.id)]);
       expect(savedSettings.length).toBe(1);
       expect(savedSettings[0].id).toBe('s1');
@@ -96,7 +96,7 @@ describe('settingsUtil_store', () => {
         settings:[{ id:'s1', type:SettingType.TEXT, label:'Test Setting', value:'test' }] 
       };
       const categories:SettingCategory[] = [appCategory];
-      await saveSettingCategories(categories, (settings) => {
+      await saveSettingCategories(categories, 'root', (settings) => {
         settings[0].value = 'modified';
         return settings;
       });
@@ -114,7 +114,7 @@ describe('settingsUtil_store', () => {
       const categories:SettingCategory[] = [appCategory];
       const _onSaveAppSettings = () => { throw new Error('Test error'); };
       await expect(
-        saveSettingCategories(categories, _onSaveAppSettings)
+        saveSettingCategories(categories, 'root', _onSaveAppSettings)
       ).rejects.toThrow('Test error');
     });
 
@@ -128,7 +128,7 @@ describe('settingsUtil_store', () => {
       const originalError = console.error; // Suppress console.error for this test so output is clean.
       console.error = vi.fn();
       await expect(
-        saveSettingCategories(categories)
+        saveSettingCategories(categories, 'root')
       ).rejects.toThrow();
       console.error = originalError;
       theFakeStoreSetTextShouldThrow = false;

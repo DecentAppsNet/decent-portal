@@ -8,8 +8,8 @@ describe("ModelDeviceHistory", () => {
       const validHistory = {
         loadSuccessRate: { series: [0.9, 0.95], seriesMax: 10, lastAverage: 0.925 },
         loadTime: { series: [100, 200], seriesMax: 10, lastAverage: 150 },
-        inputTokensPerSec: { series: [1000, 1500], seriesMax: 10, lastAverage: 1250 },
-        outputTokensPerSec: { series: [800, 1200], seriesMax: 10, lastAverage: 1000 }
+        inputCharsPerSec: { series: [1000, 1500], seriesMax: 10, lastAverage: 1250 },
+        outputCharsPerSec: { series: [800, 1200], seriesMax: 10, lastAverage: 1000 }
       };
       expect(isModelDeviceHistoryFormat(validHistory)).toBe(true);
     });
@@ -18,7 +18,7 @@ describe("ModelDeviceHistory", () => {
       const invalidHistory = {
         loadSuccessRate: { series: [0.9, "invalid"], seriesMax: 10, lastAverage: 0.925 },
         loadTime: { series: [100, 200], seriesMax: 10, lastAverage: 150 },
-        inputTokensPerSec: { series: [1000, 1500], seriesMax: 10, lastAverage: 1250 }
+        inputCharsPerSec: { series: [1000, 1500], seriesMax: 10, lastAverage: 1250 }
       };
       expect(isModelDeviceHistoryFormat(invalidHistory)).toBe(false);
     });

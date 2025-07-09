@@ -1,3 +1,4 @@
+// Avoid use of "@" alias in type file imports so that types exported from the library don't include them.
 export const HEADING_TYPE = 'HEADING';
 
 // Headings don't hold settings, and aren't (de)serialized to storage. They are used for visually grouping in UI.

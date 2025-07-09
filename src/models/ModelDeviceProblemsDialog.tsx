@@ -16,7 +16,7 @@ type Props = {
   modelId:string,
   onConfirm:() => void,
   onCancel:() => void,
-  problems:ModelDeviceProblem[]
+  problems:ModelDeviceProblem[]|null
 }
 
 function _renderProblemIcon(problemType:ModelDeviceProblemType) {
@@ -30,8 +30,8 @@ function _renderProblemIcon(problemType:ModelDeviceProblemType) {
   }
 }
 
-function ModelDeviceProblemDialog({isOpen, problems, onConfirm, onCancel, modelId}:Props) {
-  if (!isOpen) return null;
+function ModelDeviceProblemsDialog({isOpen, problems, onConfirm, onCancel, modelId}:Props) {
+  if (!isOpen || !problems) return null;
 
   assert(problems.length >= 1);
 
@@ -62,4 +62,4 @@ function ModelDeviceProblemDialog({isOpen, problems, onConfirm, onCancel, modelI
   );
 }
 
-export default ModelDeviceProblemDialog;
+export default ModelDeviceProblemsDialog;

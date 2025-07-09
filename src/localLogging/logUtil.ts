@@ -1,9 +1,9 @@
-import { assert, assertNonNullable } from "@/common/assertUtil";
-import { now } from "@/common/dateUtil";
-import { deleteLogTextForDay, findAllLoggedDays, getDayPath, getLogTextForDay, setLogTextForDay } from "@/persistence/localLog";
-import { LOGGING_SETTING_ENABLE, LOGGING_SETTING_MAX_RETENTION_DAYS } from "@/settings/categories/loggingSettingsUtil";
-import { settingValue } from "@/settings/settingsUtil";
-import Setting from "@/settings/types/Setting";
+import { assert, assertNonNullable } from "../common/assertUtil";
+import { now } from "../common/dateUtil";
+import { deleteLogTextForDay, findAllLoggedDays, getDayPath, getLogTextForDay, setLogTextForDay } from "../persistence/localLog";
+import { LOGGING_SETTING_ENABLE, LOGGING_SETTING_MAX_RETENTION_DAYS } from "../settings/categories/loggingSettingsUtil";
+import { settingValue } from "../settings/settingsUtil";
+import Setting from "../settings/types/Setting";
 
 const DEFAULT_WRITE_DELAY_MS = 3000;
 const DAY = 24 * 60 * 60 * 1000;

@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState, JSX } from 'react';
 
 import styles from './DecentBar.module.css';
-import ContentButton from '@/components/contentButton/ContentButton';
+import ContentButton from '../contentButton/ContentButton';
 import { getBaseUrl } from './decentBarUtil';
 import DecentBarCssOverrides from './types/DecentBarCssOverrides';
 import Link from './types/Link';
 import SettingsIcon from './icons/cog.svg';
-import SettingsDialog from '@/settings/settingsDialog/SettingsDialog';
-import { LoadAppSettingsCallback, SaveAppSettingsCallback, ValidateSettingCallback } from '@/settings/types/AppSettingsCallbacks';
-import AppSettingCategory from '@/settings/types/AppSettingCategory';
+import SettingsDialog from '../../settings/settingsDialog/SettingsDialog';
+import { LoadAppSettingsCallback, SaveAppSettingsCallback, ValidateSettingCallback } from '../../settings/types/AppSettingsCallbacks';
+import AppSettingCategory from '../../settings/types/AppSettingCategory';
 import ToastPane from '../toasts/ToastPane';
 import { init } from './interactions/initialization';
 
@@ -149,6 +149,7 @@ function DecentBar({
         </div>
       </div>
       <SettingsDialog 
+        appName={appName}
         isOpen={modalDialogName === SettingsDialog.name} 
         defaultAppSettings={initialAppSettings.current} 
         onClose={() => setModalDialogName(null)} 

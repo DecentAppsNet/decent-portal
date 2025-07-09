@@ -1,0 +1,12 @@
+.problemList {
+  margin: 2vh;
+  font-size: 1vh;;
+}
+
+.problemList li {
+  list-style: none;
+}
+
+.icon {
+  width: 2vh;
+}

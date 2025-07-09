@@ -44,15 +44,15 @@ export function isSettingsFormat(maybeSettings:any):boolean {
   return settingsArray.every(setting => isSettingFormat(setting));
 }
 
-export async function loadSettingCategories(defaultAppCategory:AppSettingCategory, onLoadAppSettings?:LoadAppSettingsCallback):Promise<SettingCategory[]> {
-  const appCategory = await loadAppSettingCategory(defaultAppCategory, onLoadAppSettings);
+export async function loadSettingCategories(defaultAppCategory:AppSettingCategory, appName:string, onLoadAppSettings?:LoadAppSettingsCallback):Promise<SettingCategory[]> {
+  const appCategory = await loadAppSettingCategory(defaultAppCategory, appName, onLoadAppSettings);
   const llmCategory = await loadLlmSettingCategory();
   const loggingCategory = await loadLoggingSettingCategory();
   return [appCategory, llmCategory, loggingCategory];
 }
 
-export async function saveSettingCategories(categories:SettingCategory[], onSaveAppSettings?:SaveAppSettingsCallback):Promise<void> {
-  const appCategoryId = getAppCategoryId();
+export async function saveSettingCategories(categories:SettingCategory[], appName:string, onSaveAppSettings?:SaveAppSettingsCallback):Promise<void> {
+  const appCategoryId = getAppCategoryId(appName);
   const promises = categories.map(category => {
     let settings = category.settings;
     switch (category.id) {

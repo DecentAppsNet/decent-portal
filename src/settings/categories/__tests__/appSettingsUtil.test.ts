@@ -37,29 +37,29 @@ describe("appSettingsUtil", () => {
   });
 
   describe("getAppCategoryId()", () => {
-    it("returns 'app-root' for root pathname", () => {
+    it("returns ID based on appName for root pathname", () => {
       theWindowLocationPathname = "/";
-      expect(getAppCategoryId()).toBe("app-root");
+      expect(getAppCategoryId('root')).toBe("app-root");
     });
 
-    it("returns 'app-root' for empty pathname", () => {
+    it("returns ID based on appName for empty pathname", () => {
       theWindowLocationPathname = "";
-      expect(getAppCategoryId()).toBe("app-root");
+      expect(getAppCategoryId('root')).toBe("app-root");
     });
 
     it("returns correct name for a path with an app part in it", () => {
       theWindowLocationPathname = "/dog";
-      expect(getAppCategoryId()).toBe("app-dog");
+      expect(getAppCategoryId('wrong')).toBe("app-dog");
     });
 
     it("returns correct name for app part followed by trailing /'", () => {
       theWindowLocationPathname = "/dog/";
-      expect(getAppCategoryId()).toBe("app-dog");
+      expect(getAppCategoryId('wrong')).toBe("app-dog");
     });
 
     it("returns correct name for app part followed by more stuff'", () => {
       theWindowLocationPathname = "/dog/index.html";
-      expect(getAppCategoryId()).toBe("app-dog");
+      expect(getAppCategoryId('wrong')).toBe("app-dog");
     });
   });
 
@@ -72,7 +72,7 @@ describe("appSettingsUtil", () => {
           { id:"s2", type:SettingType.BOOLEAN_TOGGLE, label:"l", value: true }
         ]
       }
-      const category = await loadAppSettingCategory(defaultAppSettings);
+      const category = await loadAppSettingCategory(defaultAppSettings, 'root');
       expect(category.name).toBe("This App");
       expect(category.id).toBe("app-root");
       expect(category.description).toBe("default");
@@ -93,7 +93,7 @@ describe("appSettingsUtil", () => {
           { id:"s2", type:SettingType.BOOLEAN_TOGGLE, label:"l", value:false }
         ]
       }
-      const category = await loadAppSettingCategory(defaultAppSettings);
+      const category = await loadAppSettingCategory(defaultAppSettings, 'root');
       expect(category.name).toBe("This App");
       expect(category.id).toBe("app-root");
       expect(category.description).toBe("default");
@@ -113,7 +113,7 @@ describe("appSettingsUtil", () => {
           { id:"s2", type:SettingType.BOOLEAN_TOGGLE, label:"l", value:false }
         ]
       };
-      const category = await loadAppSettingCategory(defaultAppSettings, _onLoadAppSettings);
+      const category = await loadAppSettingCategory(defaultAppSettings, 'root', _onLoadAppSettings);
       expect(category.settings.length).toBe(2);
       expect(category.settings[0].id).toBe("s1");
       expect(category.settings[1].id).toBe("s2");
@@ -133,7 +133,7 @@ describe("appSettingsUtil", () => {
           { id:"s2", type:SettingType.BOOLEAN_TOGGLE, label:"l", value:false }
         ]
       };
-      const category = await loadAppSettingCategory(defaultAppSettings, _onLoadAppSettings);
+      const category = await loadAppSettingCategory(defaultAppSettings, 'root', _onLoadAppSettings);
       expect(category.settings.length).toBe(3);
       expect(category.settings[0].id).toBe("s1");
       expect(category.settings[1].id).toBe("s2");

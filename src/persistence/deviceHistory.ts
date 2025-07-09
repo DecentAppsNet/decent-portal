@@ -15,8 +15,8 @@ function _createModelDeviceHistory():ModelDeviceHistory {
   return { 
     loadSuccessRate: createMovingAverage(LOAD_SUCCESS_RATE_SAMPLE_COUNT),
     loadTime: createMovingAverage(LOAD_TIME_SAMPLE_COUNT),
-    inputTokensPerSec: createMovingAverage(INPUT_TOKENS_SAMPLE_COUNT),
-    outputTokensPerSec: createMovingAverage(OUTPUT_TOKENS_SAMPLE_COUNT)
+    inputCharsPerSec: createMovingAverage(INPUT_TOKENS_SAMPLE_COUNT),
+    outputCharsPerSec: createMovingAverage(OUTPUT_TOKENS_SAMPLE_COUNT)
   };
 }
 
