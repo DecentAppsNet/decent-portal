@@ -1,5 +1,4 @@
 import { estimateSystemMemory, mbToGb } from "@/deviceCapabilities/memoryUtil";
-import { prebuiltAppConfig } from "@mlc-ai/web-llm";
 import ModelInfo from "./types/ModelInfo";
 import { updateMovingAverage } from "@/common/movingAverageUtil";
 import ModelDeviceProblem from "./types/ModelDeviceProblem";
@@ -9,13 +8,14 @@ import { getModelDeviceHistory, setModelDeviceHistory } from "@/persistence/devi
 import { assertNonNullable } from "@/common/assertUtil";
 import MovingAverageData from "@/common/types/MovingAverageData";
 import { isServingLocally } from "@/developer/devEnvUtil";
+import theModelList from './modelList.json';
 
 let theCurrentModelInfo:ModelInfo|null = null;
 
 function _findModelRequiredMemory(modelId:string):number {
-  const model = prebuiltAppConfig.model_list.find(m => m.model_id === modelId);
-  if (!model || !model.vram_required_MB) return 0;
-  return mbToGb(model.vram_required_MB);
+  const model = (theModelList as any)[modelId];
+  if (!model || !model.vramRequiredMb) return 0;
+  return mbToGb(model.vramRequiredMb);
 }
 
 const WEBLLM_MEMORY_TO_STORAGE_RATIO = 3; // Could improve this number with testing.

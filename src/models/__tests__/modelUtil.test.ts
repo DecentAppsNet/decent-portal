@@ -23,7 +23,6 @@ vi.mock("@/developer/devEnvUtil", async () => ({
 
 // Import section after mocking.
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
-import { prebuiltAppConfig } from "@mlc-ai/web-llm";
 
 import ModelDeviceHistory from "../types/ModelDeviceHistory";
 import { createMovingAverage, updateMovingAverage } from "@/common/movingAverageUtil";
@@ -34,7 +33,6 @@ import { clearCachedModelInfo, predictModelDeviceProblems, updateModelDeviceLoad
 
 // These constants based on model settings found at https://github.com/mlc-ai/web-llm/blob/main/src/config.ts
 const MODEL_ID = "Llama-3.1-8B-Instruct-q4f32_1-MLC-1k";
-const MODEL_VRAM_REQUIRED_MB = 5295.7; // 5.3 GB
 const ALT_MODEL_ID = 'Llama-3-70B-Instruct-q3f16_1-MLC';
 
 let theSystemMemory = 0;
@@ -60,14 +58,6 @@ function _findProblemFromResult(result:any, type:ModelDeviceProblemType):ModelDe
 }
 
 describe('modelUtil', () => {
-  it('WebLLM matches assumptions of tests', () => {
-    let model = prebuiltAppConfig.model_list.find(m => m.model_id === MODEL_ID);
-    expect(model).toBeDefined();
-    expect(model?.vram_required_MB).toBe(MODEL_VRAM_REQUIRED_MB);
-    model = prebuiltAppConfig.model_list.find(m => m.model_id === ALT_MODEL_ID);
-    expect(model).toBeDefined();
-  });
-
   describe("predictModelDeviceProblems()", () => {
     let uniqueProblemDescriptions:string[] = [];
 
