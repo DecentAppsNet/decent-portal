@@ -1,4 +1,3 @@
-import { estimateSystemMemory, mbToGb } from "@/deviceCapabilities/memoryUtil";
 import ModelInfo from "./types/ModelInfo";
 import { updateMovingAverage } from "@/common/movingAverageUtil";
 import ModelDeviceProblem from "./types/ModelDeviceProblem";
@@ -9,6 +8,8 @@ import { assertNonNullable } from "@/common/assertUtil";
 import MovingAverageData from "@/common/types/MovingAverageData";
 import { isServingLocally } from "@/developer/devEnvUtil";
 import theModelList from './modelList.json';
+import { getMaxLlmSize } from "@/settings/categories/llmSettingsUtil";
+import { mbToGb } from "@/deviceCapabilities/memoryUtil";
 
 let theCurrentModelInfo:ModelInfo|null = null;
 
@@ -73,8 +74,8 @@ function _describeInsufficientStorage(wasSuccessfulBefore:boolean, requiredStora
   return `You probably need an additional ${neededStorage} GB of free storage space on this device to load this model safely.`;
 }
 
-function _describeInsufficientMemory(wasSuccessfulBefore:boolean, requiredMemoryGb:number, availableMemory:number):string {
-  if (availableMemory == 0) {
+function _describeInsufficientMemory(wasSuccessfulBefore:boolean, requiredMemoryGb:number, maxLlmSize:number):string {
+  if (maxLlmSize == 0) {
     if (wasSuccessfulBefore) return `Couldn't determine how much memory is available on the device. But you did have previous success loading this model.`;
     return `Couldn't determine how much memory is available on the device. There might not be enough to load the model.`;
   }
@@ -138,12 +139,12 @@ export async function predictModelDeviceProblems(modelId:string):Promise<ModelDe
     })
   }
 
-  const availableMemory = estimateSystemMemory();
+  const maxLlmSize = await getMaxLlmSize();
   const wasSuccessfulBefore = loadSuccessRate.series.some(s => s > 0);
-  if (theCurrentModelInfo.requiredMemoryGb > availableMemory) {
+  if (theCurrentModelInfo.requiredMemoryGb > maxLlmSize) {
     problems.push({
       type: ModelDeviceProblemType.INSUFFICIENT_VRAM, 
-      description: _describeInsufficientMemory(wasSuccessfulBefore, theCurrentModelInfo.requiredStorageGb, availableMemory)
+      description: _describeInsufficientMemory(wasSuccessfulBefore, theCurrentModelInfo.requiredMemoryGb, maxLlmSize)
     });
   }
 

@@ -50,3 +50,13 @@ export async function applyLlmSettings(_settings:Setting[]):Promise<void> {
   // For now, it simply returns without doing anything.
   return Promise.resolve();
 }
+
+/* v8 ignore start */
+export async function getMaxLlmSize():Promise<number> {
+  const settings = await getCategorySettings(LLM_CATEGORY_ID);
+  if (!settings) return _getDefaultMaxLlmSize();
+  const maxSizeSetting = settings.find(s => s.id === LLM_SETTING_MAX_SIZE);
+  if (!maxSizeSetting) return _getDefaultMaxLlmSize();
+  return maxSizeSetting.value as number;
+}
+/* v8 ignore end */

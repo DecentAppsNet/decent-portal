@@ -21,6 +21,11 @@ vi.mock("@/developer/devEnvUtil", async () => ({
   isServingLocally: vi.fn(() => theIsServingLocally)
 }));
 
+vi.mock("@/settings/categories/llmSettingsUtil", async () => ({
+  ...(await vi.importActual("@/settings/categories/llmSettingsUtil")),
+  getMaxLlmSize: vi.fn(() => Promise.resolve(theSystemMemory))
+}));
+
 // Import section after mocking.
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 
