@@ -9,6 +9,7 @@
     "paths": {
       "@/*": ["./*"]
     },
+    "types": ["@webgpu/types"],
     "declaration": true,
 
     "moduleResolution": "node",
@@ -22,7 +23,8 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

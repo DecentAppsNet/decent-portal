@@ -12,6 +12,7 @@
 
 /* For a document, form, or interactive area that allows changes to data. */
 @value background-content: #ffffff;
+@value background-alt-content: #f9f9f8;
 @value border-content: #808080;
 
 /* For a navigation or control area. */

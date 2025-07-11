@@ -1,0 +1,36 @@
+@value colors: "@/components/commonPalette.module.css";
+@value button, background-alt-content, button-highlight from colors;
+
+.container {
+  height: 50vh;
+  border-color: button-highlight;
+  border-style: solid;
+  border-width: 0.2vh;
+  border-image: linear-gradient(to bottom, button-highlight, #fdebd7) 1;
+  background-color: background-alt-content;
+}
+
+.container > p {
+  font-size: 1.4vh;
+  padding-top: 1vh;
+  padding-left: .5vh;
+  padding-right: .5vh;
+  margin-bottom: 1vh;
+  background: linear-gradient(
+    to bottom,
+    button-highlight 0%,
+    background-alt-content 80%,
+    background-alt-content 100%
+  );
+}
+
+.setterList { 
+  position: relative;
+  overflow-y: auto;
+  height: 46vh;
+  box-sizing: border-box;
+}
+
+.setterList:hover {
+  scrollbar-color: button white;
+}

@@ -1,0 +1,30 @@
+@value colors: "@/components/commonPalette.module.css";
+@value background-alt-content from colors;
+
+.problemList {
+  margin: 2vh;
+}
+
+.problemList li {
+  display: flex;
+  align-items: center;
+  font-size: 1vh;
+  height: 2vh;
+  margin-right: 0.5vh;
+}
+
+.icon {
+  width: 2vh;
+}
+
+.continueText {
+  margin-bottom: 2vh;
+}
+
+.modelIdText {
+    font-size: 1.5vh;
+    background-color: background-alt-content;
+    border-radius: .5vh;
+    padding: .2vh;
+    white-space: nowrap;
+} 

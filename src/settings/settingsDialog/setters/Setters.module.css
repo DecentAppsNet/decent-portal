@@ -1,0 +1,70 @@
+@value colors: "@/components/commonPalette.module.css";
+@value background-alt-content, button-highlight from colors;
+
+.container {
+  font-size: 1vh;
+  display: flex;
+  margin-bottom: .5vh;
+}
+
+.label {
+  margin-left: 1vh;
+  min-width: 15vw;
+  display: inline-block;
+}
+
+.labelDisabled {
+  composes: label;
+  color: gray;
+}
+
+.heading {
+  padding-left: .5vh;
+  margin-bottom: 1vh;
+  background: linear-gradient(
+    to bottom,
+    #ffe6c1 0%,
+    background-alt-content 100%
+  );
+}
+
+.headingDisabled {
+  composes: heading;
+  color: gray;
+  background: linear-gradient(
+    to bottom,
+    #e1e1e1 0%,
+    background-alt-content 100%
+  );
+}
+
+.heading > p {
+  font-size: 1.1vh;
+  font-weight: bold;
+  padding-top: .5vh;
+  padding-bottom: 0;
+}
+
+.heading > hr {
+  margin: 0;
+  border: none;
+  height: 0.1vh;
+  background-color: button-highlight;
+}
+
+.validationMessage {
+  margin-left: 1vh;
+  padding-top: .1vh;
+  font-size: .8vh;
+  color: red;
+}
+
+.validationMessage::before {
+  content: "⬅ ";
+}
+
+.container input:focus, button:focus {
+  outline: none;
+  border-color: button-highlight;
+  box-shadow: 0 0 0.5vh button-highlight;
+}
