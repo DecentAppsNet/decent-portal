@@ -1,12 +1,14 @@
-import { getCategorySettings } from "@/persistence/settings";
+import { getCategorySettings, setCategorySettings } from "@/persistence/settings";
 import SettingCategory from "../types/SettingCategory";
 import SettingType from "../types/SettingType";
 import { mergeSettingsIntoCategory } from "./settingCategoryUtil";
 import Setting from "../types/Setting";
 import { estimateSystemMemory, GIGABYTE } from "@/deviceCapabilities/memoryUtil";
+import { assertNonNullable } from "@/common/assertUtil";
 
 export const LLM_CATEGORY_ID = "llm";
 export const LLM_SETTING_MAX_SIZE = "llmMaxSize";
+export const LLM_SETTING_AUTO_INC_MAX_SIZE = "autoIncMaxSize";
 
 /*
   The system memory has nothing to do with GPU memory... sorta. Due to web API limitations, I can't directly query GPU memory available.
@@ -25,23 +27,24 @@ function _getDefaultMaxLlmSize():number {
   return Math.max(AT_LEAST_THIS_MUCH, availableMemoryGB);
 }
 
-export function getLlmDefaultSettings():SettingCategory {
+function _getLlmDefaultSettings():SettingCategory {
   return {
     name: "LLM",
     id: LLM_CATEGORY_ID,
     description: "Settings for loading and using LLMs (Large Language Models) on this device.",
     settings: [
-      {type: SettingType.NUMERIC, id:LLM_SETTING_MAX_SIZE, label:"Max LLM size (GB)", value:_getDefaultMaxLlmSize(), minValue:1, maxValue:256}
+      {type: SettingType.NUMERIC, id:LLM_SETTING_MAX_SIZE, label:"Max LLM size (GB)", value:_getDefaultMaxLlmSize(), minValue:1, maxValue:256},
+      {type: SettingType.BOOLEAN_TOGGLE, id:LLM_SETTING_AUTO_INC_MAX_SIZE, label:"Auto-increase max LLM", value:true}
     ],
     headings: [
-      {precedeSettingId:'llmMaxSize', description:`The max LLM size prevents attempting to load models that are unlikely to succeed and could cause system instability.`}
+      {precedeSettingId:'llmMaxSize', description:`The max LLM size prevents attempting to load models that are unlikely to succeed and could cause system instability. The auto-increment option will increase the max LLM size if evidence is found during loading to support a larger size.`}
     ]
   };
 }
 
 export async function loadLlmSettingCategory():Promise<SettingCategory> {
-  const settings = await getCategorySettings("llm");
-  return mergeSettingsIntoCategory(getLlmDefaultSettings(), settings);
+  const settings = await getCategorySettings(LLM_CATEGORY_ID);
+  return mergeSettingsIntoCategory(_getLlmDefaultSettings(), settings);
 }
 
 export async function applyLlmSettings(_settings:Setting[]):Promise<void> {
@@ -51,7 +54,22 @@ export async function applyLlmSettings(_settings:Setting[]):Promise<void> {
   return Promise.resolve();
 }
 
-/* v8 ignore start */
+export async function incrementMaxLlmSizeAfterSuccessfulLoad(successfulLoadSize:number) {
+  const llmCategory = await loadLlmSettingCategory();
+  const { settings } = llmCategory;
+  const isAutoIncrementing = settings.find(s => s.id === LLM_SETTING_AUTO_INC_MAX_SIZE)?.value as boolean;
+  if (!isAutoIncrementing) return;
+  const maxLlmSizeSetting = settings.find(s => s.id === LLM_SETTING_MAX_SIZE);
+  /* v8 ignore next */
+  assertNonNullable(maxLlmSizeSetting); // The default settings at least should always have this setting.
+  const currentMaxSize = maxLlmSizeSetting.value as number;
+  if (currentMaxSize >= successfulLoadSize) return;
+  const nextMaxSize = successfulLoadSize < 1 ? 1 : Math.floor(successfulLoadSize); // Round down to nearest GB.
+  maxLlmSizeSetting.value = nextMaxSize;
+  await applyLlmSettings(settings);
+  setCategorySettings(LLM_CATEGORY_ID, settings);
+}
+
 export async function getMaxLlmSize():Promise<number> {
   const settings = await getCategorySettings(LLM_CATEGORY_ID);
   if (!settings) return _getDefaultMaxLlmSize();
@@ -59,4 +77,3 @@ export async function getMaxLlmSize():Promise<number> {
   if (!maxSizeSetting) return _getDefaultMaxLlmSize();
   return maxSizeSetting.value as number;
 }
-/* v8 ignore end */

@@ -1,4 +1,6 @@
+/* v8 ignore start */
 export function hasWebGpuSupport():boolean {
+  if (!globalThis.navigator || !globalThis.navigator.gpu) return false; // Test runner.
   return !!globalThis.navigator.gpu;
 }
 
@@ -7,6 +9,7 @@ export function hasWasmSupport():boolean {
 }
 
 export function hasStorageSupport():boolean {
-  /* v8 ignore next */
+  if (!globalThis.navigator || !globalThis.navigator.gpu) return false; // Test runner.
   return (!!globalThis.navigator.storage && !!globalThis.navigator.storage.estimate);
 }
+/* v8 ignore end */
