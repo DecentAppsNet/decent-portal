@@ -64,7 +64,7 @@ export async function incrementMaxLlmSizeAfterSuccessfulLoad(successfulLoadSize:
   assertNonNullable(maxLlmSizeSetting); // The default settings at least should always have this setting.
   const currentMaxSize = maxLlmSizeSetting.value as number;
   if (currentMaxSize >= successfulLoadSize) return;
-  const nextMaxSize = successfulLoadSize < 1 ? 1 : Math.floor(successfulLoadSize); // Round down to nearest GB.
+  const nextMaxSize = Math.ceil(successfulLoadSize); // Round up to nearest GB because setting is whole numbers only. Rounding down would cause this model to be treated pessimistically when loading later.
   maxLlmSizeSetting.value = nextMaxSize;
   await applyLlmSettings(settings);
   setCategorySettings(LLM_CATEGORY_ID, settings);

@@ -15,6 +15,7 @@
 
 .icon {
   width: 2vh;
+  margin-right: 0.5vh;
 }
 
 .continueText {
@@ -22,9 +23,9 @@
 }
 
 .modelIdText {
-    font-size: 1.5vh;
-    background-color: background-alt-content;
-    border-radius: .5vh;
-    padding: .2vh;
-    white-space: nowrap;
+  font-size: 1.5vh;
+  background-color: background-alt-content;
+  border-radius: .5vh;
+  padding: .2vh;
+  white-space: nowrap;
 } 
