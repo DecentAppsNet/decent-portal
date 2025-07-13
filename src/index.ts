@@ -39,7 +39,6 @@ export { infoToast, errorToast, importantToast } from './components/toasts/toast
 
 // Updating model device history and predicting problems
 export { predictModelDeviceProblems, updateModelDevicePerformanceHistory, updateModelDeviceLoadHistory } from './models/modelUtil';
-export { incrementMaxLlmSizeAfterSuccessfulLoad } from './settings/categories/llmSettingsUtil';
 
 // Model Device Problems dialog
 export { default as ModelDeviceProblemsDialog } from './models/ModelDeviceProblemsDialog';

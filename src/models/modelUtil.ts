@@ -8,7 +8,7 @@ import { assertNonNullable } from "@/common/assertUtil";
 import MovingAverageData from "@/common/types/MovingAverageData";
 import { isServingLocally } from "@/developer/devEnvUtil";
 import theModelList from './modelList.json';
-import { getMaxLlmSize } from "@/settings/categories/llmSettingsUtil";
+import { getMaxLlmSize, incrementMaxLlmSizeAfterSuccessfulLoad } from "@/settings/categories/llmSettingsUtil";
 import { mbToGb } from "@/deviceCapabilities/memoryUtil";
 
 let theCurrentModelInfo:ModelInfo|null = null;
@@ -113,7 +113,10 @@ export async function updateModelDeviceLoadHistory(modelId:string, successfulLoa
   assertNonNullable(theCurrentModelInfo);
   const loadSuccessRate = successfulLoad ? 1 : 0;
   updateMovingAverage(loadSuccessRate, theCurrentModelInfo.history.loadSuccessRate);
-  if (successfulLoad) updateMovingAverage(loadTime, theCurrentModelInfo.history.loadTime);
+  if (successfulLoad) {
+    updateMovingAverage(loadTime, theCurrentModelInfo.history.loadTime);
+    await incrementMaxLlmSizeAfterSuccessfulLoad(theCurrentModelInfo.requiredMemoryGb);
+  }
   await _saveCurrentModel();
 }
 

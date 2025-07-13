@@ -23,7 +23,8 @@ vi.mock("@/developer/devEnvUtil", async () => ({
 
 vi.mock("@/settings/categories/llmSettingsUtil", async () => ({
   ...(await vi.importActual("@/settings/categories/llmSettingsUtil")),
-  getMaxLlmSize: vi.fn(() => Promise.resolve(theSystemMemory))
+  getMaxLlmSize: vi.fn(() => Promise.resolve(theSystemMemory)),
+  incrementMaxLlmSizeAfterSuccessfulLoad: vi.fn(() => Promise.resolve())
 }));
 
 // Import section after mocking.
@@ -34,7 +35,7 @@ import { createMovingAverage, updateMovingAverage } from "@/common/movingAverage
 import ModelDeviceProblem from "../types/ModelDeviceProblem";
 import ModelDeviceProblemType from "../types/ModelDeviceProblemType";
 import { INPUT_TOKENS_SAMPLE_COUNT, LOAD_SUCCESS_RATE_SAMPLE_COUNT, LOAD_TIME_SAMPLE_COUNT, OUTPUT_TOKENS_SAMPLE_COUNT } from "@/persistence/deviceHistory";
-import { clearCachedModelInfo, predictModelDeviceProblems, updateModelDeviceLoadHistory, updateModelDevicePerformanceHistory } from "../modelUtil"; 
+import { clearCachedModelInfo, predictModelDeviceProblems, updateModelDeviceLoadHistory, updateModelDevicePerformanceHistory } from "../modelUtil";
 
 // These constants based on model settings found at https://github.com/mlc-ai/web-llm/blob/main/src/config.ts
 const MODEL_ID = "Llama-3.1-8B-Instruct-q4f32_1-MLC-1k";
