@@ -19,9 +19,12 @@ sl-react-ui-*.tgz
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# O/S and 3rd-party noise
+.DS_Store
+*.icloud
