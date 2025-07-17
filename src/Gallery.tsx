@@ -16,6 +16,7 @@ import ModelDeviceProblemType from './models/types/ModelDeviceProblemType';
 import ModelDeviceProblemDialog from './models/ModelDeviceProblemsDialog';
 import ContentButton from './components/contentButton/ContentButton';
 import { predictModelDeviceProblems } from './models/modelUtil';
+import LlmSpeed from './components/llmSpeed/LlmSpeed';
 
 function testMinimal() {
   return <>
@@ -260,6 +261,13 @@ function _testModelDeviceProblemsRealData(modalDialogName:string|null,
   </>;
 }
 
+function _testLlmSpeed() {
+  return <>
+    <h3>LLM Speed</h3>
+    <LlmSpeed inputCharsPerSec={40} outputCharsPerSec={10} />
+  </>;
+}
+
 function Gallery() {
   const [modalDialogName, setModalDialogName] = useState<string|null>(null);
   const [modelDeviceProblems, setModelDeviceProblems] = useState<ModelDeviceProblem[]|null>(null);
@@ -285,6 +293,9 @@ function Gallery() {
       { _testModelDeviceProblems(modalDialogName, setModalDialogName) }
       { _testModelDeviceProblemsDevMode(modalDialogName, setModalDialogName) }
       { _testModelDeviceProblemsRealData(modalDialogName, modelDeviceProblems, setModelDeviceProblems, setModalDialogName) }
+
+      <h2>LLM Speed Tests</h2>
+      { _testLlmSpeed() }
     </div>
   );
 }

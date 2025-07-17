@@ -1,0 +1,43 @@
+.container {
+  display: inline-flex;
+}
+
+.speedBox {
+  border: 1px solid black;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  font-size: 1vh;
+  color: black;
+  padding-left: .5vh;
+  padding-right: .5vh;
+}
+
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  z-index: -1;
+}
+
+.overTextBar {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.inputSpeedBox {
+  composes: speedBox;
+  background-color: rgb(230, 180, 137);
+  border-right: 0;
+}
+
+.outputSpeedBox {
+  composes: speedBox;
+  background-color: rgb(253, 194, 141);
+}
