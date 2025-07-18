@@ -6,10 +6,15 @@ import SettingCategory from "../types/SettingCategory";
 import AppSettingCategory from "../types/AppSettingCategory";
 import { windowLocationPathname } from "../../common/windowUtil";
 
+// Without the app name appended, this category ID can only be used for operations that need to do 
+// something specifying the app category, but not a specific app. For example, saving settings to persistent 
+// storage needs the app name appended, but opening the dialog with app settings category selected does not.
+export const APP_CATEGORY_ID = 'app-';
+
 export function getAppCategoryId(appName:string):string {
   const parts = windowLocationPathname().split('/').filter(part => part.length);
-  if (!parts.length) return `app-${appName}`;
-  return `app-${parts[0]}`;
+  if (!parts.length) return `${APP_CATEGORY_ID}${appName}`;
+  return `${APP_CATEGORY_ID}${parts[0]}`;
 }
 
 function _appSettingCategoryToSettingCategory(appCategory:AppSettingCategory, appName:string):SettingCategory {

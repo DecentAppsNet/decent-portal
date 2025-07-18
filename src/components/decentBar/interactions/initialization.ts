@@ -1,6 +1,7 @@
 import { applyLoggingSettings, setAppName } from "@/localLogging/logUtil";
 import { getLoggingSettings } from "@/settings/categories/loggingSettingsUtil";
 import { isServingFromEnabledDomain } from "../decentBarUtil";
+import { initOpening } from "./opening";
 
 function _findFavIconLink() {
   return document.querySelector<HTMLLinkElement>('link[rel~="icon"][sizes="192x192"]') ||
@@ -12,8 +13,9 @@ export type InitResults = {
   isDecentBarEnabled:boolean
 }
 
-export async function init(appName:string, enabledDomains:string[]) {
+export async function init(appName:string, enabledDomains:string[], setModalDialogName:Function):Promise<InitResults> {
   try {
+    initOpening(setModalDialogName);
     const loggingSettings = await getLoggingSettings();
     await applyLoggingSettings(loggingSettings);
     setAppName(appName);

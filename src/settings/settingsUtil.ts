@@ -9,6 +9,7 @@ import Setting, { isSettingFormat } from "./types/Setting";
 import { setCategorySettings } from "@/persistence/settings";
 import AppSettingCategory from "./types/AppSettingCategory";
 import { applyLoggingSettings } from "@/localLogging/logUtil";
+import { openSettingsDialog } from "@/components/decentBar/interactions/opening";
 
 export function collateSettingRows(category:SettingCategory):SettingRow[] {
   const rows:SettingRow[] = [];
@@ -85,4 +86,8 @@ export function settingValue(settingId:string, settings?:Setting[]|null):number|
   if (!settings) return null;
   const setting = settings.find(s => s.id === settingId);
   return !setting ? null : setting.value;
+}
+
+export function openSettings(categoryId?:string) {
+  openSettingsDialog(categoryId);
 }

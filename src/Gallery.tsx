@@ -17,6 +17,10 @@ import ModelDeviceProblemDialog from './models/ModelDeviceProblemsDialog';
 import ContentButton from './components/contentButton/ContentButton';
 import { predictModelDeviceProblems } from './models/modelUtil';
 import LlmSpeed from './components/llmSpeed/LlmSpeed';
+import { openSettings } from './settings/settingsUtil';
+import { APP_CATEGORY_ID } from './settings/categories/appSettingsUtil';
+import { LOGGING_CATEGORY_ID } from './settings/categories/loggingSettingsUtil';
+import { LLM_CATEGORY_ID } from './settings/categories/llmSettingsUtil';
 
 function testMinimal() {
   return <>
@@ -192,10 +196,14 @@ function testAppSettings() {
       defaultAppSettings={defaultAppSettings}
       onValidateSetting={_onValidateSetting}
     />
+    <p>Use gear in DecentBar or...</p>
+    <ContentButton text='App Settings' onClick={() => openSettings(APP_CATEGORY_ID)} />
+    <ContentButton text='Logging Settings' onClick={() => openSettings(LOGGING_CATEGORY_ID)} />
+    <ContentButton text='LLM Settings' onClick={() => openSettings(LLM_CATEGORY_ID)} />
   </>;
 }
 
-function _testModelDeviceProblems(modalDialogName:string|null, setModalDialogName:Function) {
+function testModelDeviceProblems(modalDialogName:string|null, setModalDialogName:Function) {
   const DIALOG_NAME = ModelDeviceProblemDialog.name;
   const problems:ModelDeviceProblem[] = [
     {type:ModelDeviceProblemType.BAD_LOAD_SUCCESS_HISTORY, description:`The model didn't load before.`},
@@ -217,7 +225,7 @@ function _testModelDeviceProblems(modalDialogName:string|null, setModalDialogNam
   </>;
 }
 
-function _testModelDeviceProblemsDevMode(modalDialogName:string|null, setModalDialogName:Function) {
+function testModelDeviceProblemsDevMode(modalDialogName:string|null, setModalDialogName:Function) {
   const DIALOG_NAME = `${ModelDeviceProblemDialog.name}2`;
   const problems:ModelDeviceProblem[] = [
     {type:ModelDeviceProblemType.DEVELOPER_MODE, description:`We aren't actually loading a model. This is just a UI test!`}
@@ -235,7 +243,7 @@ function _testModelDeviceProblemsDevMode(modalDialogName:string|null, setModalDi
   </>;
 }
 
-function _testModelDeviceProblemsRealData(modalDialogName:string|null, 
+function testModelDeviceProblemsRealData(modalDialogName:string|null, 
     modelDeviceProblems:ModelDeviceProblem[]|null, setModelDeviceProblems:Function, setModalDialogName:Function) {
   const DIALOG_NAME = `${ModelDeviceProblemDialog.name}3`;
   const MODEL_ID = "Llama-3-70B-Instruct-q3f16_1-MLC"; // A larger model more likely to have problems.
@@ -261,7 +269,7 @@ function _testModelDeviceProblemsRealData(modalDialogName:string|null,
   </>;
 }
 
-function _testLlmSpeed() {
+function _testLlmSpeed() { // TODO delete this after its viewable in settings.
   return <>
     <h3>LLM Speed</h3>
     <LlmSpeed inputCharsPerSec={40} outputCharsPerSec={10} />
@@ -290,9 +298,9 @@ function Gallery() {
       { testAppSettings() }
 
       <h2>Model Device Problems Tests</h2>
-      { _testModelDeviceProblems(modalDialogName, setModalDialogName) }
-      { _testModelDeviceProblemsDevMode(modalDialogName, setModalDialogName) }
-      { _testModelDeviceProblemsRealData(modalDialogName, modelDeviceProblems, setModelDeviceProblems, setModalDialogName) }
+      { testModelDeviceProblems(modalDialogName, setModalDialogName) }
+      { testModelDeviceProblemsDevMode(modalDialogName, setModalDialogName) }
+      { testModelDeviceProblemsRealData(modalDialogName, modelDeviceProblems, setModelDeviceProblems, setModalDialogName) }
 
       <h2>LLM Speed Tests</h2>
       { _testLlmSpeed() }
