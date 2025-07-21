@@ -1,14 +1,17 @@
+import SupportedModelSetting, { duplicateSupportedModelSetting } from "./SupportedModelSetting";
 import { botch } from "../../common/assertUtil";
 import BooleanToggleSetting, { duplicateBooleanToggleSetting, isBooleanToggleSettingFormat } from "./BooleanToggleSetting";
 import NumericSetting, { duplicateNumericSetting, isNumericSettingFormat } from "./NumericSetting";
 import { isSettingBaseFormat } from "./SettingBase";
 import SettingType from "./SettingType";
 import TextSetting, { duplicateTextSetting, isTextSettingFormat } from "./TextSetting";
+import { isSupportedModelSettingFormat } from "./SupportedModelSetting";
 
 // Don't add any types that aren't intended to persist setting data. Presentation-only types can be added to SettingCategory type instead.
 type Setting = 
   BooleanToggleSetting |
   NumericSetting | 
+  SupportedModelSetting |
   TextSetting;
 
 export function isSettingFormat(maybeSetting:any):boolean {
@@ -17,6 +20,7 @@ export function isSettingFormat(maybeSetting:any):boolean {
     case SettingType.BOOLEAN_TOGGLE: return isBooleanToggleSettingFormat(maybeSetting);
     case SettingType.NUMERIC: return isNumericSettingFormat(maybeSetting);
     case SettingType.TEXT: return isTextSettingFormat(maybeSetting);
+    case SettingType.SUPPORTED_MODEL: return isSupportedModelSettingFormat(maybeSetting);
     /* v8 ignore start */
     default: 
       botch(); // isSettingBaseFormat() should have caught this.
@@ -28,6 +32,7 @@ export function duplicateSetting(setting:Setting):Setting {
   switch (setting.type) {
     case SettingType.BOOLEAN_TOGGLE: return duplicateBooleanToggleSetting(setting);
     case SettingType.NUMERIC: return duplicateNumericSetting(setting);
+    case SettingType.SUPPORTED_MODEL: return duplicateSupportedModelSetting(setting);
     case SettingType.TEXT: return duplicateTextSetting(setting);
     /* v8 ignore start */
     default: 

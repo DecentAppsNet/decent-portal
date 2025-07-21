@@ -12,4 +12,8 @@ export function isSupportedModelFormat(maybeModel:any): boolean {
   return true;
 }
 
+export function duplicateSupportedModel(model:SupportedModel):SupportedModel {
+  return { ...model };
+}
+
 export default SupportedModel;

@@ -21,6 +21,7 @@ import { openSettings } from './settings/settingsUtil';
 import { APP_CATEGORY_ID } from './settings/categories/appSettingsUtil';
 import { LOGGING_CATEGORY_ID } from './settings/categories/loggingSettingsUtil';
 import { LLM_CATEGORY_ID } from './settings/categories/llmSettingsUtil';
+import SupportedModelSetter from './settings/settingsDialog/setters/SupportedModelSetter';
 
 function testMinimal() {
   return <>
@@ -276,6 +277,30 @@ function _testLlmSpeed() { // TODO delete this after its viewable in settings.
   </>;
 }
 
+function _testAdhoc() {
+  return <>
+    <h3>SupportedModelSetter</h3>
+    <SupportedModelSetter
+      setting={{
+        id: 'supported-models',
+        type: SettingType.SUPPORTED_MODEL,
+        label: 'Supported Models',
+        value: 'Llama-3-70B-Instruct-q3f16_1-MLC',
+        models: [
+          { id:'Llama-3-70B-Instruct-q3f16_1-MLC', appBehaviorSummary:'Help us test this.', beta: true },
+          { id:'Llama-3.1-8B-Instruct-q4f16_1-MLC', appBehaviorSummary:'Best option for most.' },
+          { id:'DeepSeek-R1-Distill-Qwen-7B-q4f32_1-MLC', appBehaviorSummary:'Better for math.'}
+        ]
+      }}
+      onChange={() => {}}
+    />
+    <div style={{height: '10vh'}}/>
+    <ContentButton text='Open Settings' onClick={() => openSettings(APP_CATEGORY_ID)} />
+    <ContentButton text='Open Logging Settings' onClick={() => openSettings(LOGGING_CATEGORY_ID)} />
+    <ContentButton text='Open LLM Settings' onClick={() => openSettings(LLM_CATEGORY_ID)} />
+  </>;
+}
+
 function Gallery() {
   const [modalDialogName, setModalDialogName] = useState<string|null>(null);
   const [modelDeviceProblems, setModelDeviceProblems] = useState<ModelDeviceProblem[]|null>(null);
@@ -304,6 +329,9 @@ function Gallery() {
 
       <h2>LLM Speed Tests</h2>
       { _testLlmSpeed() }
+
+      <h2>Adhoc</h2>
+      { _testAdhoc() }
     </div>
   );
 }

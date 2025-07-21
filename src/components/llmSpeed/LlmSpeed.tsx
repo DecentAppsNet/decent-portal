@@ -1,4 +1,4 @@
-import { useMemo, useRef, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 
 import styles from './LlmSpeed.module.css';
 

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 
-import { isSupportedModelFormat } from "../SupportedModel";
+import { duplicateSupportedModel, isSupportedModelFormat } from "../SupportedModel";
 
 describe('SupportedModel', () => {
   describe('isSupportedModelFormat()', () => {
@@ -61,6 +61,19 @@ describe('SupportedModel', () => {
       expect(isSupportedModelFormat('string')).toBe(false);
       expect(isSupportedModelFormat(true)).toBe(false);
       expect(isSupportedModelFormat([])).toBe(false);
+    });
+  });
+
+  describe('duplicateSupportedModel()', () => {
+    it('creates a copy of the model', () => {
+      const originalModel = {
+        id: 'MODEL_ID',
+        appBehaviorSummary: 'I love this model. So good.',
+        beta: true
+      };
+      const duplicatedModel = duplicateSupportedModel(originalModel);
+      expect(duplicatedModel).toEqual(originalModel);
+      expect(duplicatedModel).not.toBe(originalModel);
     });
   });
 });
