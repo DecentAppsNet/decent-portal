@@ -1,4 +1,5 @@
 import { useState, useRef, ReactNode, MouseEvent, useEffect, CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 
 import styles from './Popover.module.css';
 import Direction from './types/Direction';
@@ -45,10 +46,12 @@ function Popover({ children, content, preferredDirection, allowedDirections }: P
     setIsOpen(false);
   };
 
+  const popoverContent = createPortal(<div className={styles.contentBox} style={contentBoxStyle} ref={contentRef} onMouseOut={_onMouseOut}>{content}</div>, document.body);
+
   return (
     <div className={styles.container} ref={containerRef}>
       <div onMouseOver={_onMouseOver} onMouseOut={_onMouseOut}>{children}</div>
-      <div className={styles.contentBox} style={contentBoxStyle} ref={contentRef} onMouseOut={_onMouseOut}>{content}</div>
+      {popoverContent}
     </div>
   );
 }
