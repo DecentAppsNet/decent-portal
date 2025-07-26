@@ -27,7 +27,7 @@ function Popover({ children, content, preferredDirection, allowedDirections }: P
 
   const contentBoxStyle = isOpen ? popoverPositionStyle : POPOVER_HIDDEN_STYLE;
 
-  function _onMouseOver(event: MouseEvent<HTMLDivElement>) {
+  function _onMouseOver(event:MouseEvent<HTMLDivElement>) {
     if (!containerRef.current || !contentRef.current || isOpen) return;
     const relatedTarget = event.relatedTarget as HTMLDivElement | null;
     if (relatedTarget && containerRef.current.contains(relatedTarget)) return; // Ignore if moving within the container
@@ -36,7 +36,7 @@ function Popover({ children, content, preferredDirection, allowedDirections }: P
     setIsOpen(true);
   };
 
-  function _onMouseOut(event: MouseEvent<HTMLDivElement>) {
+  function _onMouseOut(event:MouseEvent<HTMLDivElement>) {
     if (!containerRef.current || !contentRef.current || !isOpen) return;
     const relatedTarget = event.relatedTarget as Node | null;
     const isInsideContent = contentRef.current.contains(relatedTarget);

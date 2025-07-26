@@ -7,6 +7,8 @@
   position: absolute;
   background-color:antiquewhite;
   width: 25vh;
+  left: -10000px; /* Needs to be offscreen to avoid it affecting layout - even with absolute positioning. */
+  top: -10000px;
   border-color: black;
   border-width: 0.2vh;
   border-radius: 1vh;

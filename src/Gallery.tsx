@@ -294,10 +294,7 @@ function _testAdhoc() {
       }}
       onChange={() => {}}
     />
-    <div style={{height: '10vh'}}/>
-    <ContentButton text='Open Settings' onClick={() => openSettings(APP_CATEGORY_ID)} />
-    <ContentButton text='Open Logging Settings' onClick={() => openSettings(LOGGING_CATEGORY_ID)} />
-    <ContentButton text='Open LLM Settings' onClick={() => openSettings(LLM_CATEGORY_ID)} />
+    
   </>;
 }
 
