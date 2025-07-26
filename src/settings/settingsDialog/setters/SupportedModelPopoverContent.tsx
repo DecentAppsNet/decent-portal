@@ -2,7 +2,7 @@ import ModelDeviceProblem from "@/models/types/ModelDeviceProblem"
 import styles from "./SupportedModelPopoverContent.module.css"
 import LlmSpeed from "@/components/llmSpeed/LlmSpeed";
 import ModelDeviceProblemsList from "@/models/ModelDeviceProblemsList";
-import { AUTO_SELECT_ID } from "./SupportedModelSetter";
+import { AUTO_SELECT_ID } from "./interactions/models";
 
 type Props = {
   modelId:string,

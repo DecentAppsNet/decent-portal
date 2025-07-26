@@ -13,6 +13,8 @@ import { HEADING_TYPE } from "@/settings/types/Heading";
 import BooleanToggleSetting from "@/settings/types/BooleanToggleSetting";
 import NumericSetting from "@/settings/types/NumericSetting";
 import TextSetting from "@/settings/types/TextSetting";
+import SupportedModelSetter from "./setters/SupportedModelSetter";
+import SupportedModelSetting from "../types/SupportedModelSetting";
 
 type Props = {
   category:SettingCategory,
@@ -69,6 +71,14 @@ function _renderSetters(category:SettingCategory, validities:boolean[], setValid
         onValidateSetting={onValidateSetting}
         onChange={(nextSetting, isValid) => _onChangeSetting(category, settingNo, nextSetting, isValid, validities, setValidities, onChange)} 
         disabled={disabledSettings.includes(textSetting.id)}
+      />
+
+      case SettingType.SUPPORTED_MODEL:
+          const supportedModelSetting = settingRow as SupportedModelSetting;
+      return <SupportedModelSetter key={settingRow.id} setting={supportedModelSetting}
+        onValidateSetting={onValidateSetting}
+        onChange={(nextSetting, isValid) => _onChangeSetting(category, settingNo, nextSetting, isValid, validities, setValidities, onChange)}
+        disabled={disabledSettings.includes(supportedModelSetting.id)}
       />
 
       case HEADING_TYPE:

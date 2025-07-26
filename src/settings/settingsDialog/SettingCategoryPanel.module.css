@@ -8,6 +8,8 @@
   border-width: 0.2vh;
   border-image: linear-gradient(to bottom, button-highlight, #fdebd7) 1;
   background-color: background-alt-content;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .container > p {
@@ -27,6 +29,7 @@
 .setterList { 
   position: relative;
   overflow-y: auto;
+  overflow-x: hidden;
   height: 46vh;
   box-sizing: border-box;
 }

@@ -22,6 +22,7 @@ import { APP_CATEGORY_ID } from './settings/categories/appSettingsUtil';
 import { LOGGING_CATEGORY_ID } from './settings/categories/loggingSettingsUtil';
 import { LLM_CATEGORY_ID } from './settings/categories/llmSettingsUtil';
 import SupportedModelSetter from './settings/settingsDialog/setters/SupportedModelSetter';
+import { AUTO_SELECT_ID } from './settings/settingsDialog/setters/interactions/models';
 
 function testMinimal() {
   return <>
@@ -291,6 +292,18 @@ function _testAdhoc() {
           { id:'Llama-3.1-8B-Instruct-q4f16_1-MLC', appBehaviorSummary:'Best option for most.' },
           { id:'DeepSeek-R1-Distill-Qwen-7B-q4f32_1-MLC', appBehaviorSummary:'Better for math.'}
         ]
+      }}
+      onChange={() => {}}
+    />
+
+    <h3>SupportedModelSetter - No Models</h3>
+    <SupportedModelSetter
+      setting={{
+        id: 'supported-models',
+        type: SettingType.SUPPORTED_MODEL,
+        label: 'Supported Models',
+        value: AUTO_SELECT_ID,
+        models: []
       }}
       onChange={() => {}}
     />

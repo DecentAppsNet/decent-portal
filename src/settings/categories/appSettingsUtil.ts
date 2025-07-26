@@ -5,11 +5,16 @@ import { LoadAppSettingsCallback } from "../types/AppSettingsCallbacks";
 import SettingCategory from "../types/SettingCategory";
 import AppSettingCategory from "../types/AppSettingCategory";
 import { windowLocationPathname } from "../../common/windowUtil";
+import SettingType from "../types/SettingType";
+import { AUTO_SELECT_ID } from "../settingsDialog/setters/interactions/models";
+import { getAppMetaData } from "@/appMetadata/appMetadataUtil";
+import Heading from "../types/Heading";
 
 // Without the app name appended, this category ID can only be used for operations that need to do 
 // something specifying the app category, but not a specific app. For example, saving settings to persistent 
 // storage needs the app name appended, but opening the dialog with app settings category selected does not.
 export const APP_CATEGORY_ID = 'app-';
+export const APP_SETTINGS_LLM_ID = 'llm';
 
 export function getAppCategoryId(appName:string):string {
   const parts = windowLocationPathname().split('/').filter(part => part.length);
@@ -17,13 +22,38 @@ export function getAppCategoryId(appName:string):string {
   return `${APP_CATEGORY_ID}${parts[0]}`;
 }
 
-function _appSettingCategoryToSettingCategory(appCategory:AppSettingCategory, appName:string):SettingCategory {
+async function _addAppLlmSettingIfMissing(settings:Setting[]) {
+  if (settings.some(s => s.id === APP_SETTINGS_LLM_ID)) return;
+  const appMetaData = await getAppMetaData();
+  settings.unshift({
+    id: APP_SETTINGS_LLM_ID,
+    type: SettingType.SUPPORTED_MODEL,
+    label: 'LLM to use',
+    value: AUTO_SELECT_ID,
+    models: appMetaData.supportedModels
+  });
+}
+
+function _addAppLlmHeadingIfMissing(headings:Heading[]) {
+  if (headings.some(h => h.precedeSettingId === APP_SETTINGS_LLM_ID)) return;
+  headings.unshift({
+    id: 'LLM',
+    description: 'LLM Settings Specific to This App',
+    precedeSettingId: APP_SETTINGS_LLM_ID
+  });
+}
+
+async function _appSettingCategoryToSettingCategory(appCategory:AppSettingCategory, appName:string):Promise<SettingCategory> {
+  const settings = [...appCategory.settings];
+  await _addAppLlmSettingIfMissing(settings);
+  const headings = appCategory.headings ? [...appCategory.headings] : []
+  _addAppLlmHeadingIfMissing(headings);
   return {
     name: 'This App',
     id: getAppCategoryId(appName),
     description: appCategory.description,
-    headings: appCategory.headings,
-    settings: appCategory.settings,
+    headings,
+    settings,
     disablementRules: appCategory.disablementRules
   }
 }
@@ -38,7 +68,7 @@ export async function getAppSettings(appName:string):Promise<Setting[]|null> {
 }
 
 export async function loadAppSettingCategory(defaultAppCategory:AppSettingCategory, appName:string, onLoadAppSettings?:LoadAppSettingsCallback):Promise<SettingCategory> {
-  const category = _appSettingCategoryToSettingCategory(defaultAppCategory, appName);
+  const category = await _appSettingCategoryToSettingCategory(defaultAppCategory, appName);
   let appSettings = await getAppSettings(appName) ?? category.settings;
   if (onLoadAppSettings) {
     const overrideAppSettings = onLoadAppSettings(appSettings); // Allow caller to fix/upgrade settings or use their own loading mechanism.
