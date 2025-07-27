@@ -19,16 +19,23 @@ vi.mock("@/persistence/pathStore", async () => ({
   })
 }));
 
+vi.mock("@/appMetaData/fetchAppMetaData", async () => ({
+  ...(await vi.importActual("@/appMetaData/fetchAppMetaData")),
+  fetchAppMetadataText: vi.fn(() => Promise.resolve(theAppMetaDataText))
+}));
+
 // Imports after mocks.
 import { vi, describe, expect, it, beforeEach } from "vitest";
 
 let theWindowLocationPathname = "";
 let theFakeStore: Record<string, any> = {};
+let theAppMetaDataText = '{"id":"test","name":"n","description":"d","supportedModels":[]}';
 
-import { getAppCategoryId, loadAppSettingCategory } from "../appSettingsUtil";
+import { APP_SETTINGS_LLM_ID, getAppCategoryId, loadAppSettingCategory } from "../appSettingsUtil";
 import AppSettingCategory from "@/settings/types/AppSettingCategory";
 import SettingType from "@/settings/types/SettingType";
 import Setting from "@/settings/types/Setting";
+import Heading from "@/settings/types/Heading";
 
 describe("appSettingsUtil", () => {
   beforeEach(() => {
@@ -76,9 +83,44 @@ describe("appSettingsUtil", () => {
       expect(category.name).toBe("This App");
       expect(category.id).toBe("app-root");
       expect(category.description).toBe("default");
-      expect(category.settings.length).toBe(2);
-      expect(category.settings[0].id).toBe("s1");
-      expect(category.settings[1].id).toBe("s2");
+      expect(category.settings.length).toBe(3);
+      expect(category.settings[1].id).toBe("s1");
+      expect(category.settings[2].id).toBe("s2");
+    });
+
+    it('adds LLM setting and heading if not found in category', async () => {
+      const defaultAppSettings:AppSettingCategory = {
+        description: "default",
+        settings:[]
+      }
+      const category = await loadAppSettingCategory(defaultAppSettings, 'root');
+      expect(category.settings.length).toBe(1);
+      expect(category.settings[0].id).toBe(APP_SETTINGS_LLM_ID);
+      expect(category.headings).toBeDefined();
+      const headings = category.headings as Heading[];
+      expect(headings.length === 1);
+      expect(headings[0].precedeSettingId).toEqual(APP_SETTINGS_LLM_ID);
+    });
+
+    it('does not overwrite existing LLM setting and heading', async () => {
+      const defaultAppSettings:AppSettingCategory = {
+        description: "default",
+        settings:[
+          {id:APP_SETTINGS_LLM_ID, label:'test', value:'v', type:SettingType.SUPPORTED_MODEL, models:[]}
+        ],
+        headings:[
+          {precedeSettingId:APP_SETTINGS_LLM_ID, description:'test'}
+        ]
+      }
+      const category = await loadAppSettingCategory(defaultAppSettings, 'root');
+      expect(category.settings.length).toBe(1);
+      expect(category.settings[0].id).toBe(APP_SETTINGS_LLM_ID);
+      expect(category.settings[0].label).toEqual('test');
+      expect(category.headings).toBeDefined();
+      const headings = category.headings as Heading[];
+      expect(headings.length === 1);
+      expect(headings[0].precedeSettingId).toEqual(APP_SETTINGS_LLM_ID);
+      expect(headings[0].description).toEqual('test');
     });
 
     it('returns settings from store when they exist', async () => {
@@ -97,9 +139,9 @@ describe("appSettingsUtil", () => {
       expect(category.name).toBe("This App");
       expect(category.id).toBe("app-root");
       expect(category.description).toBe("default");
-      expect(category.settings.length).toBe(2);
-      expect(category.settings[0].value).toBe("x");
-      expect(category.settings[1].value).toBe(true);
+      expect(category.settings.length).toBe(3);
+      expect(category.settings[1].value).toBe("x");
+      expect(category.settings[2].value).toBe(true);
     });
 
     it('returns settings as-is if onLoadAppSettings() returns null', async () => {
@@ -114,9 +156,9 @@ describe("appSettingsUtil", () => {
         ]
       };
       const category = await loadAppSettingCategory(defaultAppSettings, 'root', _onLoadAppSettings);
-      expect(category.settings.length).toBe(2);
-      expect(category.settings[0].id).toBe("s1");
-      expect(category.settings[1].id).toBe("s2");
+      expect(category.settings.length).toBe(3);
+      expect(category.settings[1].id).toBe("s1");
+      expect(category.settings[2].id).toBe("s2");
     });
 
     it('merges settings if onLoadAppSettings() returns settings', async () => {
@@ -134,11 +176,11 @@ describe("appSettingsUtil", () => {
         ]
       };
       const category = await loadAppSettingCategory(defaultAppSettings, 'root', _onLoadAppSettings);
-      expect(category.settings.length).toBe(3);
-      expect(category.settings[0].id).toBe("s1");
-      expect(category.settings[1].id).toBe("s2");
-      expect(category.settings[1].value).toBe(true);
-      expect(category.settings[2].id).toBe("s3");
+      expect(category.settings.length).toBe(4);
+      expect(category.settings[1].id).toBe("s1");
+      expect(category.settings[2].id).toBe("s2");
+      expect(category.settings[2].value).toBe(true);
+      expect(category.settings[3].id).toBe("s3");
     });
   });
 });

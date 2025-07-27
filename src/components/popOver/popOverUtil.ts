@@ -3,8 +3,9 @@ import { CSSProperties } from "react";
 import Direction from "./types/Direction";
 import Rect from "./types/Rect";
 import { assert } from "@/common/assertUtil";
+import { browserClientRect } from "@/common/windowUtil";
 
-const DEFAULT_DIRECTIONS:Direction[] = [Direction.ABOVE, Direction.BELOW, Direction.RIGHT, Direction.LEFT];
+export const DEFAULT_DIRECTIONS:Direction[] = [Direction.ABOVE, Direction.BELOW, Direction.RIGHT, Direction.LEFT];
 
 function _domRectToRect(rect:DOMRect):Rect {
   return {
@@ -48,12 +49,14 @@ offsetFunctions[Direction.LEFT] = _calcLeftOffset;
 offsetFunctions[Direction.RIGHT] = _calcRightOffset;
 
 export function getTryDirections(preferredDirection?: Direction | Direction[], allowedDirections?:Direction[]): Direction[] {
-  if (preferredDirection === undefined) return [...DEFAULT_DIRECTIONS];
+  if (preferredDirection === undefined) preferredDirection = DEFAULT_DIRECTIONS;
+  /* v8 ignore next */
   assert(allowedDirections === undefined || allowedDirections.length > 0, "If allowedDirections is specified, it must be a non-empty array.");
   if (!Array.isArray(preferredDirection)) preferredDirection = [preferredDirection];
   const directions:Direction[] = [];
   preferredDirection.forEach(d => {if (!directions.includes(d) && (!allowedDirections || allowedDirections.includes(d))) directions.push(d) });
   DEFAULT_DIRECTIONS.forEach(d => {if (!directions.includes(d) && (!allowedDirections || allowedDirections.includes(d))) directions.push(d) });
+  /* v8 ignore next */
   assert(directions.length > 0); // Since caller specified at least one allowed direction, there should be at least one direction in the result.
   return directions;
 }
@@ -83,7 +86,7 @@ function _fixOobRect(containerRect:Rect, innerRect:Rect):Rect {
 export function calcPopoverPositionStyle(tryDirections:Direction[], targetElement:HTMLDivElement, popoverContentElement:HTMLDivElement):CSSProperties {
   const targetRect = _domRectToRect(targetElement.getBoundingClientRect());
   const popoverRect = _domRectToRect(popoverContentElement.getBoundingClientRect());
-  const browserRect = _domRectToRect(document.documentElement.getBoundingClientRect());
+  const browserRect = _domRectToRect(browserClientRect());
   const tryRect = {...popoverRect};
 
   let dx = 0, dy = 0, firstDx = 0, firstDy = 0, directionI = 0;

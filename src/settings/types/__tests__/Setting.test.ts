@@ -4,6 +4,7 @@ import { isSettingFormat, duplicateSetting } from "../Setting";
 import TextSetting from "../TextSetting";
 import BooleanToggleSetting from "../BooleanToggleSetting";
 import NumericRangeSetting from "../NumericSetting";
+import SupportedModelSetting from "../SupportedModelSetting";
 import SettingType from "../SettingType";
 
 describe('Setting', () => {
@@ -19,17 +20,22 @@ describe('Setting', () => {
     });
 
     it('returns true for valid text setting format', () => {
-      const setting = { id:'test', type:SettingType.TEXT, label:'Test Setting', value:'Test Value' };
+      const setting:TextSetting = { id:'test', type:SettingType.TEXT, label:'Test Setting', value:'Test Value' };
       expect(isSettingFormat(setting)).toBe(true);
     });
 
     it('returns true for valid boolean toggle setting format', () => {
-      const setting = { id:'test', type:SettingType.BOOLEAN_TOGGLE, label:'Test Setting', value:true };
+      const setting:BooleanToggleSetting = { id:'test', type:SettingType.BOOLEAN_TOGGLE, label:'Test Setting', value:true };
       expect(isSettingFormat(setting)).toBe(true);
     });
 
     it('returns true for valid numeric range setting format', () => {
-      const setting = { id:'test', type:SettingType.NUMERIC, label:'Test Setting', value:42, minValue:0, maxValue:100 };
+      const setting:NumericRangeSetting = { id:'test', type:SettingType.NUMERIC, label:'Test Setting', value:42, minValue:0, maxValue:100 };
+      expect(isSettingFormat(setting)).toBe(true);
+    });
+
+    it('returns true for a valid supported model setting format', () => {
+      const setting:SupportedModelSetting = { id:'test', type:SettingType.SUPPORTED_MODEL, label:'Test Setting', value:'model1', models:[] };
       expect(isSettingFormat(setting)).toBe(true);
     });
   });
