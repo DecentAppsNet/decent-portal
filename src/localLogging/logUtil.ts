@@ -1,9 +1,8 @@
+import SettingValues from "@/settings/types/SettingValues";
 import { assert, assertNonNullable } from "../common/assertUtil";
 import { now } from "../common/dateUtil";
 import { deleteLogTextForDay, findAllLoggedDays, getDayPath, getLogTextForDay, setLogTextForDay } from "../persistence/localLog";
 import { LOGGING_SETTING_ENABLE, LOGGING_SETTING_MAX_RETENTION_DAYS } from "../settings/categories/loggingSettingsUtil";
-import { settingValue } from "../settings/settingsUtil";
-import Setting from "../settings/types/Setting";
 
 const DEFAULT_WRITE_DELAY_MS = 3000;
 const DAY = 24 * 60 * 60 * 1000;
@@ -15,15 +14,16 @@ let thePreviousDayPath:string = UNINITIALIZED_DAY_PATH;
 let thePreviousDayEntryCount:number = 0; // When >0, it means the buffer has entries from the previous day that haven't been written yet.
 let theDebouncedWriteTimer:number|null = null;
 let theAppName:string = '';
-let theLoggingSettings:Setting[]|null = null;
+let theLoggingSettings:SettingValues|null = null;
 let theWriteDelayMs:number = DEFAULT_WRITE_DELAY_MS;
 
 function _getMaxRetentionDays():number {
-  return settingValue(LOGGING_SETTING_MAX_RETENTION_DAYS, theLoggingSettings) as number || 0;
+  return (theLoggingSettings && theLoggingSettings[LOGGING_SETTING_MAX_RETENTION_DAYS] as number) || 0;
 }
 
 function _isLoggingEnabled():boolean {
-  return settingValue(LOGGING_SETTING_ENABLE, theLoggingSettings) as boolean || false;
+  assertNonNullable(theLoggingSettings);
+  return theLoggingSettings[LOGGING_SETTING_ENABLE] as boolean;
 }
 
 function _isRunningOnDedicatedWorker():boolean {
@@ -146,7 +146,7 @@ export async function deleteAllLogMessages() {
   return await Promise.all(promises);
 }
 
-export async function applyLoggingSettings(loggingSettings:Setting[]) {
+export async function applyLoggingSettings(loggingSettings:SettingValues) {
   theLoggingSettings = loggingSettings;
   const maxRetentionDays = _getMaxRetentionDays();
   if (maxRetentionDays > 0) await deleteOldLogMessages();

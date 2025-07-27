@@ -5,11 +5,7 @@ import Link from './components/decentBar/types/Link';
 import { getBaseUrl } from './components/decentBar/decentBarUtil';
 import style from './Gallery.module.css'
 import SettingType from './settings/types/SettingType';
-import Setting from './settings/types/Setting';
 import ValidationFailure, { LAST_VALID_VALUE } from './settings/types/ValidationFailure';
-import BooleanToggleSetting from './settings/types/BooleanToggleSetting';
-import TextSetting from './settings/types/TextSetting';
-import NumericSetting from './settings/types/NumericSetting';
 import AppSettingCategory from './settings/types/AppSettingCategory';
 import ModelDeviceProblem from './models/types/ModelDeviceProblem';
 import ModelDeviceProblemType from './models/types/ModelDeviceProblemType';
@@ -164,28 +160,27 @@ function testAppSettings() {
     ]
   };
   
-  function _onValidateSetting(setting:Setting):ValidationFailure|null {
-    switch (setting.id) {
-      case '1d': return !(setting as BooleanToggleSetting).value ? { failReason:'Say yes!' } : null;
-      case '1e': return (setting as BooleanToggleSetting).value ? { failReason:'Say no!' } : null;
-      case '1f': return !(setting as BooleanToggleSetting).value ? { failReason:'Yes required.', nextValue:LAST_VALID_VALUE } : null;
-      case '1g': return (setting as BooleanToggleSetting).value ? { failReason:'No required.', nextValue:LAST_VALID_VALUE } : null;
-      case '2c': return (setting as TextSetting).value.length ? null : { failReason:'Should be specified.' };
+  function _onValidateSetting(settingId:string, settingValue:any):ValidationFailure|null {
+    switch (settingId) {
+      case '1d': return !settingValue ? { failReason:'Say yes!' } : null;
+      case '1e': return !!settingValue ? { failReason:'Say no!' } : null;
+      case '1f': return !!settingValue ? { failReason:'Yes required.', nextValue:LAST_VALID_VALUE } : null;
+      case '1g': return !!settingValue ? { failReason:'No required.', nextValue:LAST_VALID_VALUE } : null;
+      case '2c': return settingValue.length ? null : { failReason:'Should be specified.' };
       case '2d': 
-        const originalValue = (setting as TextSetting).value;
+        const originalValue = settingValue as string;
         const nextValue = originalValue.trim();
       return nextValue === originalValue ? null : { nextValue };
       
       case '2e': 
-      return (setting as TextSetting).value.includes('apple') ? null : { failReason:'Must contain "apple".', nextValue:LAST_VALID_VALUE };
+      return (settingValue as string).includes('apple') ? null : { failReason:'Must contain "apple".', nextValue:LAST_VALID_VALUE };
       
       case '3c':
-      return (setting as NumericSetting).value % 2 !== 0 ? { failReason:'Should be even.' } : null;
+      return (settingValue as number) % 2 !== 0 ? { failReason:'Should be even.' } : null;
 
       case '3d': 
-        const numericSetting = setting as NumericSetting;
-        const roundedValue = Math.round(numericSetting.value * 10) / 10; // Round to 1 decimal place
-      return roundedValue !== numericSetting.value ? { failReason:'Must have less than 2 decimal places.', nextValue:roundedValue } : null;
+        const roundedValue = Math.round(settingValue * 10) / 10; // Round to 1 decimal place
+      return roundedValue !== settingValue ? { failReason:'Must have less than 2 decimal places.', nextValue:roundedValue } : null;
 
       default: return null;
     }

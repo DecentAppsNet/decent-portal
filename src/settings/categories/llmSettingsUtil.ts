@@ -1,7 +1,7 @@
 import { getCategorySettings, setCategorySettings } from "@/persistence/settings";
 import SettingCategory from "../types/SettingCategory";
 import SettingType from "../types/SettingType";
-import { mergeSettingsIntoCategory } from "./settingCategoryUtil";
+import { mergeSettingValuesIntoCategory, settingsToSettingValues } from "./settingCategoryUtil";
 import Setting from "../types/Setting";
 import { estimateSystemMemory, GIGABYTE } from "@/deviceCapabilities/memoryUtil";
 import { assertNonNullable } from "@/common/assertUtil";
@@ -43,8 +43,8 @@ function _getLlmDefaultSettings():SettingCategory {
 }
 
 export async function loadLlmSettingCategory():Promise<SettingCategory> {
-  const settings = await getCategorySettings(LLM_CATEGORY_ID);
-  return mergeSettingsIntoCategory(_getLlmDefaultSettings(), settings);
+  const settingValues = await getCategorySettings(LLM_CATEGORY_ID) ?? {};
+  return mergeSettingValuesIntoCategory(_getLlmDefaultSettings(), settingValues);
 }
 
 export async function applyLlmSettings(_settings:Setting[]):Promise<void> {
@@ -56,24 +56,21 @@ export async function applyLlmSettings(_settings:Setting[]):Promise<void> {
 
 export async function incrementMaxLlmSizeAfterSuccessfulLoad(successfulLoadSize:number) {
   const llmCategory = await loadLlmSettingCategory();
-  const { settings } = llmCategory;
-  const isAutoIncrementing = settings.find(s => s.id === LLM_SETTING_AUTO_INC_MAX_SIZE)?.value as boolean;
+  const settingValues = settingsToSettingValues(llmCategory.settings);
+  const isAutoIncrementing = settingValues[LLM_SETTING_AUTO_INC_MAX_SIZE] as boolean;
   if (!isAutoIncrementing) return;
-  const maxLlmSizeSetting = settings.find(s => s.id === LLM_SETTING_MAX_SIZE);
+  const currentMaxSize = settingValues[LLM_SETTING_MAX_SIZE] as number;
   /* v8 ignore next */
-  assertNonNullable(maxLlmSizeSetting); // The default settings at least should always have this setting.
-  const currentMaxSize = maxLlmSizeSetting.value as number;
+  assertNonNullable(currentMaxSize); // The default settings at least should always have this setting.
   if (currentMaxSize >= successfulLoadSize) return;
-  const nextMaxSize = Math.ceil(successfulLoadSize); // Round up to nearest GB because setting is whole numbers only. Rounding down would cause this model to be treated pessimistically when loading later.
-  maxLlmSizeSetting.value = nextMaxSize;
-  await applyLlmSettings(settings);
-  setCategorySettings(LLM_CATEGORY_ID, settings);
+  settingValues[LLM_SETTING_MAX_SIZE] = Math.ceil(successfulLoadSize); // Round up to nearest GB because setting is whole numbers only. Rounding down would cause this model to be treated pessimistically when loading later.
+  setCategorySettings(LLM_CATEGORY_ID, settingValues);
 }
 
 export async function getMaxLlmSize():Promise<number> {
-  const settings = await getCategorySettings(LLM_CATEGORY_ID);
-  if (!settings) return _getDefaultMaxLlmSize();
-  const maxSizeSetting = settings.find(s => s.id === LLM_SETTING_MAX_SIZE);
-  if (!maxSizeSetting) return _getDefaultMaxLlmSize();
-  return maxSizeSetting.value as number;
+  const settingValues = await getCategorySettings(LLM_CATEGORY_ID);
+  if (!settingValues) return _getDefaultMaxLlmSize();
+  const maxSize = settingValues[LLM_SETTING_MAX_SIZE];
+  if (!maxSize) return _getDefaultMaxLlmSize();
+  return maxSize as number;
 }

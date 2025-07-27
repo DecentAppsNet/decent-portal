@@ -36,6 +36,7 @@ import AppSettingCategory from "@/settings/types/AppSettingCategory";
 import SettingType from "@/settings/types/SettingType";
 import Setting from "@/settings/types/Setting";
 import Heading from "@/settings/types/Heading";
+import SettingValues from "@/settings/types/SettingValues";
 
 describe("appSettingsUtil", () => {
   beforeEach(() => {
@@ -124,10 +125,7 @@ describe("appSettingsUtil", () => {
     });
 
     it('returns settings from store when they exist', async () => {
-      theFakeStore["/settings/app-root.json"] = JSON.stringify([
-        { id:"s1", type:SettingType.TEXT, label:"l", value:"x" },
-        { id:"s2", type:SettingType.BOOLEAN_TOGGLE, label:"l", value: true }
-      ]);
+      theFakeStore["/settings/app-root.json"] = JSON.stringify({s1:"x",s2:true});
       const defaultAppSettings:AppSettingCategory = {
         description: "default",
         settings:[
@@ -145,7 +143,7 @@ describe("appSettingsUtil", () => {
     });
 
     it('returns settings as-is if onLoadAppSettings() returns null', async () => {
-      function _onLoadAppSettings(_settings:Setting[]|null):Setting[]|null {
+      function _onLoadAppSettings(_settings:SettingValues|null):Setting[]|null {
         return null;
       }
       const defaultAppSettings:AppSettingCategory = {
@@ -162,11 +160,8 @@ describe("appSettingsUtil", () => {
     });
 
     it('merges settings if onLoadAppSettings() returns settings', async () => {
-      function _onLoadAppSettings(_settings:Setting[]|null):Setting[]|null {
-        return [
-          { id:"s2", type:SettingType.BOOLEAN_TOGGLE, label:"l", value:true },
-          { id:"s3", type:SettingType.TEXT, label:"l", value:"y"}
-        ];
+      function _onLoadAppSettings(_settings:SettingValues|null):SettingValues|null {
+        return { s2:true };
       }
       const defaultAppSettings:AppSettingCategory = {
         description: "default",
@@ -176,11 +171,23 @@ describe("appSettingsUtil", () => {
         ]
       };
       const category = await loadAppSettingCategory(defaultAppSettings, 'root', _onLoadAppSettings);
-      expect(category.settings.length).toBe(4);
+      expect(category.settings.length).toBe(3);
       expect(category.settings[1].id).toBe("s1");
       expect(category.settings[2].id).toBe("s2");
       expect(category.settings[2].value).toBe(true);
-      expect(category.settings[3].id).toBe("s3");
+    });
+
+    it('does not create a settings for a value with no category settings', async () => {
+      function _onLoadAppSettings(_settings:SettingValues|null):SettingValues|null {
+        return { s3:"y" };
+      }
+      const defaultAppSettings:AppSettingCategory = {
+        description: "default",
+        settings:[]
+      };
+      const category = await loadAppSettingCategory(defaultAppSettings, 'root', _onLoadAppSettings);
+      expect(category.settings.length).toBe(1);
+      expect(category.settings[0].id).not.toBe("s3");
     });
   });
 });

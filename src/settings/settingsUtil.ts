@@ -10,6 +10,7 @@ import { setCategorySettings } from "@/persistence/settings";
 import AppSettingCategory from "./types/AppSettingCategory";
 import { applyLoggingSettings } from "@/localLogging/logUtil";
 import { openSettingsDialog } from "@/components/decentBar/interactions/opening";
+import { mergeSettingValuesIntoSettings } from "./categories/settingCategoryUtil";
 
 export function collateSettingRows(category:SettingCategory):SettingRow[] {
   const rows:SettingRow[] = [];
@@ -60,7 +61,7 @@ export async function saveSettingCategories(categories:SettingCategory[], appNam
       case appCategoryId:
         if (onSaveAppSettings) {
           const overrideAppSettings = onSaveAppSettings(settings);
-          if (overrideAppSettings) settings = overrideAppSettings;
+          if (overrideAppSettings) settings = mergeSettingValuesIntoSettings(settings, overrideAppSettings);
         }
       break;
 

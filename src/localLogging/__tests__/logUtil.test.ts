@@ -24,10 +24,9 @@ vi.mock("@/common/dateUtil", async () => ({
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getDayPath } from '@/persistence/localLog';
 import { applyLoggingSettings, deleteAllLogMessages, deleteOldLogMessages, log, setAppName, setWriteDelay  } from '../logUtil';
-import SettingType from '@/settings/types/SettingType';
 import { LOGGING_SETTING_ENABLE, LOGGING_SETTING_MAX_RETENTION_DAYS } from '@/settings/categories/loggingSettingsUtil';
-import Setting, { duplicateSetting } from '@/settings/types/Setting';
 import { wait } from '@/common/waitUtil';
+import SettingValues from '@/settings/types/SettingValues';
 
 let theFakeStore:Record<string, any> = {};
 let theFakeStoreSetTextShouldThrow = false;
@@ -35,10 +34,10 @@ let theFakeTimestamp = 0; // Way back in 1970.
 const DAY = 24 * 60 * 60 * 1000;
 const TODAY_PATH = getDayPath(0);
 const TODAY_KEY = `/log/${TODAY_PATH}.txt`;
-const DEFAULT_LOGGING_SETTINGS:Setting[] = [
-  {type: SettingType.BOOLEAN_TOGGLE, id:LOGGING_SETTING_ENABLE, label:"Logging enabled?", value:true},
-  {type: SettingType.NUMERIC, id:LOGGING_SETTING_MAX_RETENTION_DAYS, label:"Max days to keep", value:7, minValue:1, maxValue:1000, allowDecimals:false}, 
-];
+const DEFAULT_LOGGING_SETTINGS:SettingValues = {
+  [LOGGING_SETTING_ENABLE]:true,
+  [LOGGING_SETTING_MAX_RETENTION_DAYS]:7
+};
 
 describe('logUtil', () => {
   describe('log()', () => {
@@ -58,9 +57,8 @@ describe('logUtil', () => {
     });
 
     it('logs nothing if logging disabled', async () => {
-      const settings:Setting[] = DEFAULT_LOGGING_SETTINGS.map(duplicateSetting);
-      settings[0].value = false;
-      await applyLoggingSettings(settings);
+      const settingValues:SettingValues = {...DEFAULT_LOGGING_SETTINGS, [LOGGING_SETTING_ENABLE]:false};
+      await applyLoggingSettings(settingValues);
       log('something');
       expect(theFakeStore[TODAY_KEY]).toBeUndefined();
     });
@@ -148,8 +146,7 @@ describe('logUtil', () => {
     });
 
     it('deletes logs older than max retention days', async () => {
-      const settings:Setting[] = DEFAULT_LOGGING_SETTINGS.map(duplicateSetting);
-      settings[1].value = 1; // Set retention to 1 day.
+      const settings:SettingValues = {...DEFAULT_LOGGING_SETTINGS, [LOGGING_SETTING_MAX_RETENTION_DAYS]:1};
       await applyLoggingSettings(settings);
       await log('something', true);
       expect(theFakeStore[TODAY_KEY]).toBeDefined();
@@ -175,8 +172,7 @@ describe('logUtil', () => {
     });
 
     it('applies logging settings and deletes old logs', async () => {
-      const settings:Setting[] = DEFAULT_LOGGING_SETTINGS.map(duplicateSetting);
-      settings[1].value = 1; // Set retention to 1 day.
+      const settings:SettingValues = {...DEFAULT_LOGGING_SETTINGS, [LOGGING_SETTING_MAX_RETENTION_DAYS]:1};
       await applyLoggingSettings(settings);
       await log('something', true);
       expect(theFakeStore[TODAY_KEY]).toBeDefined();

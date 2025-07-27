@@ -1,6 +1,6 @@
 import { getCategorySettings } from "../../persistence/settings";
 import Setting from "../../settings/types/Setting";
-import { mergeSettingsIntoCategory } from "./settingCategoryUtil";
+import { mergeSettingValuesIntoCategory } from "./settingCategoryUtil";
 import { LoadAppSettingsCallback } from "../types/AppSettingsCallbacks";
 import SettingCategory from "../types/SettingCategory";
 import AppSettingCategory from "../types/AppSettingCategory";
@@ -9,6 +9,7 @@ import SettingType from "../types/SettingType";
 import { AUTO_SELECT_ID } from "../settingsDialog/setters/interactions/models";
 import { getAppMetaData } from "@/appMetadata/appMetadataUtil";
 import Heading from "../types/Heading";
+import SettingValues from "../types/SettingValues";
 
 // Without the app name appended, this category ID can only be used for operations that need to do 
 // something specifying the app category, but not a specific app. For example, saving settings to persistent 
@@ -60,9 +61,9 @@ async function _appSettingCategoryToSettingCategory(appCategory:AppSettingCatego
 
 /**
  * Retrieves application settings.
- * @returns {Setting[]} An array of settings.
+ * @returns {SettingValues} Associative array of settings.
  */
-export async function getAppSettings(appName:string):Promise<Setting[]|null> {
+export async function getAppSettings(appName:string):Promise<SettingValues|null> {
   const id = getAppCategoryId(appName);
   return await getCategorySettings(id);
 }
@@ -74,5 +75,5 @@ export async function loadAppSettingCategory(defaultAppCategory:AppSettingCatego
     const overrideAppSettings = onLoadAppSettings(appSettings); // Allow caller to fix/upgrade settings or use their own loading mechanism.
     if (overrideAppSettings) appSettings = overrideAppSettings;
   }
-  return mergeSettingsIntoCategory(category, appSettings);
+  return mergeSettingValuesIntoCategory(category, appSettings);
 }
