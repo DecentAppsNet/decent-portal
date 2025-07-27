@@ -3,7 +3,8 @@ enum ModelDeviceProblemType {
   INSUFFICIENT_STORAGE, 
   BAD_LOAD_SUCCESS_HISTORY, 
   BAD_PERFORMANCE_HISTORY,
-  DEVELOPER_MODE
+  DEVELOPER_MODE,
+  WEBGPU_NOT_AVAILABLE
 }
 
 export default ModelDeviceProblemType;

@@ -11,6 +11,21 @@ import BadPerformanceIcon from './icons/speedometer-slow.svg';
 import DeveloperIcon from './icons/code-braces.svg';
 import ModelDeviceProblemType from './types/ModelDeviceProblemType';
 
+// Configuration for blocking problems that prevent model loading
+const BLOCKING_PROBLEM_MESSAGES: Partial<Record<ModelDeviceProblemType, string>> = {
+  [ModelDeviceProblemType.WEBGPU_NOT_AVAILABLE]: 'Please use a compatible browser like Google Chrome or Microsoft Edge.'
+} as const;
+
+const BLOCKING_PROBLEM_TYPES = Object.keys(BLOCKING_PROBLEM_MESSAGES).map(key => parseInt(key) as ModelDeviceProblemType);
+
+function isBlockingProblem(problemType: ModelDeviceProblemType): boolean {
+  return BLOCKING_PROBLEM_TYPES.includes(problemType);
+}
+
+function getBlockingMessage(problemType: ModelDeviceProblemType): string {
+  return BLOCKING_PROBLEM_MESSAGES[problemType] || '';
+}
+
 type Props = {
   isOpen:boolean,
   modelId:string,
@@ -26,6 +41,7 @@ function _renderProblemIcon(problemType:ModelDeviceProblemType) {
     case ModelDeviceProblemType.BAD_LOAD_SUCCESS_HISTORY: return <img className={styles.icon} src={BadLoadSuccessIcon} alt='Bad Load Success History' />;
     case ModelDeviceProblemType.BAD_PERFORMANCE_HISTORY: return <img className={styles.icon} src={BadPerformanceIcon} alt='Bad Performance History' />;
     case ModelDeviceProblemType.DEVELOPER_MODE: return <img className={styles.icon} src={DeveloperIcon} alt='Developer Mode' />;
+    case ModelDeviceProblemType.WEBGPU_NOT_AVAILABLE: return <img className={styles.icon} src={InsufficientMemoryIcon} alt='WebGPU Not Available' />;
     default: botch();
   }
 }
@@ -40,6 +56,10 @@ function ModelDeviceProblemsDialog({isOpen, problems, onConfirm, onCancel, model
   const isDeveloperMode = problems.length === 1 && problems[0].type === ModelDeviceProblemType.DEVELOPER_MODE;
   if (problems.length > 1) problems = problems.filter(p => p.type !== ModelDeviceProblemType.DEVELOPER_MODE);
 
+  const hasBlockingProblem = problems.some(p => isBlockingProblem(p.type));
+  const firstBlockingProblem = problems.find(p => isBlockingProblem(p.type));
+  const blockingMessage = firstBlockingProblem ? getBlockingMessage(firstBlockingProblem.type) : '';
+  
   const summaryContent = isDeveloperMode 
     ? <p>Development environment detected. Paused loading <span className={styles.modelIdText}>{modelId}</span> until you confirm.</p>
     : problems.length === 1 
@@ -50,13 +70,23 @@ function ModelDeviceProblemsDialog({isOpen, problems, onConfirm, onCancel, model
   });
 
   return (
-    <ModalDialog isOpen={isOpen} title='Continue Loading Model?' onCancel={onCancel}>
+    <ModalDialog isOpen={isOpen} title={hasBlockingProblem ? 'Failed to Load Model' : 'Continue Loading Model?'} onCancel={onCancel}>
       {summaryContent}
       <ul className={styles.problemList}>{problemsContent}</ul>
-      <p className={styles.continueText}>You can continue loading the model if you want.</p>
+      {hasBlockingProblem ? (
+        <p className={styles.continueText}>{blockingMessage}</p>
+      ) : (
+        <p className={styles.continueText}>You can continue loading the model if you want.</p>
+      )}
       <DialogFooter>
-        <DialogButton text={'Cancel'} onClick={onCancel} />
-        <DialogButton text={'Load Model'} onClick={onConfirm} isPrimary />
+        {hasBlockingProblem ? (
+          <DialogButton text={'Got it'} onClick={onCancel} isPrimary />
+        ) : (
+          <>
+            <DialogButton text={'Cancel'} onClick={onCancel} />
+            <DialogButton text={'Load Model'} onClick={onConfirm} isPrimary />
+          </>
+        )}
       </DialogFooter>
     </ModalDialog>
   );

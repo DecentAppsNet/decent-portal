@@ -83,6 +83,10 @@ function _describeInsufficientMemory(wasSuccessfulBefore:boolean, requiredMemory
   return `You need ${requiredMemoryGb.toFixed(1)} GB of video memory to load this model. It seems unlikely to load, but you can try it.`;
 }
 
+export function _describeWebGpuNotAvailable():string {
+  return `Your browser doesn't support WebGPU. GPU-accelerated models might not load successfully on this device.`;
+}
+
 // Used for testing.
 export async function clearCachedModelInfo() {
   theCurrentModelInfo = null;
@@ -125,6 +129,13 @@ export async function predictModelDeviceProblems(modelId:string):Promise<ModelDe
   assertNonNullable(theCurrentModelInfo);
 
   const problems:ModelDeviceProblem[] = [];
+
+  if (typeof navigator !== "undefined" && !('gpu' in navigator)) {
+    problems.push({
+      type: ModelDeviceProblemType.WEBGPU_NOT_AVAILABLE,
+      description: _describeWebGpuNotAvailable()
+    });
+  }
 
   const { loadSuccessRate } = theCurrentModelInfo.history;
   if (loadSuccessRate.series.length && loadSuccessRate.lastAverage < 1) {

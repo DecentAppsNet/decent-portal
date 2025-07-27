@@ -15,7 +15,7 @@ import ModelDeviceProblem from './models/types/ModelDeviceProblem';
 import ModelDeviceProblemType from './models/types/ModelDeviceProblemType';
 import ModelDeviceProblemDialog from './models/ModelDeviceProblemsDialog';
 import ContentButton from './components/contentButton/ContentButton';
-import { predictModelDeviceProblems } from './models/modelUtil';
+import { predictModelDeviceProblems, _describeWebGpuNotAvailable } from './models/modelUtil';
 
 function testMinimal() {
   return <>
@@ -260,6 +260,24 @@ function _testModelDeviceProblemsRealData(modalDialogName:string|null,
   </>;
 }
 
+function _testWebGpuNotAvailableDialog(modalDialogName:string|null, setModalDialogName:Function) {
+  const DIALOG_NAME = `${ModelDeviceProblemDialog.name}WebGpu`;
+  const problems:ModelDeviceProblem[] = [
+    {type:ModelDeviceProblemType.WEBGPU_NOT_AVAILABLE, description:_describeWebGpuNotAvailable()}
+  ];
+  return <>
+    <h3>Test: WebGPU Not Available Dialog</h3>
+    <ModelDeviceProblemDialog 
+      modelId={'None'}
+      isOpen={modalDialogName === DIALOG_NAME}
+      problems={problems}
+      onConfirm={() => setModalDialogName(null)}
+      onCancel={() => setModalDialogName(null)}
+    />
+    <ContentButton onClick={() => setModalDialogName(DIALOG_NAME)} text='Open' />
+  </>;
+}
+
 function Gallery() {
   const [modalDialogName, setModalDialogName] = useState<string|null>(null);
   const [modelDeviceProblems, setModelDeviceProblems] = useState<ModelDeviceProblem[]|null>(null);
@@ -285,6 +303,7 @@ function Gallery() {
       { _testModelDeviceProblems(modalDialogName, setModalDialogName) }
       { _testModelDeviceProblemsDevMode(modalDialogName, setModalDialogName) }
       { _testModelDeviceProblemsRealData(modalDialogName, modelDeviceProblems, setModelDeviceProblems, setModalDialogName) }
+      { _testWebGpuNotAvailableDialog(modalDialogName, setModalDialogName) }
     </div>
   );
 }
