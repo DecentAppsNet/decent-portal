@@ -1,6 +1,6 @@
 import { getCategorySettings } from "../../persistence/settings";
 import Setting from "../../settings/types/Setting";
-import { mergeSettingValuesIntoCategory } from "./settingCategoryUtil";
+import { mergeSettingValuesIntoCategory, settingsToSettingValues } from "./settingCategoryUtil";
 import { LoadAppSettingsCallback } from "../types/AppSettingsCallbacks";
 import SettingCategory from "../types/SettingCategory";
 import AppSettingCategory from "../types/AppSettingCategory";
@@ -70,7 +70,7 @@ export async function getAppSettings(appName:string):Promise<SettingValues|null>
 
 export async function loadAppSettingCategory(defaultAppCategory:AppSettingCategory, appName:string, onLoadAppSettings?:LoadAppSettingsCallback):Promise<SettingCategory> {
   const category = await _appSettingCategoryToSettingCategory(defaultAppCategory, appName);
-  let appSettings = await getAppSettings(appName) ?? category.settings;
+  let appSettings = await getAppSettings(appName) ?? settingsToSettingValues(category.settings);
   if (onLoadAppSettings) {
     const overrideAppSettings = onLoadAppSettings(appSettings); // Allow caller to fix/upgrade settings or use their own loading mechanism.
     if (overrideAppSettings) appSettings = overrideAppSettings;

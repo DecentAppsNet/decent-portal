@@ -2,9 +2,9 @@ import { getCategorySettings, setCategorySettings } from "@/persistence/settings
 import SettingCategory from "../types/SettingCategory";
 import SettingType from "../types/SettingType";
 import { mergeSettingValuesIntoCategory, settingsToSettingValues } from "./settingCategoryUtil";
-import Setting from "../types/Setting";
 import { estimateSystemMemory, GIGABYTE } from "@/deviceCapabilities/memoryUtil";
 import { assertNonNullable } from "@/common/assertUtil";
+import SettingValues from "../types/SettingValues";
 
 export const LLM_CATEGORY_ID = "llm";
 export const LLM_SETTING_MAX_SIZE = "llmMaxSize";
@@ -47,7 +47,7 @@ export async function loadLlmSettingCategory():Promise<SettingCategory> {
   return mergeSettingValuesIntoCategory(_getLlmDefaultSettings(), settingValues);
 }
 
-export async function applyLlmSettings(_settings:Setting[]):Promise<void> {
+export async function applyLlmSettings(_settingValues:SettingValues):Promise<void> {
   // Currently, no specific actions are needed to apply LLM settings.
   // This function is a placeholder for future logic if needed.
   // For now, it simply returns without doing anything.

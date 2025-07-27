@@ -5,12 +5,13 @@ import { LoadAppSettingsCallback, SaveAppSettingsCallback } from "./types/AppSet
 import { getAppCategoryId, loadAppSettingCategory } from "@/settings/categories/appSettingsUtil";
 import { applyLlmSettings, LLM_CATEGORY_ID, loadLlmSettingCategory } from "./categories/llmSettingsUtil";
 import { loadLoggingSettingCategory, LOGGING_CATEGORY_ID } from "./categories/loggingSettingsUtil";
-import Setting, { isSettingFormat } from "./types/Setting";
+import { isSettingFormat } from "./types/Setting";
 import { setCategorySettings } from "@/persistence/settings";
 import AppSettingCategory from "./types/AppSettingCategory";
 import { applyLoggingSettings } from "@/localLogging/logUtil";
 import { openSettingsDialog } from "@/components/decentBar/interactions/opening";
-import { mergeSettingValuesIntoSettings } from "./categories/settingCategoryUtil";
+import { settingsToSettingValues } from "./categories/settingCategoryUtil";
+import { botch } from "@/common/assertUtil";
 
 export function collateSettingRows(category:SettingCategory):SettingRow[] {
   const rows:SettingRow[] = [];
@@ -56,24 +57,29 @@ export async function loadSettingCategories(defaultAppCategory:AppSettingCategor
 export async function saveSettingCategories(categories:SettingCategory[], appName:string, onSaveAppSettings?:SaveAppSettingsCallback):Promise<void> {
   const appCategoryId = getAppCategoryId(appName);
   const promises = categories.map(category => {
-    let settings = category.settings;
+    let settingValues = settingsToSettingValues(category.settings);
     switch (category.id) {
       case appCategoryId:
         if (onSaveAppSettings) {
-          const overrideAppSettings = onSaveAppSettings(settings);
-          if (overrideAppSettings) settings = mergeSettingValuesIntoSettings(settings, overrideAppSettings);
+          const overrideAppSettings = onSaveAppSettings(settingValues);
+          if (overrideAppSettings) settingValues = {...settingValues, ...overrideAppSettings };
         }
       break;
 
       case LOGGING_CATEGORY_ID:
-        applyLoggingSettings(settings);
+        applyLoggingSettings(settingValues);
       break;
 
       case LLM_CATEGORY_ID:
-        applyLlmSettings(settings);
+        applyLlmSettings(settingValues);
       break;
+
+      /* v8 ignore start */
+      default:
+        botch();
+      /* v8 ignore end */
     }
-    return setCategorySettings(category.id, settings);
+    return setCategorySettings(category.id, settingValues);
   });
   try {
     await Promise.all(promises);
@@ -81,12 +87,6 @@ export async function saveSettingCategories(categories:SettingCategory[], appNam
     console.error("Error saving settings:", error);
     throw new Error("Failed to save settings. Please try again later.");
   }
-}
-
-export function settingValue(settingId:string, settings?:Setting[]|null):number|string|boolean|null {
-  if (!settings) return null;
-  const setting = settings.find(s => s.id === settingId);
-  return !setting ? null : setting.value;
 }
 
 export function openSettings(categoryId?:string) {

@@ -34,7 +34,6 @@ let theAppMetaDataText = '{"id":"test","name":"n","description":"d","supportedMo
 import { APP_SETTINGS_LLM_ID, getAppCategoryId, loadAppSettingCategory } from "../appSettingsUtil";
 import AppSettingCategory from "@/settings/types/AppSettingCategory";
 import SettingType from "@/settings/types/SettingType";
-import Setting from "@/settings/types/Setting";
 import Heading from "@/settings/types/Heading";
 import SettingValues from "@/settings/types/SettingValues";
 
@@ -143,7 +142,7 @@ describe("appSettingsUtil", () => {
     });
 
     it('returns settings as-is if onLoadAppSettings() returns null', async () => {
-      function _onLoadAppSettings(_settings:SettingValues|null):Setting[]|null {
+      function _onLoadAppSettings(_settings:SettingValues|null):SettingValues|null {
         return null;
       }
       const defaultAppSettings:AppSettingCategory = {

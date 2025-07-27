@@ -11,8 +11,8 @@ vi.mock("@/persistence/pathStore", async () => ({
 
 // Imports after mocks.
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import Setting from '../../types/Setting';
 import { applyLlmSettings, getMaxLlmSize, LLM_SETTING_MAX_SIZE, LLM_CATEGORY_ID, LLM_SETTING_AUTO_INC_MAX_SIZE, incrementMaxLlmSizeAfterSuccessfulLoad } from '../llmSettingsUtil';
+import SettingValues from '@/settings/types/SettingValues';
 
 const LLM_CATEGORY_KEY = `/settings/${LLM_CATEGORY_ID}.json`;
 
@@ -25,8 +25,8 @@ describe('llmSettingsUtil', () => {
 
   describe('applyLlmSettings()', () => {
     it('can be called without error', async () => {
-      const settings:Setting[] = []
-      await expect(applyLlmSettings(settings)).resolves.toBeUndefined();
+      const settingValues:SettingValues = {}
+      await expect(applyLlmSettings(settingValues)).resolves.toBeUndefined();
     });
   });
 
