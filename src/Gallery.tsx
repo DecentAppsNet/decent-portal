@@ -11,7 +11,7 @@ import ModelDeviceProblem from './models/types/ModelDeviceProblem';
 import ModelDeviceProblemType from './models/types/ModelDeviceProblemType';
 import ModelDeviceProblemDialog from './models/ModelDeviceProblemsDialog';
 import ContentButton from './components/contentButton/ContentButton';
-import { predictModelDeviceProblems } from './models/modelUtil';
+import { predictModelDeviceProblems, _describeWebGpuNotAvailable } from './models/modelUtil';
 import LlmSpeed from './components/llmSpeed/LlmSpeed';
 import { openSettings } from './settings/settingsUtil';
 import { APP_CATEGORY_ID } from './settings/categories/appSettingsUtil';
@@ -266,6 +266,24 @@ function testModelDeviceProblemsRealData(modalDialogName:string|null,
   </>;
 }
 
+function _testWebGpuNotAvailableDialog(modalDialogName:string|null, setModalDialogName:Function) {
+  const DIALOG_NAME = `${ModelDeviceProblemDialog.name}WebGpu`;
+  const problems:ModelDeviceProblem[] = [
+    {type:ModelDeviceProblemType.WEBGPU_NOT_AVAILABLE, description:_describeWebGpuNotAvailable()}
+  ];
+  return <>
+    <h3>Test: WebGPU Not Available Dialog</h3>
+    <ModelDeviceProblemDialog 
+      modelId={'None'}
+      isOpen={modalDialogName === DIALOG_NAME}
+      problems={problems}
+      onConfirm={() => setModalDialogName(null)}
+      onCancel={() => setModalDialogName(null)}
+    />
+    <ContentButton onClick={() => setModalDialogName(DIALOG_NAME)} text='Open' />
+  </>;
+}
+
 function _testLlmSpeed() { // TODO delete this after its viewable in settings.
   return <>
     <h3>LLM Speed</h3>
@@ -302,7 +320,6 @@ function _testAdhoc() {
       }}
       onChange={() => {}}
     />
-    
   </>;
 }
 
@@ -328,6 +345,7 @@ function Gallery() {
       { testAppSettings() }
 
       <h2>Model Device Problems Tests</h2>
+      { _testWebGpuNotAvailableDialog(modalDialogName, setModalDialogName) }
       { testModelDeviceProblems(modalDialogName, setModalDialogName) }
       { testModelDeviceProblemsDevMode(modalDialogName, setModalDialogName) }
       { testModelDeviceProblemsRealData(modalDialogName, modelDeviceProblems, setModelDeviceProblems, setModalDialogName) }
