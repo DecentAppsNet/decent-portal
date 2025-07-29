@@ -30,18 +30,6 @@ type Props = {
   problems:ModelDeviceProblem[]|null
 }
 
-function _renderProblemIcon(problemType:ModelDeviceProblemType) {
-  switch(problemType) {
-    case ModelDeviceProblemType.INSUFFICIENT_VRAM:  return <img className={styles.icon} src={InsufficientMemoryIcon} alt='Insufficient VRAM' />;
-    case ModelDeviceProblemType.INSUFFICIENT_STORAGE: return <img className={styles.icon} src={InsufficientStorageIcon} alt='Insufficient Storage' />;
-    case ModelDeviceProblemType.BAD_LOAD_SUCCESS_HISTORY: return <img className={styles.icon} src={BadLoadSuccessIcon} alt='Bad Load Success History' />;
-    case ModelDeviceProblemType.BAD_PERFORMANCE_HISTORY: return <img className={styles.icon} src={BadPerformanceIcon} alt='Bad Performance History' />;
-    case ModelDeviceProblemType.DEVELOPER_MODE: return <img className={styles.icon} src={DeveloperIcon} alt='Developer Mode' />;
-    case ModelDeviceProblemType.WEBGPU_NOT_AVAILABLE: return <img className={styles.icon} src={InsufficientMemoryIcon} alt='WebGPU Not Available' />;
-    default: botch();
-  }
-}
-
 function ModelDeviceProblemsDialog({isOpen, problems, onConfirm, onCancel, modelId}:Props) {
   if (!isOpen || !problems) return null;
 
@@ -71,10 +59,9 @@ function ModelDeviceProblemsDialog({isOpen, problems, onConfirm, onCancel, model
       ) : (
         <p className={styles.continueText}>You can continue loading the model if you want.</p>
       )}
-      <p className={styles.continueText}>You can continue loading the model if you want.</p>
       <DialogFooter>
         {hasBlockingProblem ? (
-          <DialogButton text={'Got it'} onClick={onCancel} isPrimary />
+          <DialogButton text={'Got It'} onClick={onCancel} isPrimary />
         ) : (
           <>
             <DialogButton text={'Cancel'} onClick={onCancel} />

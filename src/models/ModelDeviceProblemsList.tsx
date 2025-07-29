@@ -19,6 +19,7 @@ function _renderProblemIcon(problemType:ModelDeviceProblemType) {
     case ModelDeviceProblemType.INSUFFICIENT_STORAGE: return <img className={styles.icon} src={InsufficientStorageIcon} alt='Insufficient Storage' />;
     case ModelDeviceProblemType.BAD_LOAD_SUCCESS_HISTORY: return <img className={styles.icon} src={BadLoadSuccessIcon} alt='Bad Load Success History' />;
     case ModelDeviceProblemType.BAD_PERFORMANCE_HISTORY: return <img className={styles.icon} src={BadPerformanceIcon} alt='Bad Performance History' />;
+    case ModelDeviceProblemType.WEBGPU_NOT_AVAILABLE: return <img className={styles.icon} src={InsufficientMemoryIcon} alt='WebGPU Not Available' />;
     case ModelDeviceProblemType.DEVELOPER_MODE: return <img className={styles.icon} src={DeveloperIcon} alt='Developer Mode' />;
     case ModelDeviceProblemType.BETA: return <img className={styles.icon} src={BetaIcon} alt='Beta' />;
     default: botch();
