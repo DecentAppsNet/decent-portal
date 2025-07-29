@@ -28,7 +28,7 @@ export function setClearValidationMessageDelay(delayMs:number) {
 
 export function handleValidation(nextSetting:Setting, lastValidValue:any, setValidationMessage:Function, onValidateSetting?:ValidateSettingCallback):boolean {
   if (!onValidateSetting) { setValidationMessage(null); return true; }
-  const validationFailure = onValidateSetting(nextSetting);
+  const validationFailure = onValidateSetting(nextSetting.id, nextSetting.value);
   if (validationFailure) {
     _clearValidationMessageTimer(nextSetting.id);
     setValidationMessage(validationFailure.failReason ?? null);

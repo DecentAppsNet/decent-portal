@@ -4,7 +4,8 @@ enum ModelDeviceProblemType {
   BAD_LOAD_SUCCESS_HISTORY, 
   BAD_PERFORMANCE_HISTORY,
   DEVELOPER_MODE,
-  WEBGPU_NOT_AVAILABLE
+  WEBGPU_NOT_AVAILABLE,
+  BETA
 }
 
 export default ModelDeviceProblemType;

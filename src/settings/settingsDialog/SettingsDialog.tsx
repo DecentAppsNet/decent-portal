@@ -11,6 +11,7 @@ import DialogFooter from "../../components/modalDialogs/DialogFooter";
 import DialogButton from "../../components/modalDialogs/DialogButton";
 import AppSettingCategory from "@/settings/types/AppSettingCategory";
 import { saveAndClose } from "./interactions/saving";
+import { findOpeningCategoryNo, setOpeningCategoryId } from "@/components/decentBar/interactions/opening";
 
 // The settings dialog is intended to eventually contain cross-device settings. But as I write this, there are no
 // cross-device capabilities. So the dialog has the title "Device Settings" for now, and later it may be renamed to "Settings",
@@ -29,7 +30,7 @@ type Props = {
 function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings, onSaveAppSettings, onValidateSetting, appName}: Props) {
   const initialAppSettingsRef = useRef<AppSettingCategory>(defaultAppSettings);
   const [categories, setCategories] = useState<SettingCategory[]>([]);
-  const [selectedCategoryNo, setSelectedCategoryNo] = useState(0);
+  const [selectedCategoryNo, setSelectedCategoryNo] = useState<number>(0);
   const [categoryValidities, setCategoryValidities] = useState<boolean[]>(Array(categories.length).fill(true));
 
   const categoryNames = useMemo(() => categories.map(c => c.name), [categories]);
@@ -47,7 +48,10 @@ function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings,
 
   useEffect(() => {
     if (!isOpen) return;
-    init(initialAppSettingsRef.current, appName, onLoadAppSettings).then(setCategories);
+    init(initialAppSettingsRef.current, appName, onLoadAppSettings).then(initCategories => {
+      setCategories(initCategories);
+      setSelectedCategoryNo(findOpeningCategoryNo(initCategories));
+    });
   }, [isOpen, onLoadAppSettings]);
 
   if (!isOpen || !categories.length) return null;
@@ -56,7 +60,12 @@ function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings,
 
   return (
     <ModalDialog title="Device Settings" isOpen={isOpen} onCancel={() => onClose(categories[0].settings)}>
-      <SettingCategorySelector selectedCategoryNo={selectedCategoryNo} categoryNames={categoryNames} onChange={setSelectedCategoryNo} disabled={isSaveDisabled} />
+      <SettingCategorySelector 
+        selectedCategoryNo={selectedCategoryNo} 
+        categoryNames={categoryNames} 
+        onChange={(nextCategoryNo) => { setSelectedCategoryNo(nextCategoryNo); setOpeningCategoryId(categories[nextCategoryNo].id); }} 
+        disabled={isSaveDisabled} 
+      />
       { categories.map((category, categoryNo) => (
         <SettingCategoryPanel key={category.name} category={category} isOpen={selectedCategoryNo === categoryNo} 
           onValidateSetting={onValidateSetting}

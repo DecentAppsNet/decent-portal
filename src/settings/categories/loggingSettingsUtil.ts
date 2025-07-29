@@ -1,9 +1,9 @@
 import { getCategorySettings } from "@/persistence/settings";
 import SettingCategory from "@/settings/types/SettingCategory";
 import SettingType from "@/settings/types/SettingType";
-import { mergeSettingsIntoCategory } from "./settingCategoryUtil";
-import Setting from "../types/Setting";
+import { mergeSettingValuesIntoCategory, settingsToSettingValues } from "./settingCategoryUtil";
 import { ButtonAction, onLogSettingsButtonClick } from './interactions/loggingSettingsButtons';
+import SettingValues from "../types/SettingValues";
 
 export const LOGGING_CATEGORY_ID = "logging";
 export const LOGGING_SETTING_ENABLE = "enableLogging";
@@ -34,13 +34,13 @@ function _getLoggingDefaultSettings():SettingCategory {
 }
 
 export async function loadLoggingSettingCategory():Promise<SettingCategory> {
-  const settings = await getCategorySettings(LOGGING_CATEGORY_ID);
-  return mergeSettingsIntoCategory(_getLoggingDefaultSettings(), settings);
+  const settingValues = await getCategorySettings(LOGGING_CATEGORY_ID) ?? {};
+  return mergeSettingValuesIntoCategory(_getLoggingDefaultSettings(), settingValues);
 }
 
-export async function getLoggingSettings():Promise<Setting[]> {
+export async function getLoggingSettings():Promise<SettingValues> {
   const loggingSettings = await getCategorySettings(LOGGING_CATEGORY_ID);
   if (loggingSettings) return loggingSettings;
   const defaultSettings = _getLoggingDefaultSettings();
-  return defaultSettings.settings;
+  return settingsToSettingValues(defaultSettings.settings);
 }

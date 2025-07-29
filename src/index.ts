@@ -34,6 +34,12 @@ export { default as SettingType } from './settings/types/SettingType';
 export type { default as TextSetting } from './settings/types/TextSetting';
 export type { default as ValidationFailure } from './settings/types/ValidationFailure';
 
+// Explicitly opening the settings dialog
+export { openSettings } from './settings/settingsUtil';
+export { APP_CATEGORY_ID } from './settings/categories/appSettingsUtil';
+export { LOGGING_CATEGORY_ID } from './settings/categories/loggingSettingsUtil';
+export { LLM_CATEGORY_ID } from './settings/categories/llmSettingsUtil';
+
 // Toasts - these complement the buttons that can be defined in app settings.
 export { infoToast, errorToast, importantToast } from './components/toasts/toastUtil';
 

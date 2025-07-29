@@ -1,0 +1,22 @@
+.container p {
+  padding-left: 1vh;
+  padding-right: 1vh;
+  padding-top: .5vh;
+  padding-bottom: .5vh;
+}
+
+.modelIdText {
+  padding-left: 1vh;
+  padding-right: 1vh;
+  padding-bottom: .2vh;
+  background-color: white;
+  border-top-left-radius: 1vh;
+  border-top-right-radius: 1vh;
+  text-align: center;
+}
+
+.appBehaviorSummary {
+  padding-top: .5vh;
+  padding-bottom: 0;
+  font-style: italic;
+}

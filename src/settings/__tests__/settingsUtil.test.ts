@@ -1,11 +1,12 @@
 
 import { describe, it, expect } from 'vitest';
 
-import { collateSettingRows, findDisabledSettings, isSettingsFormat } from '../settingsUtil';
+import { collateSettingRows, findDisabledSettings, isSettingsFormat, openSettings } from '../settingsUtil';
 import SettingCategory from '../types/SettingCategory';
 import SettingRow from '../types/SettingRow';
 import SettingType from '../types/SettingType';
 import { HEADING_TYPE } from '../types/Heading';
+import { initOpening } from '@/components/decentBar/interactions/opening';
 
 describe('settingsUtil', () => {
   describe('collateSettingRows()', () => {
@@ -205,6 +206,17 @@ describe('settingsUtil', () => {
       ];
       const result = isSettingsFormat(settings);
       expect(result).toBe(false);
+    });
+  });
+
+  describe('openSettings()', () => {
+    it('throws if module was not initialized', () => {
+      expect(() => openSettings()).toThrow();
+    });
+
+    it('returns successfully if module was initialized', () => {
+      initOpening((_ignored:string) => {});
+      expect(() => openSettings()).not.toThrow();
     });
   });
 });

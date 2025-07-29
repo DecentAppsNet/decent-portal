@@ -13,10 +13,10 @@
 .label {
     composes: disableSelect;
     flex-grow: 0;
-    min-width: 7rem;
-    padding-left: .5rem;
-    padding-right: .5rem;
-    font-size: 1.3rem;
+    min-width: 7vh;
+    padding-left: .5vh;
+    padding-right: .5vh;
+    font-size: 1.3vh;
 }
 
 .selectorButton {
@@ -28,12 +28,12 @@
     background-position: center;
     transition: background 0.2s;
     cursor: pointer;
-    margin-bottom: .1rem;
+    margin-bottom: .1vh;
 }
 
 .tabButton {
-    border-top-left-radius: .5rem;
-    border-top-right-radius: .5rem;
+    border-top-left-radius: .5vh;
+    border-top-right-radius: .5vh;
     margin-bottom: 0; /* Because it's often good to put the tabs directly attached to the top of some container for tab content. */
     margin-right: .1vh;
 }
@@ -48,20 +48,20 @@
 }
 
 .firstSelectorButton {
-    border-top-left-radius: .5rem;
-    border-bottom-left-radius: .5rem;
+    border-top-left-radius: .5vh;
+    border-bottom-left-radius: .5vh;
 }
 
 .lastSelectorButton {
-    border-top-right-radius: .5rem;
-    border-bottom-right-radius: .5rem;
+    border-top-right-radius: .5vh;
+    border-bottom-right-radius: .5vh;
 }
 
 .selectorButtonText {
-    padding-left: .5rem;
-    padding-right: .5rem;
-    letter-spacing: .1rem;
-    font-size: 1.1rem;
+    padding-left: .5vh;
+    padding-right: .5vh;
+    letter-spacing: .1vh;
+    font-size: 1.1vh;
     color: button-text;
 }
 
@@ -69,6 +69,20 @@
     composes: selectorButton;
     background-color: button-highlight;
     cursor: default;
+}
+
+.icon {
+    display: inline-block;
+    height: 1.1vh;
+    font-size: 1vh;
+    padding-left: .3vh;
+    color: button-text;
+    cursor: default;
+}
+
+.iconDisabled {
+    composes: icon;
+    cursor: pointer;
 }
 
 .selectorButtonSelectedReclickable {

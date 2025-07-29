@@ -1,15 +1,11 @@
-import { assert, botch } from '@/common/assertUtil';
+import { assert } from '@/common/assertUtil';
 import ModalDialog from "@/components/modalDialogs/ModalDialog";
 import ModelDeviceProblem from "./types/ModelDeviceProblem"
 import DialogFooter from "@/components/modalDialogs/DialogFooter";
 import DialogButton from "@/components/modalDialogs/DialogButton";
 import styles from './ModelDeviceProblemsDialog.module.css';
-import InsufficientMemoryIcon from './icons/memory.svg';
-import InsufficientStorageIcon from './icons/database.svg';
-import BadLoadSuccessIcon from './icons/message-alert.svg';
-import BadPerformanceIcon from './icons/speedometer-slow.svg';
-import DeveloperIcon from './icons/code-braces.svg';
 import ModelDeviceProblemType from './types/ModelDeviceProblemType';
+import ModelDeviceProblemsList from './ModelDeviceProblemsList';
 
 // Configuration for blocking problems that prevent model loading
 const BLOCKING_PROBLEM_MESSAGES: Partial<Record<ModelDeviceProblemType, string>> = {
@@ -65,19 +61,17 @@ function ModelDeviceProblemsDialog({isOpen, problems, onConfirm, onCancel, model
     : problems.length === 1 
       ? <p>The following problem was found for loading <span className={styles.modelIdText}>{modelId}</span>:</p>
       : <p>The following problems were found for loading <span className={styles.modelIdText}>{modelId}</span>:</p>;
-  const problemsContent = problems.map((problem, problemI) => {
-    return <li key={problemI}>{_renderProblemIcon(problem.type)}{problem.description}</li>
-  });
 
   return (
     <ModalDialog isOpen={isOpen} title={hasBlockingProblem ? 'Failed to Load Model' : 'Continue Loading Model?'} onCancel={onCancel}>
       {summaryContent}
-      <ul className={styles.problemList}>{problemsContent}</ul>
+      <ModelDeviceProblemsList problems={problems} />
       {hasBlockingProblem ? (
         <p className={styles.continueText}>{blockingMessage}</p>
       ) : (
         <p className={styles.continueText}>You can continue loading the model if you want.</p>
       )}
+      <p className={styles.continueText}>You can continue loading the model if you want.</p>
       <DialogFooter>
         {hasBlockingProblem ? (
           <DialogButton text={'Got it'} onClick={onCancel} isPrimary />

@@ -17,7 +17,6 @@ vi.mock("@/persistence/pathStore", async () => ({
 // Imports after mocks.
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { LOGGING_CATEGORY_ID, getLoggingSettings, loadLoggingSettingCategory } from "../loggingSettingsUtil";
-import SettingType from "@/settings/types/SettingType";
 
 let theFakeStore: Record<string, any> = {};
 
@@ -35,10 +34,7 @@ describe(('loggingSettingsUtil'), () => {
     });
 
     it('returns stored settings when they exist', async () => {
-      theFakeStore[`/settings/${LOGGING_CATEGORY_ID}.json`] = JSON.stringify([
-        { type:SettingType.BOOLEAN_TOGGLE, id: "enableLogging", label: "Logging enabled?", value:false },
-        { type:SettingType.NUMERIC, id: "maxRetentionDays", label: "Max days to keep", value: 14, minValue: 1, maxValue: 1000, allowDecimals: false }
-      ]);
+      theFakeStore[`/settings/${LOGGING_CATEGORY_ID}.json`] = JSON.stringify({enableLogging:false, maxRetentionDays:14});
       const category = await loadLoggingSettingCategory();
       expect(category.settings[0].value).toBe(false);
       expect(category.settings[1].value).toBe(14);
@@ -48,17 +44,14 @@ describe(('loggingSettingsUtil'), () => {
   describe('getLoggingSettings()', () => {
     it('returns default settings when no settings are stored', async () => {
       const settings = await getLoggingSettings();
-      expect(settings.length > 0).toBe(true);
+      expect(Object.keys(settings).length > 0).toBe(true);
     });
 
     it('returns stored settings when they exist', async () => {
-      theFakeStore[`/settings/${LOGGING_CATEGORY_ID}.json`] = JSON.stringify([
-        { type:SettingType.BOOLEAN_TOGGLE, id: "enableLogging", label: "Logging enabled?", value:false },
-        { type:SettingType.NUMERIC, id: "maxRetentionDays", label: "Max days to keep", value: 14, minValue: 1, maxValue: 1000, allowDecimals: false }
-      ]);
+      theFakeStore[`/settings/${LOGGING_CATEGORY_ID}.json`] = JSON.stringify({enableLogging:false, maxRetentionDays:14});;
       const settings = await getLoggingSettings();
-      expect(settings[0].value).toBe(false);
-      expect(settings[1].value).toBe(14);
+      expect(settings.enableLogging).toBe(false);
+      expect(settings.maxRetentionDays).toBe(14);
     });
   });
 });

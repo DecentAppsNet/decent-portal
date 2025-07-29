@@ -1,0 +1,23 @@
+@value colors: "@/components/commonPalette.module.css";
+@value background-alt-content from colors;
+
+.problemList {
+  margin-left: 2vh;
+  margin-right: 2vh;
+  margin-top: .5vh;
+  margin-bottom: .5vh;
+}
+
+.problemList li {
+  display: flex;
+  align-items: center;
+  font-size: 1vh;
+  min-height: 2vh;
+  margin-bottom: .5vh;
+  margin-right: 0.5vh;
+}
+
+.icon {
+  width: 2vh;
+  margin-right: 0.5vh;
+}
