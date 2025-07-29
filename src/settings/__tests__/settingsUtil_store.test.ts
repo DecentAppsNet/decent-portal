@@ -18,12 +18,11 @@ vi.mock("@/persistence/pathStore", async () => ({
 
 // Imports after mocks.
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { loadSettingCategories, saveSettingCategories, settingValue } from '../settingsUtil';
+import { loadSettingCategories, saveSettingCategories } from '../settingsUtil';
 import SettingCategory from '../types/SettingCategory';
 import { LLM_CATEGORY_ID } from '../categories/llmSettingsUtil';
 import { LOGGING_CATEGORY_ID } from '../categories/loggingSettingsUtil';
 import SettingType from '../types/SettingType';
-import Setting from '../types/Setting';
 
 const FAKE_APP_SETTING_CATEGORY:SettingCategory = {
   id:'app-root',
@@ -72,9 +71,7 @@ describe('settingsUtil_store', () => {
       const categories:SettingCategory[] = [appCategory];
       await saveSettingCategories(categories, 'root');
       const savedSettings = JSON.parse(theFakeStore[_idToKey(appCategory.id)]);
-      expect(savedSettings.length).toBe(1);
-      expect(savedSettings[0].id).toBe('s1');
-      expect(savedSettings[0].value).toBe('test');
+      expect(savedSettings.s1).toBe('test');
     });
 
     it('if onSaveAppSettings() returns null, settings are saved as is', async () => {
@@ -85,9 +82,7 @@ describe('settingsUtil_store', () => {
       const categories:SettingCategory[] = [appCategory];
       await saveSettingCategories(categories, 'root', () => null);
       const savedSettings = JSON.parse(theFakeStore[_idToKey(appCategory.id)]);
-      expect(savedSettings.length).toBe(1);
-      expect(savedSettings[0].id).toBe('s1');
-      expect(savedSettings[0].value).toBe('test');
+      expect(savedSettings.s1).toBe('test');
     });
 
     it('if onSaveAppSettings() returns modified settings, those are saved', async () => {
@@ -97,13 +92,11 @@ describe('settingsUtil_store', () => {
       };
       const categories:SettingCategory[] = [appCategory];
       await saveSettingCategories(categories, 'root', (settings) => {
-        settings[0].value = 'modified';
+        settings.s1 = 'modified';
         return settings;
       });
       const savedSettings = JSON.parse(theFakeStore[_idToKey(appCategory.id)]);
-      expect(savedSettings.length).toBe(1);
-      expect(savedSettings[0].id).toBe('s1');
-      expect(savedSettings[0].value).toBe('modified');
+      expect(savedSettings.s1).toBe('modified');
     });
 
     it('if onSaveAppSettings() throws, so does saveSettingsCategories()', async () => {
@@ -132,31 +125,6 @@ describe('settingsUtil_store', () => {
       ).rejects.toThrow();
       console.error = originalError;
       theFakeStoreSetTextShouldThrow = false;
-    });
-  });
-
-  describe('settingValue', () => {
-    it('returns null if settings are undefined', () => {
-      const value = settingValue('test');
-      expect(value).toBeNull();
-    });
-
-    it('returns a setting if found', () => {
-      const settings:Setting[] = [
-        { id: 's1', type: SettingType.TEXT, label: 'Text Setting', value: 'Some text' },
-        { id: 's2', type: SettingType.BOOLEAN_TOGGLE, label: 'Boolean Setting', value: true }
-      ];
-      const value = settingValue('s1', settings);
-      expect(value).toBe('Some text');
-    });
-
-    it('returns null if setting not found', () => {
-      const settings:Setting[] = [
-        { id: 's1', type: SettingType.TEXT, label: 'Text Setting', value: 'Some text' },
-        { id: 's2', type: SettingType.BOOLEAN_TOGGLE, label: 'Boolean Setting', value: true }
-      ];
-      const value = settingValue('s3', settings);
-      expect(value).toBeNull();
     });
   });
 });

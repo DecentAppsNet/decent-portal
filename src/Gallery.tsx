@@ -5,17 +5,20 @@ import Link from './components/decentBar/types/Link';
 import { getBaseUrl } from './components/decentBar/decentBarUtil';
 import style from './Gallery.module.css'
 import SettingType from './settings/types/SettingType';
-import Setting from './settings/types/Setting';
 import ValidationFailure, { LAST_VALID_VALUE } from './settings/types/ValidationFailure';
-import BooleanToggleSetting from './settings/types/BooleanToggleSetting';
-import TextSetting from './settings/types/TextSetting';
-import NumericSetting from './settings/types/NumericSetting';
 import AppSettingCategory from './settings/types/AppSettingCategory';
 import ModelDeviceProblem from './models/types/ModelDeviceProblem';
 import ModelDeviceProblemType from './models/types/ModelDeviceProblemType';
 import ModelDeviceProblemDialog from './models/ModelDeviceProblemsDialog';
 import ContentButton from './components/contentButton/ContentButton';
 import { predictModelDeviceProblems } from './models/modelUtil';
+import LlmSpeed from './components/llmSpeed/LlmSpeed';
+import { openSettings } from './settings/settingsUtil';
+import { APP_CATEGORY_ID } from './settings/categories/appSettingsUtil';
+import { LOGGING_CATEGORY_ID } from './settings/categories/loggingSettingsUtil';
+import { LLM_CATEGORY_ID } from './settings/categories/llmSettingsUtil';
+import SupportedModelSetter from './settings/settingsDialog/setters/SupportedModelSetter';
+import { AUTO_SELECT_ID } from './settings/settingsDialog/setters/interactions/models';
 
 function testMinimal() {
   return <>
@@ -157,28 +160,27 @@ function testAppSettings() {
     ]
   };
   
-  function _onValidateSetting(setting:Setting):ValidationFailure|null {
-    switch (setting.id) {
-      case '1d': return !(setting as BooleanToggleSetting).value ? { failReason:'Say yes!' } : null;
-      case '1e': return (setting as BooleanToggleSetting).value ? { failReason:'Say no!' } : null;
-      case '1f': return !(setting as BooleanToggleSetting).value ? { failReason:'Yes required.', nextValue:LAST_VALID_VALUE } : null;
-      case '1g': return (setting as BooleanToggleSetting).value ? { failReason:'No required.', nextValue:LAST_VALID_VALUE } : null;
-      case '2c': return (setting as TextSetting).value.length ? null : { failReason:'Should be specified.' };
+  function _onValidateSetting(settingId:string, settingValue:any):ValidationFailure|null {
+    switch (settingId) {
+      case '1d': return !settingValue ? { failReason:'Say yes!' } : null;
+      case '1e': return !!settingValue ? { failReason:'Say no!' } : null;
+      case '1f': return !!settingValue ? { failReason:'Yes required.', nextValue:LAST_VALID_VALUE } : null;
+      case '1g': return !!settingValue ? { failReason:'No required.', nextValue:LAST_VALID_VALUE } : null;
+      case '2c': return settingValue.length ? null : { failReason:'Should be specified.' };
       case '2d': 
-        const originalValue = (setting as TextSetting).value;
+        const originalValue = settingValue as string;
         const nextValue = originalValue.trim();
       return nextValue === originalValue ? null : { nextValue };
       
       case '2e': 
-      return (setting as TextSetting).value.includes('apple') ? null : { failReason:'Must contain "apple".', nextValue:LAST_VALID_VALUE };
+      return (settingValue as string).includes('apple') ? null : { failReason:'Must contain "apple".', nextValue:LAST_VALID_VALUE };
       
       case '3c':
-      return (setting as NumericSetting).value % 2 !== 0 ? { failReason:'Should be even.' } : null;
+      return (settingValue as number) % 2 !== 0 ? { failReason:'Should be even.' } : null;
 
       case '3d': 
-        const numericSetting = setting as NumericSetting;
-        const roundedValue = Math.round(numericSetting.value * 10) / 10; // Round to 1 decimal place
-      return roundedValue !== numericSetting.value ? { failReason:'Must have less than 2 decimal places.', nextValue:roundedValue } : null;
+        const roundedValue = Math.round(settingValue * 10) / 10; // Round to 1 decimal place
+      return roundedValue !== settingValue ? { failReason:'Must have less than 2 decimal places.', nextValue:roundedValue } : null;
 
       default: return null;
     }
@@ -191,10 +193,14 @@ function testAppSettings() {
       defaultAppSettings={defaultAppSettings}
       onValidateSetting={_onValidateSetting}
     />
+    <p>Use gear in DecentBar or...</p>
+    <ContentButton text='App Settings' onClick={() => openSettings(APP_CATEGORY_ID)} />
+    <ContentButton text='Logging Settings' onClick={() => openSettings(LOGGING_CATEGORY_ID)} />
+    <ContentButton text='LLM Settings' onClick={() => openSettings(LLM_CATEGORY_ID)} />
   </>;
 }
 
-function _testModelDeviceProblems(modalDialogName:string|null, setModalDialogName:Function) {
+function testModelDeviceProblems(modalDialogName:string|null, setModalDialogName:Function) {
   const DIALOG_NAME = ModelDeviceProblemDialog.name;
   const problems:ModelDeviceProblem[] = [
     {type:ModelDeviceProblemType.BAD_LOAD_SUCCESS_HISTORY, description:`The model didn't load before.`},
@@ -216,7 +222,7 @@ function _testModelDeviceProblems(modalDialogName:string|null, setModalDialogNam
   </>;
 }
 
-function _testModelDeviceProblemsDevMode(modalDialogName:string|null, setModalDialogName:Function) {
+function testModelDeviceProblemsDevMode(modalDialogName:string|null, setModalDialogName:Function) {
   const DIALOG_NAME = `${ModelDeviceProblemDialog.name}2`;
   const problems:ModelDeviceProblem[] = [
     {type:ModelDeviceProblemType.DEVELOPER_MODE, description:`We aren't actually loading a model. This is just a UI test!`}
@@ -234,7 +240,7 @@ function _testModelDeviceProblemsDevMode(modalDialogName:string|null, setModalDi
   </>;
 }
 
-function _testModelDeviceProblemsRealData(modalDialogName:string|null, 
+function testModelDeviceProblemsRealData(modalDialogName:string|null, 
     modelDeviceProblems:ModelDeviceProblem[]|null, setModelDeviceProblems:Function, setModalDialogName:Function) {
   const DIALOG_NAME = `${ModelDeviceProblemDialog.name}3`;
   const MODEL_ID = "Llama-3-70B-Instruct-q3f16_1-MLC"; // A larger model more likely to have problems.
@@ -260,6 +266,46 @@ function _testModelDeviceProblemsRealData(modalDialogName:string|null,
   </>;
 }
 
+function _testLlmSpeed() { // TODO delete this after its viewable in settings.
+  return <>
+    <h3>LLM Speed</h3>
+    <LlmSpeed inputCharsPerSec={40} outputCharsPerSec={10} />
+  </>;
+}
+
+function _testAdhoc() {
+  return <>
+    <h3>SupportedModelSetter</h3>
+    <SupportedModelSetter
+      setting={{
+        id: 'supported-models',
+        type: SettingType.SUPPORTED_MODEL,
+        label: 'Supported Models',
+        value: 'Llama-3-70B-Instruct-q3f16_1-MLC',
+        models: [
+          { id:'Llama-3-70B-Instruct-q3f16_1-MLC', appBehaviorSummary:'Help us test this.', beta: true },
+          { id:'Llama-3.1-8B-Instruct-q4f16_1-MLC', appBehaviorSummary:'Best option for most.' },
+          { id:'DeepSeek-R1-Distill-Qwen-7B-q4f32_1-MLC', appBehaviorSummary:'Better for math.'}
+        ]
+      }}
+      onChange={() => {}}
+    />
+
+    <h3>SupportedModelSetter - No Models</h3>
+    <SupportedModelSetter
+      setting={{
+        id: 'supported-models',
+        type: SettingType.SUPPORTED_MODEL,
+        label: 'Supported Models',
+        value: AUTO_SELECT_ID,
+        models: []
+      }}
+      onChange={() => {}}
+    />
+    
+  </>;
+}
+
 function Gallery() {
   const [modalDialogName, setModalDialogName] = useState<string|null>(null);
   const [modelDeviceProblems, setModelDeviceProblems] = useState<ModelDeviceProblem[]|null>(null);
@@ -282,9 +328,15 @@ function Gallery() {
       { testAppSettings() }
 
       <h2>Model Device Problems Tests</h2>
-      { _testModelDeviceProblems(modalDialogName, setModalDialogName) }
-      { _testModelDeviceProblemsDevMode(modalDialogName, setModalDialogName) }
-      { _testModelDeviceProblemsRealData(modalDialogName, modelDeviceProblems, setModelDeviceProblems, setModalDialogName) }
+      { testModelDeviceProblems(modalDialogName, setModalDialogName) }
+      { testModelDeviceProblemsDevMode(modalDialogName, setModalDialogName) }
+      { testModelDeviceProblemsRealData(modalDialogName, modelDeviceProblems, setModelDeviceProblems, setModalDialogName) }
+
+      <h2>LLM Speed Tests</h2>
+      { _testLlmSpeed() }
+
+      <h2>Adhoc</h2>
+      { _testAdhoc() }
     </div>
   );
 }

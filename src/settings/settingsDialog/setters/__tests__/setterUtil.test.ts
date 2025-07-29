@@ -3,7 +3,6 @@ import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
 import { handleValidation, setClearValidationMessageDelay } from '../setterUtil';
 import TextSetting from '@/settings/types/TextSetting';
 import SettingType from '@/settings/types/SettingType';
-import Setting from '@/settings/types/Setting';
 import ValidationFailure, { LAST_VALID_VALUE } from '@/settings/types/ValidationFailure';
 import { wait } from '@/common/waitUtil';
 
@@ -35,7 +34,7 @@ describe('setterUtil', () => {
     });
 
     it('sets validation message to null and returns true if validation settings callback returns no failure', () => {
-      function _onValidateSetting(_setting:Setting):ValidationFailure|null {
+      function _onValidateSetting(_settingId:string, _settingValue:any):ValidationFailure|null {
         return null;
       }
       const nextSetting:TextSetting = {id:'id', type:SettingType.TEXT, label:'label', value:'x'};
@@ -46,7 +45,7 @@ describe('setterUtil', () => {
     });
 
     it('sets validation message and returns false if validation settings callback returns failure with no next value', () => {
-      function _onValidateSetting(_setting:Setting):ValidationFailure|null {
+      function _onValidateSetting(_id:string, _value:any):ValidationFailure|null {
         return { failReason:'Invalid value', nextValue:undefined };
       }
       const nextSetting:TextSetting = {id:'id', type:SettingType.TEXT, label:'label', value:'x'};
@@ -57,7 +56,7 @@ describe('setterUtil', () => {
     });
 
     it('sets validation message to null and returns false if validation settings callback returns failure with no failure reason', () => {
-      function _onValidateSetting(_setting:Setting):ValidationFailure|null {
+      function _onValidateSetting(_id:string, _value:any):ValidationFailure|null {
         return { nextValue:undefined };
       }
       const nextSetting:TextSetting = {id:'id', type:SettingType.TEXT, label:'label', value:'x'};
@@ -68,7 +67,7 @@ describe('setterUtil', () => {
     });
 
     it('sets validation message and returns true if validation settings callback returns failure with next value', async () => {
-      function _onValidateSetting(_setting:Setting):ValidationFailure|null {
+      function _onValidateSetting(_id:string, _value:any):ValidationFailure|null {
         return { failReason:'Invalid value', nextValue:'z' };
       }
       const nextSetting:TextSetting = {id:'id', type:SettingType.TEXT, label:'label', value:'x'};
@@ -82,7 +81,7 @@ describe('setterUtil', () => {
     });
 
     it('sets validation message and returns last valid value if validation settings callback returns failure with LAST_VALID_VALUE', async () => {
-      function _onValidateSetting(_setting:Setting):ValidationFailure|null {
+      function _onValidateSetting(_id:string, _value:any):ValidationFailure|null {
         return { failReason:'Invalid value', nextValue:LAST_VALID_VALUE };
       }
       const nextSetting:TextSetting = {id:'id', type:SettingType.TEXT, label:'label', value:'x'};
@@ -96,7 +95,7 @@ describe('setterUtil', () => {
     });
 
     it('debounces clearing validation message', async () => {
-      function _onValidateSetting(_setting:Setting):ValidationFailure|null {
+      function _onValidateSetting(_id:string, _value:any):ValidationFailure|null {
         return { failReason:'Invalid value', nextValue:LAST_VALID_VALUE };
       }
       const nextSetting:TextSetting = {id:'id', type:SettingType.TEXT, label:'label', value:'x'};
