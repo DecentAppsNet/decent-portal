@@ -10,6 +10,7 @@ import { isServingLocally } from "@/developer/devEnvUtil";
 import theModelList from './modelList.json';
 import { getMaxLlmSize, incrementMaxLlmSizeAfterSuccessfulLoad } from "@/settings/categories/llmSettingsUtil";
 import { mbToGb } from "@/deviceCapabilities/memoryUtil";
+import { hasWebGpuSupport } from "@/deviceCapabilities/featureUtil";
 
 let theCurrentModelInfo:ModelInfo|null = null;
 
@@ -84,7 +85,7 @@ function _describeInsufficientMemory(wasSuccessfulBefore:boolean, requiredMemory
 }
 
 export function _describeWebGpuNotAvailable():string {
-  return `Your browser doesn't support WebGPU. GPU-accelerated models might not load successfully on this device.`;
+  return `Your browser doesn't support WebGPU. GPU-accelerated models won't load successfully. You could try using a different browser like Google Chrome or Microsoft Edge.`;
 }
 
 // Used for testing.
@@ -130,10 +131,11 @@ export async function predictModelDeviceProblems(modelId:string):Promise<ModelDe
 
   const problems:ModelDeviceProblem[] = [];
 
-  if (typeof navigator !== "undefined" && !('gpu' in navigator)) {
+  if (!hasWebGpuSupport()) {
     problems.push({
       type: ModelDeviceProblemType.WEBGPU_NOT_AVAILABLE,
-      description: _describeWebGpuNotAvailable()
+      description: _describeWebGpuNotAvailable(),
+      isBlocking: true
     });
   }
 
@@ -141,7 +143,8 @@ export async function predictModelDeviceProblems(modelId:string):Promise<ModelDe
   if (loadSuccessRate.series.length && loadSuccessRate.lastAverage < 1) {
     problems.push({
       type: ModelDeviceProblemType.BAD_LOAD_SUCCESS_HISTORY,
-      description: _describeBadLoadSuccessHistory(loadSuccessRate)
+      description: _describeBadLoadSuccessHistory(loadSuccessRate),
+      isBlocking: false
     });
   }
 
@@ -149,7 +152,8 @@ export async function predictModelDeviceProblems(modelId:string):Promise<ModelDe
   if (_areTokenRatesSlow(inputCharsPerSec, outputCharsPerSec)) {
     problems.push({
       type: ModelDeviceProblemType.BAD_PERFORMANCE_HISTORY,
-      description: _describeBadPerformanceHistory(inputCharsPerSec, outputCharsPerSec)
+      description: _describeBadPerformanceHistory(inputCharsPerSec, outputCharsPerSec),
+      isBlocking: false
     })
   }
 
@@ -158,7 +162,8 @@ export async function predictModelDeviceProblems(modelId:string):Promise<ModelDe
   if (theCurrentModelInfo.requiredMemoryGb > maxLlmSize) {
     problems.push({
       type: ModelDeviceProblemType.INSUFFICIENT_VRAM, 
-      description: _describeInsufficientMemory(wasSuccessfulBefore, theCurrentModelInfo.requiredMemoryGb, maxLlmSize)
+      description: _describeInsufficientMemory(wasSuccessfulBefore, theCurrentModelInfo.requiredMemoryGb, maxLlmSize),
+      isBlocking: false
     });
   }
 
@@ -166,14 +171,16 @@ export async function predictModelDeviceProblems(modelId:string):Promise<ModelDe
   if (theCurrentModelInfo.requiredStorageGb > await estimateAvailableStorage()) {
     problems.push({
       type: ModelDeviceProblemType.INSUFFICIENT_STORAGE,
-      description: _describeInsufficientStorage(wasSuccessfulBefore, theCurrentModelInfo.requiredStorageGb, availableStorage)
+      description: _describeInsufficientStorage(wasSuccessfulBefore, theCurrentModelInfo.requiredStorageGb, availableStorage),
+      isBlocking: false
     });
   }
 
   if (isServingLocally()) {
     problems.push({
       type: ModelDeviceProblemType.DEVELOPER_MODE,
-      description: `You are running this web app from a local server, probably for development.`
+      description: `You are running this web app from a local server, probably for development.`,
+      isBlocking: false
     });
   }
   

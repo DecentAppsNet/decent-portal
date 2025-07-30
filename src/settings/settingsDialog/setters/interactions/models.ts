@@ -62,7 +62,7 @@ export async function initModelOptions(models:SupportedModel[], setModelOptions:
     const option = secondModelOptions[optionI];
     option.problems = await predictModelDeviceProblems(option.id) ?? [];
     if (option.problems.length) option.problems = option.problems.filter(o => o.type !== ModelDeviceProblemType.DEVELOPER_MODE);
-    if (option.beta) option.problems.push({ type: ModelDeviceProblemType.BETA, description: 'Beta status: app has not been fully tested with this model.' });
+    if (option.beta) option.problems.push({ type: ModelDeviceProblemType.BETA, description: 'Beta status: app has not been fully tested with this model.', isBlocking:false });
     if (!option.problems.length) option.problems = null;
     option.iconChar = option.problems ? PROBLEM_ICON : null;
     const history:ModelDeviceHistory = await getModelDeviceHistory(option.id);

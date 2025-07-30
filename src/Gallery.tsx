@@ -203,11 +203,11 @@ function testAppSettings() {
 function testModelDeviceProblems(modalDialogName:string|null, setModalDialogName:Function) {
   const DIALOG_NAME = ModelDeviceProblemDialog.name;
   const problems:ModelDeviceProblem[] = [
-    {type:ModelDeviceProblemType.BAD_LOAD_SUCCESS_HISTORY, description:`The model didn't load before.`},
-    {type:ModelDeviceProblemType.BAD_PERFORMANCE_HISTORY, description:`The model performed poorly before.`},
-    {type:ModelDeviceProblemType.INSUFFICIENT_STORAGE, description:`You might not have enough storage for this bad boy.`},
-    {type:ModelDeviceProblemType.INSUFFICIENT_VRAM, description:`Got enough VRAM? I don't think so, buddy.`},
-    {type:ModelDeviceProblemType.DEVELOPER_MODE, description:`We aren't actually loading a model. This is just a UI test!`}
+    {type:ModelDeviceProblemType.BAD_LOAD_SUCCESS_HISTORY, description:`The model didn't load before.`, isBlocking:false},
+    {type:ModelDeviceProblemType.BAD_PERFORMANCE_HISTORY, description:`The model performed poorly before.`, isBlocking:false},
+    {type:ModelDeviceProblemType.INSUFFICIENT_STORAGE, description:`You might not have enough storage for this bad boy.`, isBlocking:false},
+    {type:ModelDeviceProblemType.INSUFFICIENT_VRAM, description:`Got enough VRAM? I don't think so, buddy.`, isBlocking:false},
+    {type:ModelDeviceProblemType.DEVELOPER_MODE, description:`We aren't actually loading a model. This is just a UI test!`, isBlocking:false}
   ];
   return <>
     <h3>Test: Model Device Problems Dialog</h3>
@@ -225,7 +225,7 @@ function testModelDeviceProblems(modalDialogName:string|null, setModalDialogName
 function testModelDeviceProblemsDevMode(modalDialogName:string|null, setModalDialogName:Function) {
   const DIALOG_NAME = `${ModelDeviceProblemDialog.name}2`;
   const problems:ModelDeviceProblem[] = [
-    {type:ModelDeviceProblemType.DEVELOPER_MODE, description:`We aren't actually loading a model. This is just a UI test!`}
+    {type:ModelDeviceProblemType.DEVELOPER_MODE, description:`We aren't actually loading a model. This is just a UI test!`, isBlocking:false}
   ];
   return <>
     <h3>Test: Model Device Problems Dialog - Developer Mode</h3>
@@ -266,10 +266,10 @@ function testModelDeviceProblemsRealData(modalDialogName:string|null,
   </>;
 }
 
-function _testWebGpuNotAvailableDialog(modalDialogName:string|null, setModalDialogName:Function) {
+function testWebGpuNotAvailableDialog(modalDialogName:string|null, setModalDialogName:Function) {
   const DIALOG_NAME = `${ModelDeviceProblemDialog.name}WebGpu`;
   const problems:ModelDeviceProblem[] = [
-    {type:ModelDeviceProblemType.WEBGPU_NOT_AVAILABLE, description:_describeWebGpuNotAvailable()}
+    {type:ModelDeviceProblemType.WEBGPU_NOT_AVAILABLE, description:_describeWebGpuNotAvailable(), isBlocking:true}
   ];
   return <>
     <h3>Test: WebGPU Not Available Dialog</h3>
@@ -284,14 +284,14 @@ function _testWebGpuNotAvailableDialog(modalDialogName:string|null, setModalDial
   </>;
 }
 
-function _testLlmSpeed() { // TODO delete this after its viewable in settings.
+function testLlmSpeed() { // TODO delete this after its viewable in settings.
   return <>
     <h3>LLM Speed</h3>
     <LlmSpeed inputCharsPerSec={40} outputCharsPerSec={10} />
   </>;
 }
 
-function _testAdhoc() {
+function testAdhoc() {
   return <>
     <h3>SupportedModelSetter</h3>
     <SupportedModelSetter
@@ -345,16 +345,16 @@ function Gallery() {
       { testAppSettings() }
 
       <h2>Model Device Problems Tests</h2>
-      { _testWebGpuNotAvailableDialog(modalDialogName, setModalDialogName) }
+      { testWebGpuNotAvailableDialog(modalDialogName, setModalDialogName) }
       { testModelDeviceProblems(modalDialogName, setModalDialogName) }
       { testModelDeviceProblemsDevMode(modalDialogName, setModalDialogName) }
       { testModelDeviceProblemsRealData(modalDialogName, modelDeviceProblems, setModelDeviceProblems, setModalDialogName) }
 
       <h2>LLM Speed Tests</h2>
-      { _testLlmSpeed() }
+      { testLlmSpeed() }
 
       <h2>Adhoc</h2>
-      { _testAdhoc() }
+      { testAdhoc() }
     </div>
   );
 }
