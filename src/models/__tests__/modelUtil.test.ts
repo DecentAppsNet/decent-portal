@@ -10,6 +10,11 @@ vi.mock("@/deviceCapabilities/storageUtil", async () => ({
   estimateAvailableStorage: vi.fn(() => theAvailableStorage)
 }));
 
+vi.mock('@/deviceCapabilities/featureUtil', async () => ({
+  ...(await vi.importActual('@/deviceCapabilities/featureUtil')),
+  hasWebGpuSupport: vi.fn(() => theHasWebGpuSupport)
+}));
+
 vi.mock('@/persistence/deviceHistory', async () => ({
   ...(await vi.importActual("@/persistence/deviceHistory")),
   getModelDeviceHistory: vi.fn(() => theModelDeviceHistory),
@@ -43,6 +48,7 @@ const ALT_MODEL_ID = 'Llama-3-70B-Instruct-q3f16_1-MLC';
 
 let theSystemMemory = 0;
 let theAvailableStorage = 0;
+let theHasWebGpuSupport = true;
 let theModelDeviceHistory:ModelDeviceHistory = _createModelDeviceHistory();
 let theIsServingLocally = false;
 
@@ -70,6 +76,7 @@ describe('modelUtil', () => {
     beforeEach(() => { // Initialize to a good value, and let tests update it as wanted.
       theSystemMemory = 8;
       theAvailableStorage = 100;
+      theHasWebGpuSupport = true;
       clearCachedModelInfo();
       theModelDeviceHistory = _createModelDeviceHistory();
     });
@@ -98,6 +105,17 @@ describe('modelUtil', () => {
       expect(result).toBeNull();
       const altResult = await predictModelDeviceProblems(ALT_MODEL_ID);
       expect(altResult).not.toBeNull();
+    });
+
+    describe('when WebGPU is not available', () => {
+      it('returns WEBGPU_NOT_AVAILABLE', async () => {
+        theHasWebGpuSupport = false;
+        const result = await predictModelDeviceProblems(MODEL_ID);
+        expect(result).not.toBeNull();
+        const problems:ModelDeviceProblem[] = result as unknown as ModelDeviceProblem[];
+        expect(problems.length).toBe(1);
+        expect(problems[0].type).toBe(ModelDeviceProblemType.WEBGPU_NOT_AVAILABLE);
+      });
     });
 
     describe('when past load history has failures', () => {
