@@ -43,8 +43,8 @@ export { LLM_CATEGORY_ID } from './settings/categories/llmSettingsUtil';
 // Toasts - these complement the buttons that can be defined in app settings.
 export { infoToast, errorToast, importantToast } from './components/toasts/toastUtil';
 
-// Updating model device history and predicting problems
-export { predictModelDeviceProblems, updateModelDevicePerformanceHistory, updateModelDeviceLoadHistory } from './models/modelUtil';
+// Updating model device history, choosing best model for app, and predicting problems
+export { findBestModel, scoreModel, predictModelDeviceProblems, updateModelDevicePerformanceHistory, updateModelDeviceLoadHistory } from './models/modelUtil';
 
 // Model Device Problems dialog
 export { default as ModelDeviceProblemsDialog } from './models/ModelDeviceProblemsDialog';
