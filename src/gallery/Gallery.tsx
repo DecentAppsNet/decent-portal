@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
-import style from './Gallery.module.css'
 import ModelDeviceProblem from '../models/types/ModelDeviceProblem';
 import ModelDeviceProblemTests from './ModelDeviceProblemTests';
 import AdhocTests from './AdhocTests';
 import DecentBarTests from './DecentBarTests';
 import Selector from '@/components/selector/Selector';
+import styles from './Gallery.module.css' // Import this after the other imports to preserve intended order for CSS overrides.
 
 enum Group {
   DECENT_BAR = 0,
@@ -35,7 +35,7 @@ function Gallery() {
   }
 
   return (
-    <div className={style.container}>
+    <div className={styles.container}>
       <h1>Decent Portal Test App</h1>
 
       <Selector optionNames={OPTION_NAMES} selectedOptionNo={selectedGroupNo} onChange={setSelectedGroupNo} displayAsTabs/>

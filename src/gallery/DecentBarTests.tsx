@@ -8,8 +8,8 @@ import { LOGGING_CATEGORY_ID } from '@/settings/categories/loggingSettingsUtil';
 import { openSettings } from '@/settings/settingsUtil';
 import AppSettingCategory from '@/settings/types/AppSettingCategory';
 import SettingType from '@/settings/types/SettingType';
-import styles from './Gallery.module.css';
 import ValidationFailure, { LAST_VALID_VALUE } from '@/settings/types/ValidationFailure';
+import styles from './Gallery.module.css' // Import this after the other imports to preserve intended order for CSS overrides.
 
 function _testMinimal() {
   return <>
@@ -204,7 +204,6 @@ function DecentBarTests() {
     {_testNoRenderOnDisabledDomain()}
     {_testOverrideHomeUrl()}
     {_testOverrideCss()}
-    {_testAppSettings()}
   </>;
 }
 

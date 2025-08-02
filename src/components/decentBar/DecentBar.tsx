@@ -72,7 +72,7 @@ function _appLinksContent(links:Link[], onClickLink:Function) {
 
 function _createDefaultAppSettings(appName:string):AppSettingCategory {
   return {
-    description: `There are no settings for ${appName}. But this is where you’d find them if they existed!`,
+    description: `These settings apply solely to ${appName}, while other settings apply to all apps.`,
     settings: []
   }
 }

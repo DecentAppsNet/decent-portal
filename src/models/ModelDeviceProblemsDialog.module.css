@@ -11,4 +11,8 @@
   border-radius: .5vh;
   padding: .2vh;
   white-space: nowrap;
-} 
+}
+
+.problemPanel {
+  padding: 2vh;
+}

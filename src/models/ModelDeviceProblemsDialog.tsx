@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+
 import { assert } from '@/common/assertUtil';
 import ModalDialog from "@/components/modalDialogs/ModalDialog";
 import ModelDeviceProblem from "./types/ModelDeviceProblem"
@@ -6,17 +8,33 @@ import DialogButton from "@/components/modalDialogs/DialogButton";
 import styles from './ModelDeviceProblemsDialog.module.css';
 import ModelDeviceProblemType from './types/ModelDeviceProblemType';
 import ModelDeviceProblemsList from './ModelDeviceProblemsList';
+import { openSettingsDialog } from '@/components/decentBar/interactions/opening';
+import { APP_CATEGORY_ID } from '@/settings/categories/appSettingsUtil';
+import { findOtherModelCount } from './interactions/initialization';
+import SupportedModel from '@/appMetadata/types/SupportedModel';
 
 type Props = {
   isOpen:boolean,
   modelId:string,
   onConfirm:() => void,
   onCancel:() => void,
-  problems:ModelDeviceProblem[]|null
+  problems:ModelDeviceProblem[]|null,
+  supportedModels?:SupportedModel[] // If you don't pass anything, they'll be retrieved from app meta data.
 }
 
-function ModelDeviceProblemsDialog({isOpen, problems, onConfirm, onCancel, modelId}:Props) {
-  if (!isOpen || !problems) return null;
+function _getOtherModelsAvailableText(otherModelCount:number):string {
+  if (otherModelCount === 0) return '';
+  return otherModelCount === 1 ? ' Another model supported by this app is available.' : ` Other models supported by this app are available.` 
+}
+
+function ModelDeviceProblemsDialog({isOpen, problems, onConfirm, onCancel, modelId, supportedModels}:Props) {
+  const [otherModelCount, setOtherModelCount] = useState<number|null>(null);
+
+  useEffect(() => { // It works well to set otherModelCount before the dialog is open, because the value won't be affected by the dialog opening or anything else in the session.
+    findOtherModelCount(supportedModels).then(setOtherModelCount);
+  }, []);
+
+  if (!isOpen || !problems || otherModelCount === null) return null;
 
   assert(problems.length >= 1);
 
@@ -33,20 +51,27 @@ function ModelDeviceProblemsDialog({isOpen, problems, onConfirm, onCancel, model
       ? <p>The following problem was found for loading <span className={styles.modelIdText}>{modelId}</span>:</p>
       : <p>The following problems were found for loading <span className={styles.modelIdText}>{modelId}</span>:</p>;
 
+  const otherModelsAvailableText = _getOtherModelsAvailableText(otherModelCount);
+  const conclusionMessage = hasBlockingProblem
+    ? `This model can't be loaded.${otherModelsAvailableText}`
+    : `You can continue loading the model if you want.${otherModelsAvailableText}`;
+
   return (
     <ModalDialog isOpen={isOpen} title={hasBlockingProblem ? 'Failed to Load Model' : 'Continue Loading Model?'} onCancel={onCancel}>
       {summaryContent}
-      <ModelDeviceProblemsList problems={problems} />
-      {hasBlockingProblem ? (
-        <p className={styles.continueText}>This model can't be loaded.</p>
-      ) : (
-        <p className={styles.continueText}>You can continue loading the model if you want.</p>
-      )}
+      <div className={styles.problemPanel}>
+        <ModelDeviceProblemsList problems={problems} />
+      </div>
+      <p className={styles.continueText}>{conclusionMessage}</p>
       <DialogFooter>
         {hasBlockingProblem ? (
-          <DialogButton text={'Got It'} onClick={onCancel} isPrimary />
+          <>
+            <DialogButton text={'Other Models'} onClick={() => { onCancel(); openSettingsDialog(APP_CATEGORY_ID)} } disabled={!otherModelCount}/>
+            <DialogButton text={'Cancel'} onClick={onCancel} isPrimary />
+          </>
         ) : (
           <>
+            <DialogButton text={'Other Models'} onClick={() => { onCancel(); openSettingsDialog(APP_CATEGORY_ID)} } disabled={!otherModelCount}/>
             <DialogButton text={'Cancel'} onClick={onCancel} />
             <DialogButton text={'Load Model'} onClick={onConfirm} isPrimary />
           </>

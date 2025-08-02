@@ -1,9 +1,10 @@
-import styles from './Gallery.module.css';
 import ModelDeviceProblemType from '@/models/types/ModelDeviceProblemType';
 import ModelDeviceProblemDialog from '@/models/ModelDeviceProblemsDialog';
 import ModelDeviceProblem from '@/models/types/ModelDeviceProblem';
 import { predictModelDeviceProblems } from '@/models/modelUtil';
 import ContentButton from '@/components/contentButton/ContentButton';
+import DecentBar from '@/components/decentBar/DecentBar';
+import styles from './Gallery.module.css';
 
 function _testModelDeviceProblems(modalDialogName:string|null, setModalDialogName:Function) {
   const DIALOG_NAME = ModelDeviceProblemDialog.name;
@@ -15,13 +16,14 @@ function _testModelDeviceProblems(modalDialogName:string|null, setModalDialogNam
     {type:ModelDeviceProblemType.DEVELOPER_MODE, description:`We aren't actually loading a model. This is just a UI test!`, isBlocking:false}
   ];
   return <>
-    <h3>Test: Model Device Problems Dialog</h3>
+    <h3>Test: All the Non-Blocking Problems</h3>
     <ModelDeviceProblemDialog 
       modelId={'Fake Model'}
       isOpen={modalDialogName === DIALOG_NAME}
       problems={problems}
       onConfirm={() => setModalDialogName(null)}
       onCancel={() => setModalDialogName(null)}
+      supportedModels={[]}
     />
     <ContentButton onClick={() => setModalDialogName(DIALOG_NAME)} text='Open' />
   </>;
@@ -33,13 +35,53 @@ function _testModelDeviceProblemsDevMode(modalDialogName:string|null, setModalDi
     {type:ModelDeviceProblemType.DEVELOPER_MODE, description:`We aren't actually loading a model. This is just a UI test!`, isBlocking:false}
   ];
   return <>
-    <h3>Test: Model Device Problems Dialog - Developer Mode</h3>
+    <h3>Test: Developer Mode</h3>
     <ModelDeviceProblemDialog 
       modelId={'Fake Model'}
       isOpen={modalDialogName === DIALOG_NAME}
       problems={problems}
       onConfirm={() => setModalDialogName(null)}
       onCancel={() => setModalDialogName(null)}
+      supportedModels={[]}
+    />
+    <ContentButton onClick={() => setModalDialogName(DIALOG_NAME)} text='Open' />
+  </>;
+}
+
+
+function _testModelDeviceProblemsOneOtherModel(modalDialogName:string|null, setModalDialogName:Function) {
+  const DIALOG_NAME = `${ModelDeviceProblemDialog.name}3`;
+  const problems:ModelDeviceProblem[] = [
+    {type:ModelDeviceProblemType.DEVELOPER_MODE, description:`We aren't actually loading a model. This is just a UI test!`, isBlocking:false}
+  ];
+  return <>
+    <h3>Test: One Other Model Available</h3>
+    <ModelDeviceProblemDialog 
+      modelId={'Fake Model'}
+      isOpen={modalDialogName === DIALOG_NAME}
+      problems={problems}
+      onConfirm={() => setModalDialogName(null)}
+      onCancel={() => setModalDialogName(null)}
+      supportedModels={[{id:'1', appBehaviorSummary:'1'}, {id:'2', appBehaviorSummary:'2'}]}
+    />
+    <ContentButton onClick={() => setModalDialogName(DIALOG_NAME)} text='Open' />
+  </>;
+}
+
+function _testModelDeviceProblemsOtherModels(modalDialogName:string|null, setModalDialogName:Function) {
+  const DIALOG_NAME = `${ModelDeviceProblemDialog.name}4`;
+  const problems:ModelDeviceProblem[] = [
+    {type:ModelDeviceProblemType.DEVELOPER_MODE, description:`We aren't actually loading a model. This is just a UI test!`, isBlocking:false}
+  ];
+  return <>
+    <h3>Test: Other Models Available</h3>
+    <ModelDeviceProblemDialog 
+      modelId={'Fake Model'}
+      isOpen={modalDialogName === DIALOG_NAME}
+      problems={problems}
+      onConfirm={() => setModalDialogName(null)}
+      onCancel={() => setModalDialogName(null)}
+      supportedModels={[{id:'1', appBehaviorSummary:'1'}, {id:'2', appBehaviorSummary:'2'}, {id:'3', appBehaviorSummary:'3'}]}
     />
     <ContentButton onClick={() => setModalDialogName(DIALOG_NAME)} text='Open' />
   </>;
@@ -47,7 +89,7 @@ function _testModelDeviceProblemsDevMode(modalDialogName:string|null, setModalDi
 
 function _testModelDeviceProblemsRealData(modalDialogName:string|null, 
     modelDeviceProblems:ModelDeviceProblem[]|null, setModelDeviceProblems:Function, setModalDialogName:Function) {
-  const DIALOG_NAME = `${ModelDeviceProblemDialog.name}3`;
+  const DIALOG_NAME = `${ModelDeviceProblemDialog.name}5`;
   const MODEL_ID = "Llama-3-70B-Instruct-q3f16_1-MLC"; // A larger model more likely to have problems.
   if (!modelDeviceProblems) modelDeviceProblems = [];
   return <>
@@ -84,6 +126,7 @@ function _testWebGpuNotAvailableDialog(modalDialogName:string|null, setModalDial
       problems={problems}
       onConfirm={() => setModalDialogName(null)}
       onCancel={() => setModalDialogName(null)}
+      supportedModels={[]}
     />
     <ContentButton onClick={() => setModalDialogName(DIALOG_NAME)} text='Open' />
   </>;
@@ -97,13 +140,18 @@ type Props = {
 }
 
 function ModelDeviceProblemTests({modalDialogName, setModalDialogName, modelDeviceProblems, setModelDeviceProblems}:Props) {
+  // DecentBar is used to open the settings dialog, so it needs to be rendered, but it is hidden to avoid cluttering the UI.
   return (
     <div className={styles.container}>
       <h1>Model Device Problem Tests</h1>
 
+      <DecentBar appName={'Test App'} classNameOverrides={{ container:styles.displayNone }}/>
+
       {_testWebGpuNotAvailableDialog(modalDialogName, setModalDialogName)}
       {_testModelDeviceProblems(modalDialogName, setModalDialogName)}
       {_testModelDeviceProblemsDevMode(modalDialogName, setModalDialogName)}
+      {_testModelDeviceProblemsOneOtherModel(modalDialogName, setModalDialogName)}
+      {_testModelDeviceProblemsOtherModels(modalDialogName, setModalDialogName)}
       {_testModelDeviceProblemsRealData(modalDialogName, modelDeviceProblems, setModelDeviceProblems, setModalDialogName)}
     </div>
   );
