@@ -12,6 +12,7 @@ import { applyLoggingSettings } from "@/localLogging/logUtil";
 import { openSettingsDialog } from "@/components/decentBar/interactions/opening";
 import { settingsToSettingValues } from "./categories/settingCategoryUtil";
 import { botch } from "@/common/assertUtil";
+import { getAppMetaData } from "@/appMetadata/appMetadataUtil";
 
 export function collateSettingRows(category:SettingCategory):SettingRow[] {
   const rows:SettingRow[] = [];
@@ -47,15 +48,16 @@ export function isSettingsFormat(maybeSettings:any):boolean {
   return settingsArray.every(setting => isSettingFormat(setting));
 }
 
-export async function loadSettingCategories(defaultAppCategory:AppSettingCategory, appName:string, onLoadAppSettings?:LoadAppSettingsCallback):Promise<SettingCategory[]> {
-  const appCategory = await loadAppSettingCategory(defaultAppCategory, appName, onLoadAppSettings);
+export async function loadSettingCategories(defaultAppCategory:AppSettingCategory, onLoadAppSettings?:LoadAppSettingsCallback):Promise<SettingCategory[]> {
+  const appCategory = await loadAppSettingCategory(defaultAppCategory, onLoadAppSettings);
   const llmCategory = await loadLlmSettingCategory();
   const loggingCategory = await loadLoggingSettingCategory();
   return [appCategory, llmCategory, loggingCategory];
 }
 
-export async function saveSettingCategories(categories:SettingCategory[], appName:string, onSaveAppSettings?:SaveAppSettingsCallback):Promise<void> {
-  const appCategoryId = getAppCategoryId(appName);
+export async function saveSettingCategories(categories:SettingCategory[], onSaveAppSettings?:SaveAppSettingsCallback):Promise<void> {
+  const { id:appId } = await getAppMetaData();
+  const appCategoryId = getAppCategoryId(appId);
   const promises = categories.map(category => {
     let settingValues = settingsToSettingValues(category.settings);
     switch (category.id) {

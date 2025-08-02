@@ -11,6 +11,7 @@ import { LoadAppSettingsCallback, SaveAppSettingsCallback, ValidateSettingCallba
 import AppSettingCategory from '../../settings/types/AppSettingCategory';
 import ToastPane from '../toasts/ToastPane';
 import { init } from './interactions/initialization';
+import { getAppName } from '@/appMetadata/appMetadataUtil';
 
 // Default domains where the decent bar is rendered. Can be overridden in props.
 const DEFAULT_ENABLED_DOMAINS = ['decentapps.net', '127.0.0.1', 'localhost'];
@@ -18,7 +19,7 @@ const DEFAULT_ENABLED_DOMAINS = ['decentapps.net', '127.0.0.1', 'localhost'];
 /**
  * Props for the DecentBar component.
  * @typedef {Object} Props
- * @property {string} appName - The name of the application displayed in the bar.
+ * @property {string} [appName] - Optional name of the application displayed in the bar. If not provided, it will be derived from the app metadata.
  * @property {Link[]} [appLinks] - Optional array of links displayed as buttons in the bar.
  * @property {string} [contributorText] - Optional text displayed in the contributor section.
  * @property {string[]} [enabledDomains] - Optional list of domains where the bar is enabled. Defaults to ['decentapps.net', '127.0.0.1', 'localhost'].
@@ -31,7 +32,7 @@ const DEFAULT_ENABLED_DOMAINS = ['decentapps.net', '127.0.0.1', 'localhost'];
  * @property {ValidateSettingCallback} [onValidateSetting] - Optional callback for validating application settings.
  */
 type Props = {
-  appName:string,
+  appName?:string,
   appLinks?:Link[],
   contributorText?:string,
   enabledDomains?:string[],
@@ -84,7 +85,7 @@ function _createDefaultAppSettings(appName:string):AppSettingCategory {
  * @returns {JSX.Element | null} The rendered DecentBar component or null if conditions are not met.
  */
 function DecentBar({ 
-    appName, 
+    appName = getAppName(), 
     appLinks, 
     contributorText, 
     onClickLink = defaultOnClickLink, 
@@ -149,7 +150,6 @@ function DecentBar({
         </div>
       </div>
       <SettingsDialog 
-        appName={appName}
         isOpen={modalDialogName === SettingsDialog.name} 
         defaultAppSettings={initialAppSettings.current} 
         onClose={() => setModalDialogName(null)} 

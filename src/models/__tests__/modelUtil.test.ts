@@ -535,23 +535,23 @@ describe('modelUtil', () => {
 
     it('throws if no supported models specified in app metadata', async () => {
       theAppMetaData.supportedModels = [];
-      expect(findBestModel('test-app')).rejects.toThrow('No supported LLM models for this app.');
+      expect(findBestModel()).rejects.toThrow('No supported LLM models for this app.');
     });
 
     it('returns model ID from settings if specified and included in supported models list', async () => {
       theAppSettingsModelId = ALT_MODEL_ID;
-      const result = await findBestModel('test-app');
+      const result = await findBestModel();
       expect(result).toEqual(ALT_MODEL_ID);
     });
 
     it('returns a supported model ID instead of one from settings that is not supported', async () => {
       theAppSettingsModelId = 'not-a-real-model';
-      const result = await findBestModel('test-app');
+      const result = await findBestModel();
       expect(result).toEqual(MODEL_ID);
     });
 
     it('returns the best model of multiple available', async () => {
-      const result = await findBestModel('test-app');
+      const result = await findBestModel();
       expect(result).toEqual(MODEL_ID);
     });
   });

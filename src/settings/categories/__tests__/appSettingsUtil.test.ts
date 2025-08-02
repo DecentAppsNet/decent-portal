@@ -29,7 +29,7 @@ import { vi, describe, expect, it, beforeEach } from "vitest";
 
 let theWindowLocationPathname = "";
 let theFakeStore: Record<string, any> = {};
-let theAppMetaDataText = '{"id":"test","name":"n","description":"d","supportedModels":[]}';
+let theAppMetaDataText = '{"id":"root","name":"n","description":"d","supportedModels":[]}';
 
 import { APP_SETTINGS_LLM_ID, getAppCategoryId, loadAppSettingCategory } from "../appSettingsUtil";
 import AppSettingCategory from "@/settings/types/AppSettingCategory";
@@ -79,7 +79,7 @@ describe("appSettingsUtil", () => {
           { id:"s2", type:SettingType.BOOLEAN_TOGGLE, label:"l", value: true }
         ]
       }
-      const category = await loadAppSettingCategory(defaultAppSettings, 'root');
+      const category = await loadAppSettingCategory(defaultAppSettings);
       expect(category.name).toBe("This App");
       expect(category.id).toBe("app-root");
       expect(category.description).toBe("default");
@@ -93,7 +93,7 @@ describe("appSettingsUtil", () => {
         description: "default",
         settings:[]
       }
-      const category = await loadAppSettingCategory(defaultAppSettings, 'root');
+      const category = await loadAppSettingCategory(defaultAppSettings);
       expect(category.settings.length).toBe(1);
       expect(category.settings[0].id).toBe(APP_SETTINGS_LLM_ID);
       expect(category.headings).toBeDefined();
@@ -112,7 +112,7 @@ describe("appSettingsUtil", () => {
           {precedeSettingId:APP_SETTINGS_LLM_ID, description:'test'}
         ]
       }
-      const category = await loadAppSettingCategory(defaultAppSettings, 'root');
+      const category = await loadAppSettingCategory(defaultAppSettings);
       expect(category.settings.length).toBe(1);
       expect(category.settings[0].id).toBe(APP_SETTINGS_LLM_ID);
       expect(category.settings[0].label).toEqual('test');
@@ -132,7 +132,7 @@ describe("appSettingsUtil", () => {
           { id:"s2", type:SettingType.BOOLEAN_TOGGLE, label:"l", value:false }
         ]
       }
-      const category = await loadAppSettingCategory(defaultAppSettings, 'root');
+      const category = await loadAppSettingCategory(defaultAppSettings);
       expect(category.name).toBe("This App");
       expect(category.id).toBe("app-root");
       expect(category.description).toBe("default");
@@ -152,7 +152,7 @@ describe("appSettingsUtil", () => {
           { id:"s2", type:SettingType.BOOLEAN_TOGGLE, label:"l", value:false }
         ]
       };
-      const category = await loadAppSettingCategory(defaultAppSettings, 'root', _onLoadAppSettings);
+      const category = await loadAppSettingCategory(defaultAppSettings, _onLoadAppSettings);
       expect(category.settings.length).toBe(3);
       expect(category.settings[1].id).toBe("s1");
       expect(category.settings[2].id).toBe("s2");
@@ -169,7 +169,7 @@ describe("appSettingsUtil", () => {
           { id:"s2", type:SettingType.BOOLEAN_TOGGLE, label:"l", value:false }
         ]
       };
-      const category = await loadAppSettingCategory(defaultAppSettings, 'root', _onLoadAppSettings);
+      const category = await loadAppSettingCategory(defaultAppSettings, _onLoadAppSettings);
       expect(category.settings.length).toBe(3);
       expect(category.settings[1].id).toBe("s1");
       expect(category.settings[2].id).toBe("s2");
@@ -184,7 +184,7 @@ describe("appSettingsUtil", () => {
         description: "default",
         settings:[]
       };
-      const category = await loadAppSettingCategory(defaultAppSettings, 'root', _onLoadAppSettings);
+      const category = await loadAppSettingCategory(defaultAppSettings, _onLoadAppSettings);
       expect(category.settings.length).toBe(1);
       expect(category.settings[0].id).not.toBe("s3");
     });

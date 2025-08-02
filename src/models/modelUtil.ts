@@ -233,12 +233,12 @@ export async function scoreModel(modelId:string, isBetaModel:boolean):Promise<nu
   return score;
 }
 
-export async function findBestModel(appName:string):Promise<string> {
+export async function findBestModel():Promise<string> {
   const { supportedModels } = await getAppMetaData();
   if (!supportedModels.length) throw Error('No supported LLM models for this app.');
 
   // First check for a settings-specified model.
-  const appSettingValues = await getAppSettings(appName);
+  const appSettingValues = await getAppSettings();
   let settingsModelId:string = AUTO_SELECT_ID;
   if (appSettingValues) { 
     const modelId = appSettingValues[APP_SETTINGS_LLM_ID];

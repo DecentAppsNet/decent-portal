@@ -14,7 +14,8 @@ import styles from './Gallery.module.css' // Import this after the other imports
 function _testMinimal() {
   return <>
     <h3>Test: Minimal DecentBar</h3>
-    <DecentBar appName="My App"/>
+    <DecentBar />
+    App name should be "Decent Portal Test" from app metadata.
   </>;
 }
 

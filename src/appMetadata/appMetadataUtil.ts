@@ -1,3 +1,4 @@
+import { assertNonNullable } from "@/common/assertUtil";
 import { fetchAppMetadataText } from "./fetchAppMetaData";
 import AppMetaData, { isAppMetaDataFormat } from "./types/AppMetaData";
 
@@ -9,8 +10,20 @@ export function clearAppMetaDataCache():void {
   theAppMetaData = null;
 }
 
-export async function getAppMetaData():Promise<AppMetaData> {
-  if (theAppMetaData) return theAppMetaData;
+// Convenience function - assumes loaded to avoid async handling.
+export function getAppId():string {
+  if (!theAppMetaData) throw new Error('App metadata not initialized yet.');
+  return theAppMetaData.id;
+}
+
+// Convenience function - assumes loaded to avoid async handling.
+export function getAppName():string {
+  if (!theAppMetaData) throw new Error('App metadata not initialized yet.');
+  return theAppMetaData.name;
+}
+
+export async function initAppMetaData():Promise<void> {
+  if (theAppMetaData) return; // Already initialized.
   const json = await fetchAppMetadataText();
   let appMetaData:AppMetaData;
   try {
@@ -20,5 +33,10 @@ export async function getAppMetaData():Promise<AppMetaData> {
   }
   if (!isAppMetaDataFormat(appMetaData)) throw new Error('Invalid app metadata format.');
   theAppMetaData = appMetaData;
-  return appMetaData;
+}
+
+export async function getAppMetaData():Promise<AppMetaData> {
+  if (!theAppMetaData) await initAppMetaData();
+  assertNonNullable(theAppMetaData);
+  return theAppMetaData;
 }

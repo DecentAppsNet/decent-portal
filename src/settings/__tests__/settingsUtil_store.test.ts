@@ -16,6 +16,11 @@ vi.mock("@/persistence/pathStore", async () => ({
   })
 }));
 
+vi.mock("@/appMetaData/fetchAppMetaData", async () => ({
+  ...(await vi.importActual("@/appMetaData/fetchAppMetaData")),
+  fetchAppMetadataText: vi.fn(() => Promise.resolve(JSON.stringify(theAppMetaData)))
+}));  
+
 // Imports after mocks.
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { loadSettingCategories, saveSettingCategories } from '../settingsUtil';
@@ -23,6 +28,7 @@ import SettingCategory from '../types/SettingCategory';
 import { LLM_CATEGORY_ID } from '../categories/llmSettingsUtil';
 import { LOGGING_CATEGORY_ID } from '../categories/loggingSettingsUtil';
 import SettingType from '../types/SettingType';
+import AppMetaData from '@/appMetadata/types/AppMetaData';
 
 const FAKE_APP_SETTING_CATEGORY:SettingCategory = {
   id:'app-root',
@@ -33,6 +39,7 @@ const FAKE_APP_SETTING_CATEGORY:SettingCategory = {
 
 let theFakeStore:Record<string, any> = {};
 let theFakeStoreSetTextShouldThrow = false;
+let theAppMetaData:AppMetaData = { id: 'root', name: 'unimportant', description: 'unimportant', supportedModels: [] };
 
 function _idToKey(id:string):string {
   return `/settings/${id}.json`;
@@ -46,7 +53,7 @@ describe('settingsUtil_store', () => {
 
     it('loads categories', async () => {
       const defaultAppCategory = { description:'d', settings:[] };
-      const categories = await loadSettingCategories(defaultAppCategory, 'root');
+      const categories = await loadSettingCategories(defaultAppCategory);
       expect(categories.length > 0);
     });
   });
@@ -57,7 +64,7 @@ describe('settingsUtil_store', () => {
       const llmCategory = { id:LLM_CATEGORY_ID, name:'llm', description:'d', settings:[] };
       const loggingCategory = { id:LOGGING_CATEGORY_ID, name:'logging', description:'d', settings:[] };
       const categories:SettingCategory[] = [appCategory, llmCategory, loggingCategory];
-      await saveSettingCategories(categories, 'root');
+      await saveSettingCategories(categories);
       expect(theFakeStore[_idToKey(appCategory.id)]).toBeDefined();
       expect(theFakeStore[_idToKey(llmCategory.id)]).toBeDefined();
       expect(theFakeStore[_idToKey(loggingCategory.id)]).toBeDefined();
@@ -69,7 +76,7 @@ describe('settingsUtil_store', () => {
         settings:[{ id:'s1', type:SettingType.TEXT, label:'Test Setting', value:'test' }] 
       };
       const categories:SettingCategory[] = [appCategory];
-      await saveSettingCategories(categories, 'root');
+      await saveSettingCategories(categories);
       const savedSettings = JSON.parse(theFakeStore[_idToKey(appCategory.id)]);
       expect(savedSettings.s1).toBe('test');
     });
@@ -80,7 +87,7 @@ describe('settingsUtil_store', () => {
         settings:[{ id:'s1', type:SettingType.TEXT, label:'Test Setting', value:'test' }] 
       };
       const categories:SettingCategory[] = [appCategory];
-      await saveSettingCategories(categories, 'root', () => null);
+      await saveSettingCategories(categories, () => null);
       const savedSettings = JSON.parse(theFakeStore[_idToKey(appCategory.id)]);
       expect(savedSettings.s1).toBe('test');
     });
@@ -91,7 +98,7 @@ describe('settingsUtil_store', () => {
         settings:[{ id:'s1', type:SettingType.TEXT, label:'Test Setting', value:'test' }] 
       };
       const categories:SettingCategory[] = [appCategory];
-      await saveSettingCategories(categories, 'root', (settings) => {
+      await saveSettingCategories(categories, (settings) => {
         settings.s1 = 'modified';
         return settings;
       });
@@ -107,7 +114,7 @@ describe('settingsUtil_store', () => {
       const categories:SettingCategory[] = [appCategory];
       const _onSaveAppSettings = () => { throw new Error('Test error'); };
       await expect(
-        saveSettingCategories(categories, 'root', _onSaveAppSettings)
+        saveSettingCategories(categories, _onSaveAppSettings)
       ).rejects.toThrow('Test error');
     });
 
@@ -121,7 +128,7 @@ describe('settingsUtil_store', () => {
       const originalError = console.error; // Suppress console.error for this test so output is clean.
       console.error = vi.fn();
       await expect(
-        saveSettingCategories(categories, 'root')
+        saveSettingCategories(categories)
       ).rejects.toThrow();
       console.error = originalError;
       theFakeStoreSetTextShouldThrow = false;

@@ -11,15 +11,15 @@ import { getAppMetaData } from "@/appMetadata/appMetadataUtil";
 import Heading from "../types/Heading";
 import SettingValues from "../types/SettingValues";
 
-// Without the app name appended, this category ID can only be used for operations that need to do 
+// Without the app ID appended, this category ID can only be used for operations that need to do 
 // something specifying the app category, but not a specific app. For example, saving settings to persistent 
 // storage needs the app name appended, but opening the dialog with app settings category selected does not.
 export const APP_CATEGORY_ID = 'app-';
 export const APP_SETTINGS_LLM_ID = 'llm';
 
-export function getAppCategoryId(appName:string):string {
+export function getAppCategoryId(appId:string):string {
   const parts = windowLocationPathname().split('/').filter(part => part.length);
-  if (!parts.length) return `${APP_CATEGORY_ID}${appName}`;
+  if (!parts.length) return `${APP_CATEGORY_ID}${appId}`;
   return `${APP_CATEGORY_ID}${parts[0]}`;
 }
 
@@ -44,14 +44,14 @@ function _addAppLlmHeadingIfMissing(headings:Heading[]) {
   });
 }
 
-async function _appSettingCategoryToSettingCategory(appCategory:AppSettingCategory, appName:string):Promise<SettingCategory> {
+async function _appSettingCategoryToSettingCategory(appCategory:AppSettingCategory, appId:string):Promise<SettingCategory> {
   const settings = [...appCategory.settings];
   await _addAppLlmSettingIfMissing(settings);
   const headings = appCategory.headings ? [...appCategory.headings] : []
   _addAppLlmHeadingIfMissing(headings);
   return {
     name: 'This App',
-    id: getAppCategoryId(appName),
+    id: getAppCategoryId(appId),
     description: appCategory.description,
     headings,
     settings,
@@ -63,14 +63,16 @@ async function _appSettingCategoryToSettingCategory(appCategory:AppSettingCatego
  * Retrieves application settings.
  * @returns {SettingValues} Associative array of settings.
  */
-export async function getAppSettings(appName:string):Promise<SettingValues|null> {
-  const id = getAppCategoryId(appName);
+export async function getAppSettings():Promise<SettingValues|null> {
+  const { id:appId } = await getAppMetaData();
+  const id = getAppCategoryId(appId);
   return await getCategorySettings(id);
 }
 
-export async function loadAppSettingCategory(defaultAppCategory:AppSettingCategory, appName:string, onLoadAppSettings?:LoadAppSettingsCallback):Promise<SettingCategory> {
-  const category = await _appSettingCategoryToSettingCategory(defaultAppCategory, appName);
-  let appSettings = await getAppSettings(appName) ?? settingsToSettingValues(category.settings);
+export async function loadAppSettingCategory(defaultAppCategory:AppSettingCategory, onLoadAppSettings?:LoadAppSettingsCallback):Promise<SettingCategory> {
+  const { id:appId } = await getAppMetaData();
+  const category = await _appSettingCategoryToSettingCategory(defaultAppCategory, appId);
+  let appSettings = await getAppSettings() ?? settingsToSettingValues(category.settings);
   if (onLoadAppSettings) {
     const overrideAppSettings = onLoadAppSettings(appSettings); // Allow caller to fix/upgrade settings or use their own loading mechanism.
     if (overrideAppSettings) appSettings = overrideAppSettings;
