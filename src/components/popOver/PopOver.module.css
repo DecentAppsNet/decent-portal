@@ -4,7 +4,7 @@
 }
 
 .contentBox {
-  position: absolute;
+  position: fixed;
   background-color:antiquewhite;
   width: 25vh;
   left: 0;
