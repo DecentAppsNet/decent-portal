@@ -535,7 +535,7 @@ describe('modelUtil', () => {
 
     it('throws if no supported models specified in app metadata', async () => {
       theAppMetaData.supportedModels = [];
-      expect(findBestModel()).rejects.toThrow('No supported LLM models for this app.');
+      await expect(findBestModel()).rejects.toThrow('No supported LLM models for this app.');
     });
 
     it('returns model ID from settings if specified and included in supported models list', async () => {

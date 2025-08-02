@@ -24,11 +24,18 @@ export function getAppName():string {
 
 export async function initAppMetaData():Promise<void> {
   if (theAppMetaData) return; // Already initialized.
-  const json = await fetchAppMetadataText();
+  let json:string = '';
+  try {
+    json = await fetchAppMetadataText();
+  } catch(e) {
+    console.error('Could not fetch app-metadata.json from server. Add this file to your /public or web-serving directory to fix.');
+    throw new Error(`Failed to fetch app metadata: ` + e);
+  }
   let appMetaData:AppMetaData;
   try {
     appMetaData = JSON.parse(json);
-  } catch (e) {
+  } catch (e) { // A parse error is more likely due to the server returning a 404 or default HTML.
+    console.error('Server returned invalid JSON for appMetaData.json, which probably indicates a missing file. Add this file to your /public or web-serving directory to fix.');
     throw new Error(`Failed to parse app metadata JSON: ` + e);
   }
   if (!isAppMetaDataFormat(appMetaData)) throw new Error('Invalid app metadata format.');
