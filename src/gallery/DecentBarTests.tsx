@@ -204,6 +204,7 @@ function DecentBarTests() {
     {_testNoRenderOnDisabledDomain()}
     {_testOverrideHomeUrl()}
     {_testOverrideCss()}
+    {_testAppSettings()}
   </>;
 }
 
