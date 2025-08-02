@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, JSX } from 'react';
 
 import { assert } from '@/common/assertUtil';
 import ModalDialog from "@/components/modalDialogs/ModalDialog";
@@ -26,6 +26,24 @@ function _getOtherModelsAvailableText(otherModelCount:number):string {
   if (otherModelCount === 0) return '';
   return otherModelCount === 1 ? ' Another model supported by this app is available.' : ` Other models supported by this app are available.` 
 }
+
+function _renderFooterButtons(hasBlockingProblem:boolean, otherModelCount:number, onCancel:() => void, onConfirm:() => void) {
+    const buttons:JSX.Element[] = [];
+    if (otherModelCount > 0) {
+      buttons.push(
+        <DialogButton key="otherModels" text={'Other Models'} onClick={() => { onCancel(); openSettingsDialog(APP_CATEGORY_ID); }} disabled={!otherModelCount} />
+      );
+    }
+    buttons.push(
+      <DialogButton key="cancel" text={'Cancel'} onClick={onCancel} isPrimary={hasBlockingProblem}/>
+    );
+    if (!hasBlockingProblem) {
+      buttons.push(
+        <DialogButton key="loadModel" text={'Load Model'} onClick={onConfirm} isPrimary />
+      );
+    }
+    return buttons;
+  }
 
 function ModelDeviceProblemsDialog({isOpen, problems, onConfirm, onCancel, modelId, supportedModels}:Props) {
   const [otherModelCount, setOtherModelCount] = useState<number|null>(null);
@@ -56,6 +74,8 @@ function ModelDeviceProblemsDialog({isOpen, problems, onConfirm, onCancel, model
     ? `This model can't be loaded.${otherModelsAvailableText}`
     : `You can continue loading the model if you want.${otherModelsAvailableText}`;
 
+  const footerButtons = _renderFooterButtons(hasBlockingProblem, otherModelCount, onCancel, onConfirm);
+  
   return (
     <ModalDialog isOpen={isOpen} title={hasBlockingProblem ? 'Failed to Load Model' : 'Continue Loading Model?'} onCancel={onCancel}>
       {summaryContent}
@@ -64,18 +84,7 @@ function ModelDeviceProblemsDialog({isOpen, problems, onConfirm, onCancel, model
       </div>
       <p className={styles.continueText}>{conclusionMessage}</p>
       <DialogFooter>
-        {hasBlockingProblem ? (
-          <>
-            <DialogButton text={'Other Models'} onClick={() => { onCancel(); openSettingsDialog(APP_CATEGORY_ID)} } disabled={!otherModelCount}/>
-            <DialogButton text={'Cancel'} onClick={onCancel} isPrimary />
-          </>
-        ) : (
-          <>
-            <DialogButton text={'Other Models'} onClick={() => { onCancel(); openSettingsDialog(APP_CATEGORY_ID)} } disabled={!otherModelCount}/>
-            <DialogButton text={'Cancel'} onClick={onCancel} />
-            <DialogButton text={'Load Model'} onClick={onConfirm} isPrimary />
-          </>
-        )}
+        {footerButtons}
       </DialogFooter>
     </ModalDialog>
   );
