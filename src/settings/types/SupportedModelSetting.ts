@@ -1,4 +1,4 @@
-import SupportedModel, { duplicateSupportedModel, isSupportedModelFormat } from "@/appMetadata/types/SupportedModel";
+import SupportedModel, { duplicateSupportedModel, isSupportedModelFormat } from "../../appMetadata/types/SupportedModel";
 import SettingBase from "./SettingBase"
 import SettingType from "./SettingType"
 

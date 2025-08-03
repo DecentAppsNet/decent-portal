@@ -52,6 +52,9 @@ export { default as ModelDeviceProblemType } from './models/types/ModelDevicePro
 export type { default as ModelDeviceProblem } from './models/types/ModelDeviceProblem';
 export type { default as ModelDeviceHistory } from './models/types/ModelDeviceHistory';
 
+// App Meta Data
+export { getAppMetaData, initAppMetaData, getAppId, getAppName } from './appMetadata/appMetadataUtil';
+
 // Logging
 export { log } from './localLogging/logUtil';
 

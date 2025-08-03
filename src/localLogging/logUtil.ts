@@ -1,4 +1,4 @@
-import SettingValues from "@/settings/types/SettingValues";
+import SettingValues from "../settings/types/SettingValues";
 import { assert, assertNonNullable } from "../common/assertUtil";
 import { now } from "../common/dateUtil";
 import { deleteLogTextForDay, findAllLoggedDays, getDayPath, getLogTextForDay, setLogTextForDay } from "../persistence/localLog";

@@ -1,17 +1,17 @@
 import { useState, useEffect, JSX } from 'react';
 
-import { assert } from '@/common/assertUtil';
-import ModalDialog from "@/components/modalDialogs/ModalDialog";
+import { assert } from '../common/assertUtil';
+import ModalDialog from "../components/modalDialogs/ModalDialog";
 import ModelDeviceProblem from "./types/ModelDeviceProblem"
-import DialogFooter from "@/components/modalDialogs/DialogFooter";
-import DialogButton from "@/components/modalDialogs/DialogButton";
+import DialogFooter from "../components/modalDialogs/DialogFooter";
+import DialogButton from "../components/modalDialogs/DialogButton";
 import styles from './ModelDeviceProblemsDialog.module.css';
 import ModelDeviceProblemType from './types/ModelDeviceProblemType';
 import ModelDeviceProblemsList from './ModelDeviceProblemsList';
-import { openSettingsDialog } from '@/components/decentBar/interactions/opening';
-import { APP_CATEGORY_ID } from '@/settings/categories/appSettingsUtil';
+import { openSettingsDialog } from '../components/decentBar/interactions/opening';
+import { APP_CATEGORY_ID } from '../settings/categories/appSettingsUtil';
 import { findOtherModelCount } from './interactions/initialization';
-import SupportedModel from '@/appMetadata/types/SupportedModel';
+import SupportedModel from '../appMetadata/types/SupportedModel';
 
 type Props = {
   isOpen:boolean,

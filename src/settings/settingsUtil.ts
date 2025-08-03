@@ -1,18 +1,18 @@
-import SettingRow from "@/settings/types/SettingRow";
+import SettingRow from "../settings/types/SettingRow";
 import Heading, { HEADING_TYPE } from "./types/Heading";
 import SettingCategory from "./types/SettingCategory";
 import { LoadAppSettingsCallback, SaveAppSettingsCallback } from "./types/AppSettingsCallbacks";
-import { getAppCategoryId, loadAppSettingCategory } from "@/settings/categories/appSettingsUtil";
+import { getAppCategoryId, loadAppSettingCategory } from "../settings/categories/appSettingsUtil";
 import { applyLlmSettings, LLM_CATEGORY_ID, loadLlmSettingCategory } from "./categories/llmSettingsUtil";
 import { loadLoggingSettingCategory, LOGGING_CATEGORY_ID } from "./categories/loggingSettingsUtil";
 import { isSettingFormat } from "./types/Setting";
-import { setCategorySettings } from "@/persistence/settings";
+import { setCategorySettings } from "../persistence/settings";
 import AppSettingCategory from "./types/AppSettingCategory";
-import { applyLoggingSettings } from "@/localLogging/logUtil";
-import { openSettingsDialog } from "@/components/decentBar/interactions/opening";
+import { applyLoggingSettings } from "../localLogging/logUtil";
+import { openSettingsDialog } from "../components/decentBar/interactions/opening";
 import { settingsToSettingValues } from "./categories/settingCategoryUtil";
-import { botch } from "@/common/assertUtil";
-import { getAppMetaData } from "@/appMetadata/appMetadataUtil";
+import { botch } from "../common/assertUtil";
+import { getAppMetaData } from "../appMetadata/appMetadataUtil";
 
 export function collateSettingRows(category:SettingCategory):SettingRow[] {
   const rows:SettingRow[] = [];

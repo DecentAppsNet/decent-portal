@@ -35,10 +35,10 @@ export async function initAppMetaData():Promise<void> {
   try {
     appMetaData = JSON.parse(json);
   } catch (e) { // A parse error is more likely due to the server returning a 404 or default HTML.
-    console.error('Server returned invalid JSON for appMetaData.json, which probably indicates a missing file. Add this file to your /public or web-serving directory to fix.');
+    console.error('Server returned invalid JSON for app-metadata.json, which probably indicates a missing file. Add this file to your /public or web-serving directory to fix.');
     throw new Error(`Failed to parse app metadata JSON: ` + e);
   }
-  if (!isAppMetaDataFormat(appMetaData)) throw new Error('Invalid app metadata format.');
+  if (!isAppMetaDataFormat(appMetaData)) throw new Error('Invalid app metadata format in app-metadata.json.');
   theAppMetaData = appMetaData;
 }
 

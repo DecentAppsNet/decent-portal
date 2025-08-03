@@ -1,6 +1,6 @@
-import { getCategorySettings } from "@/persistence/settings";
-import SettingCategory from "@/settings/types/SettingCategory";
-import SettingType from "@/settings/types/SettingType";
+import { getCategorySettings } from "../../persistence/settings";
+import SettingCategory from "../../settings/types/SettingCategory";
+import SettingType from "../../settings/types/SettingType";
 import { mergeSettingValuesIntoCategory, settingsToSettingValues } from "./settingCategoryUtil";
 import { ButtonAction, onLogSettingsButtonClick } from './interactions/loggingSettingsButtons';
 import SettingValues from "../types/SettingValues";
