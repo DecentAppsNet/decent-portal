@@ -3,6 +3,7 @@
   padding-right: 1vh;
   padding-top: .5vh;
   padding-bottom: .5vh;
+  font-size: 1vh;
 }
 
 .modelIdText {
@@ -13,10 +14,18 @@
   border-top-left-radius: 1vh;
   border-top-right-radius: 1vh;
   text-align: center;
+  font-size: 1vh;
 }
 
 .appBehaviorSummary {
   padding-top: .5vh;
   padding-bottom: 0;
   font-style: italic;
+  font-size: 1vh;
+}
+
+.speedContainer {
+  width: 100%;
+  padding: .5vh;
+  padding-top: 0;
 }

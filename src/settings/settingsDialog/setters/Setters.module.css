@@ -7,11 +7,16 @@
   margin-bottom: .5vh;
 }
 
+.container > input {
+  font-size: 1vh;
+}
+
 .label {
   margin-left: 1vh;
   margin-right: 1vh;
   min-width: 15vw;
   display: inline-block;
+  font-size: 1vh;
 }
 
 .labelDisabled {

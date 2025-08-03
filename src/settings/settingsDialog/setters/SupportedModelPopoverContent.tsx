@@ -14,7 +14,7 @@ type Props = {
 
 function SupportedModelPopoverContent({modelId, appBehaviorSummary, problems, inputCharsPerSec, outputCharsPerSec}:Props) {
   const speedContent = inputCharsPerSec > 0 || outputCharsPerSec > 0
-    ? <LlmSpeed inputCharsPerSec={inputCharsPerSec} outputCharsPerSec={outputCharsPerSec} />
+    ? <div className={styles.speedContainer}><LlmSpeed inputCharsPerSec={inputCharsPerSec} outputCharsPerSec={outputCharsPerSec} /></div>
     : null;
   const modelIdContent = modelId === AUTO_SELECT_ID ? 'Auto Select Model' : modelId;
   return (

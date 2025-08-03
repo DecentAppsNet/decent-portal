@@ -18,7 +18,8 @@ export const LLM_SETTING_AUTO_INC_MAX_SIZE = "autoIncMaxSize";
   based on available memory as reported by the browser, I can stop allocation beyond the point where system stability becomes a risk.
 
   Where does 8gb AT_LEAST_THIS_MUCH magic number come from? It's to allow a device to try loading some smaller models, as a unified memory
-  architecture is very unlikely to crash in this range.
+  architecture is very unlikely to crash in this range. This number is very much coupled to the hardware expectations of 2025, and is likely
+  to need updating later.
 */
 function _getDefaultMaxLlmSize():number {
   const AT_LEAST_THIS_MUCH = 8;
