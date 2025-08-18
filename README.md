@@ -17,14 +17,6 @@ More specifically it includes:
 
 `decent-portal` allows for a single web app build that can simultaneously deploy to non-Decent-Portal hosting as well as the Decent Portal. The aim is to allow you to have a single build rather than requiring multiple builds. So, for example, the Decent Bar can be configured to not render at run-time based on the domain it is hosted from.
 
-## Design Conventions
-
-* The library is just a library - not a framework. It should be easy to add to/remove from a project.
-* Does not introduce run-time dependencies. React and ReactDOM are peer dependencies.
-* CSS is defined in CSS modules with component scope. No global CSS, other than explicit imports.
-* The scope of functionality is limited to things that are specific to Decent Portal.
-* No side effects, so the importing project can tree-shake unused code.
-
 ## Using the DecentBar
 
 If you're using the DecentBar, you probably intend for your web app to appear on the [Decent Portal](https://decentapps.net). And for that purpose, we ask that the DecentBar appears at the top of the page for your app. The idea is to have some consistency in app appearance and navigation. The elements of the Decent Bar:

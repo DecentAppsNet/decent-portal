@@ -10,6 +10,9 @@ Things that aren't good to export:
 - Stuff that is likely to have breaking changes in next 6 months.
 - Stuff that is great to use internally to the project, but takes more productionalizing for people to use.
 
+Grey area:
+- Stuff that is useful, unlikely to change, but not really part of the API. For example, utility functions that are used internally.
+
 People can always vendor and fork more functionality from `decent-portal`. Or ask for it to be included. 
 I wrote this note to myself to curtail my habit of over-exporting, but if you are reading this and wishing 
 for something to be exported, please file an issue. I'll consider it!
@@ -57,5 +60,8 @@ export { getAppMetaData, initAppMetaData, getAppId, getAppName } from './appMeta
 
 // Logging
 export { log } from './localLogging/logUtil';
+
+// Assertions (grey area)
+export * from './common/assertUtil';
 
 /* v8 ignore end */
