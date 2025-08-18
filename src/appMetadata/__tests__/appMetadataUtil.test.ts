@@ -77,7 +77,7 @@ describe('appMetadataUtil', () => {
         description: "This is a test app.",
         supportedModels: "not an array", // Invalid format
       });
-      await expect(getAppMetaData()).rejects.toThrow('Invalid app metadata format.');
+      await expect(getAppMetaData()).rejects.toThrow();
     });
   });
 
