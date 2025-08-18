@@ -12,6 +12,8 @@ import DialogButton from "../../components/modalDialogs/DialogButton";
 import AppSettingCategory from "@/settings/types/AppSettingCategory";
 import { saveAndClose } from "./interactions/saving";
 import { findOpeningCategoryNo, setOpeningCategoryId } from "@/components/decentBar/interactions/opening";
+import PageRefreshConfirmDialog from "@/components/modalDialogs/PageRefreshConfirmDialog";
+import { APP_SETTINGS_LLM_ID } from "@/settings/categories/appSettingsUtil";
 
 // The settings dialog is intended to eventually contain cross-device settings. But as I write this, there are no
 // cross-device capabilities. So the dialog has the title "Device Settings" for now, and later it may be renamed to "Settings",
@@ -31,6 +33,8 @@ function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings,
   const [categories, setCategories] = useState<SettingCategory[]>([]);
   const [selectedCategoryNo, setSelectedCategoryNo] = useState<number>(0);
   const [categoryValidities, setCategoryValidities] = useState<boolean[]>(Array(categories.length).fill(true));
+  const [showRefreshDialog, setShowRefreshDialog] = useState<boolean>(false);
+  const [initialLlmValue, setInitialLlmValue] = useState<string | null>(null);
 
   const categoryNames = useMemo(() => categories.map(c => c.name), [categories]);
 
@@ -50,6 +54,11 @@ function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings,
     init(initialAppSettingsRef.current, onLoadAppSettings).then(initCategories => {
       setCategories(initCategories);
       setSelectedCategoryNo(findOpeningCategoryNo(initCategories));
+      
+      // Store initial LLM value for comparison
+      const appCategory = initCategories[0]; // App category is always first
+      const llmSetting = appCategory.settings.find(s => s.id === APP_SETTINGS_LLM_ID);
+      setInitialLlmValue(llmSetting?.value ? String(llmSetting.value) : null);
     });
   }, [isOpen, onLoadAppSettings]);
 
@@ -57,24 +66,61 @@ function SettingsDialog({isOpen, defaultAppSettings, onClose, onLoadAppSettings,
 
   const isSaveDisabled = categoryValidities.includes(false);
 
+  function _handleSaveAndClose() {
+    // Check if LLM value has changed
+    const appCategory = categories[0]; // App category is always first
+    const llmSetting = appCategory.settings.find(s => s.id === APP_SETTINGS_LLM_ID);
+    const currentLlmValue = llmSetting?.value ? String(llmSetting.value) : null;
+    
+    if (initialLlmValue !== currentLlmValue) {
+      // LLM has changed, show confirmation dialog
+      setShowRefreshDialog(true);
+    } else {
+      // No LLM change, proceed normally
+      saveAndClose(categories, onClose, onSaveAppSettings);
+    }
+  }
+
+  function _handleRefreshConfirm() {
+    saveAndClose(categories, () => {
+      onClose(categories[0].settings);
+      // Refresh the page
+      window.location.reload();
+    }, onSaveAppSettings);
+  }
+
+  function _handleRefreshCancel() {
+    setShowRefreshDialog(false);
+    // Still save and close, but don't refresh
+    saveAndClose(categories, onClose, onSaveAppSettings);
+  }
+
   return (
-    <ModalDialog title="Device Settings" isOpen={isOpen} onCancel={() => onClose(categories[0].settings)}>
-      <SettingCategorySelector 
-        selectedCategoryNo={selectedCategoryNo} 
-        categoryNames={categoryNames} 
-        onChange={(nextCategoryNo) => { setSelectedCategoryNo(nextCategoryNo); setOpeningCategoryId(categories[nextCategoryNo].id); }} 
-        disabled={isSaveDisabled} 
+    <>
+      <ModalDialog title="Device Settings" isOpen={isOpen} onCancel={() => onClose(categories[0].settings)}>
+        <SettingCategorySelector 
+          selectedCategoryNo={selectedCategoryNo} 
+          categoryNames={categoryNames} 
+          onChange={(nextCategoryNo) => { setSelectedCategoryNo(nextCategoryNo); setOpeningCategoryId(categories[nextCategoryNo].id); }} 
+          disabled={isSaveDisabled} 
+        />
+        { categories.map((category, categoryNo) => (
+          <SettingCategoryPanel key={category.name} category={category} isOpen={selectedCategoryNo === categoryNo} 
+            onValidateSetting={onValidateSetting}
+            onChange={(nextCategory, isValid) => _updateCategory(categoryNo, nextCategory, isValid)} />
+        )) }
+        <DialogFooter>
+          <DialogButton text="Cancel" onClick={onClose} />
+          <DialogButton text="Save and Exit" onClick={_handleSaveAndClose} isPrimary disabled={isSaveDisabled}/>
+        </DialogFooter>
+      </ModalDialog>
+      
+      <PageRefreshConfirmDialog 
+        isOpen={showRefreshDialog}
+        onConfirm={_handleRefreshConfirm}
+        onCancel={_handleRefreshCancel}
       />
-      { categories.map((category, categoryNo) => (
-        <SettingCategoryPanel key={category.name} category={category} isOpen={selectedCategoryNo === categoryNo} 
-          onValidateSetting={onValidateSetting}
-          onChange={(nextCategory, isValid) => _updateCategory(categoryNo, nextCategory, isValid)} />
-      )) }
-      <DialogFooter>
-        <DialogButton text="Cancel" onClick={onClose} />
-        <DialogButton text="Save and Exit" onClick={() => saveAndClose(categories, onClose, onSaveAppSettings)} isPrimary disabled={isSaveDisabled}/>
-      </DialogFooter>
-    </ModalDialog>
+    </>
   );
 }
 
