@@ -8,9 +8,11 @@ TL;DR - we're doing strict semantic versioning, and there's some consistency rul
 
 Here are the three repositories that participate in the functionality of creating new Decent App projects.
 
+```
 +-------------------+                   +--------------------+                +---------------+
 | create-decent-app |---- git clone --->| decentapp-template |---- import --->| decent-portal |
 +-------------------+                   +--------------------+                +---------------+
+```
 
 Consistency Rules:
 * The latest `create-decent-app` tagged version must always match the latest `decentapp-template` tagged version fully (x.y.z).
