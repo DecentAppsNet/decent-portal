@@ -38,7 +38,8 @@
     "terser": "^5.43.1",
     "vite": "^7.0.6",
     "vite-plugin-css-injected-by-js": "^3.5.2",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "typescript": "^5.8.3"
   },
   "files": [
     "dist",
@@ -47,8 +48,5 @@
     "LICENSE",
     "package.json"
   ],
-  "sideEffects": false,
-  "dependencies": {
-    "typescript": "^5.8.3"
-  }
+  "sideEffects": false
 }
