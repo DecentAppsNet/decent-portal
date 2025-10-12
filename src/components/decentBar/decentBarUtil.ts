@@ -1,3 +1,5 @@
+import { baseUrl } from "@/common/urlUtil";
+
 /* v8 ignore start */
 export function isServingFromEnabledDomain(enabledDomains:string[]):boolean {
   const currentDomain = window.location.hostname.toLowerCase();
@@ -5,7 +7,6 @@ export function isServingFromEnabledDomain(enabledDomains:string[]):boolean {
 }
 
 export function getBaseUrl():string {
-  const url = new URL(window.location.href);
-  return `${url.protocol}//${url.hostname}${url.port ? `:${url.port}` : ''}`;
+  return baseUrl(window.location.href);
 }
 /* v8 ignore end */
