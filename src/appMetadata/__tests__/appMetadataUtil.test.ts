@@ -11,6 +11,7 @@ vi.mock('../fetchAppMetaData', async () => ({
 // Imports after mocking.
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { getAppMetaData, clearAppMetaDataCache, getAppName, initAppMetaData, getAppId } from '../appMetadataUtil';
+import { disableConsoleError, reenableConsoleError } from '@/common/testUtil';
 
 let theAppMetaDataText:string = '';
 let shouldFetchAppMetaDataTextThrow = false;
@@ -61,13 +62,17 @@ describe('appMetadataUtil', () => {
 
     it('throws if metadata JSON cannot be fetched', async () => {
       shouldFetchAppMetaDataTextThrow = true;
+      disableConsoleError();
       await expect(getAppMetaData()).rejects.toThrow();
+      reenableConsoleError();
       expect(shouldFetchAppMetaDataTextThrow).toBe(true);
     });
 
     it('throws if metadata JSON is invalid', async () => {
       theAppMetaDataText = '{ invalid json }';
+      disableConsoleError();
       await expect(getAppMetaData()).rejects.toThrow();
+      reenableConsoleError();
     });
 
     it('throws if metadata format is invalid', async () => {

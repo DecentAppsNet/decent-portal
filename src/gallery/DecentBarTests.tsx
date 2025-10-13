@@ -1,6 +1,6 @@
 import ContentButton from '@/components/contentButton/ContentButton';
 import DecentBar from '@/components/decentBar/DecentBar';
-import { getBaseUrl } from '@/components/decentBar/decentBarUtil';
+import { baseUrl } from '@/common/urlUtil';
 import Link from '@/components/decentBar/types/Link';
 import { APP_CATEGORY_ID } from '@/settings/categories/appSettingsUtil';
 import { LLM_CATEGORY_ID } from '@/settings/categories/llmSettingsUtil';
@@ -41,11 +41,11 @@ function _testLongAppNameWithNoSpaces() {
 }
 
 function _testLinks() {
-  const baseUrl = getBaseUrl();
+  const _baseUrl = baseUrl();
   const links = [
     { description: 'WebLLM', url: 'https://webllm.mlc.ai/' },
     { description: 'Github', url: 'https://github.com/erikh2000/decent-portal' },
-    { description: 'Fun 404', url: `${baseUrl}/nonexistent` }
+    { description: 'Fun 404', url: `${_baseUrl}/nonexistent` }
   ];
   return <>
     <h3>Test: Has Clickable Links</h3>

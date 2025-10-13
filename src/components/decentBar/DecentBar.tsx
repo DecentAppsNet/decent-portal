@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, JSX } from 'react';
 
 import styles from './DecentBar.module.css';
 import ContentButton from '../contentButton/ContentButton';
-import { getBaseUrl } from './decentBarUtil';
+import { baseUrl } from '../../common/urlUtil';
 import DecentBarCssOverrides from './types/DecentBarCssOverrides';
 import Link from './types/Link';
 import SettingsIcon from './icons/cog.svg';
@@ -53,7 +53,7 @@ type Props = {
  */
 export function defaultOnClickLink(link:Link) {
   if (link.url.startsWith('http')) {
-    const isSameDomain = link.url.startsWith(getBaseUrl());
+    const isSameDomain = link.url.startsWith(baseUrl());
     const target = isSameDomain ? '_self' : '_blank';
     window.open(link.url, target);
   } else {
@@ -90,7 +90,7 @@ function DecentBar({
     contributorText, 
     onClickLink = defaultOnClickLink, 
     enabledDomains = DEFAULT_ENABLED_DOMAINS, 
-    homeUrl = getBaseUrl(),
+    homeUrl = baseUrl(),
     classNameOverrides = {},
     defaultAppSettings,
     onLoadAppSettings,
