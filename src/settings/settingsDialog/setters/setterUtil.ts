@@ -3,7 +3,7 @@ import { ValidateSettingCallback } from "@/settings/types/AppSettingsCallbacks";
 import { LAST_VALID_VALUE } from "@/settings/types/ValidationFailure";
 
 let theValidationMessageDelayMs = 3000;
-const theValidationMessageTimers = new Map<string, NodeJS.Timeout>();
+const theValidationMessageTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
 function _clearValidationMessageTimer(settingId:string) {
   const previousTimer = theValidationMessageTimers.get(settingId);
